@@ -32,7 +32,6 @@ body {
 
 .admin-right-panel a {
     color: #ffffff;
-    font-size: 15px;
 }
 
 .admin-right-panel ul li {
@@ -60,7 +59,7 @@ body {
 .nav-item.active a {
     color: #000000;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 
@@ -88,6 +87,6 @@ li.active a:hover {
 .table-wrap{
     background-color: white;
     padding: 15px;
-    padding-top: 20px;
+    padding-top: 22px;
     border-radius: 20px;
 }

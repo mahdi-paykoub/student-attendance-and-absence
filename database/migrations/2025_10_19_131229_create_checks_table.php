@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('checks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_product_id')->constrained('student_product')->cascadeOnDelete();
+            $table->foreignId('product_student_id')->constrained('product_student')->cascadeOnDelete();
             $table->string('owner');       // نام صاحب چک
             $table->string('phone');       // شماره موبایل صاحب چک
             $table->string('image')->nullable(); // عکس چک

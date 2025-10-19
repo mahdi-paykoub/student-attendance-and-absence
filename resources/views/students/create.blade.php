@@ -203,7 +203,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-success">ثبت دانش‌آموز</button>
+                <button type="submit" class="btn btn-success bg-admin-green">ثبت دانش‌آموز</button>
             </form>
 
         </div>

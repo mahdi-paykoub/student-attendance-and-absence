@@ -16,10 +16,17 @@ class StudentController extends Controller
     /**
      * لیست دانش‌آموزان
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with(['grade', 'major', 'school', 'province', 'city'])
-            ->latest()
+        $filter = $request->get('filter'); // all | with | without
+
+        $students = Student::with(['grade', 'major', 'school', 'province', 'city', 'products'])
+            ->when($filter === 'with', function ($query) {
+                $query->whereHas('products'); // فقط دانش‌آموزان دارای محصول
+            })
+            ->when($filter === 'without', function ($query) {
+                $query->whereDoesntHave('products'); // فقط بدون محصول
+            })
             ->paginate(10);
 
         return view('students.index', compact('students'));

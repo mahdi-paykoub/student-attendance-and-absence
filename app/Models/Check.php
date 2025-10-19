@@ -9,7 +9,7 @@ class Check extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_product_id', 'owner', 'phone', 'image'];
+    protected $fillable = ['product_student_id', 'owner', 'phone', 'image'];
 
     public function studentProduct()
     {

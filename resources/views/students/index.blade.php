@@ -20,6 +20,15 @@
     </div>
     @endif
 
+    {{-- فیلتر دانش‌آموزان --}}
+    <form method="GET" action="{{ route('students.index') }}" class="mb-3 d-flex align-items-center">
+        <label for="filter" class="me-2 fw-bold">فیلتر:</label>
+        <select name="filter" id="filter" class="form-select w-auto me-2" onchange="this.form.submit()">
+            <option value="">همه دانش‌آموزان</option>
+            <option value="with" {{ $filter === 'with' ? 'selected' : '' }}>دارای محصول</option>
+            <option value="without" {{ $filter === 'without' ? 'selected' : '' }}>بدون محصول</option>
+        </select>
+    </form>
     {{-- جدول --}}
     <div class="table-wrap">
         <table class="table table-striped align-middle">
