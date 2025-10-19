@@ -31,7 +31,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $exam->name }}</td>
                     <td>
-                        <a href="{{ route('exams.attendance', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
+                        <a href="{{ route('attendances.create', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
                             حضور و غیاب
                         </a>
                         <a href="{{ route('exams.edit', $exam) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
+    AttendanceController,
     StudentController,
     GradeController,
     MajorController,
@@ -57,3 +58,13 @@ Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])
 
 // دکمه حضور و غیاب خارج از ریسورس
 Route::get('exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');
+
+
+
+
+
+
+
+Route::get('/attendances/{exam}', [AttendanceController::class, 'create'])->name('attendances.create');
+Route::post('/attendances/store', [AttendanceController::class, 'store'])->name('attendances.store');
+Route::get('/students/by-national-code', [AttendanceController::class, 'findStudent'])->name('students.byNationalCode');
