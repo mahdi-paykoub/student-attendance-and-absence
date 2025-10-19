@@ -20,21 +20,22 @@
     </div>
     @endif
 
-    {{-- فیلتر دانش‌آموزان --}}
-    <form method="GET" action="{{ route('students.index') }}" class="mb-3 d-flex align-items-center">
-        <label for="filter" class="me-2 fw-bold">فیلتر:</label>
-        <select name="filter" id="filter" class="form-select w-auto me-2" onchange="this.form.submit()">
-            <option value="">همه دانش‌آموزان</option>
-            <option value="with" {{ $filter === 'with' ? 'selected' : '' }}>دارای محصول</option>
-            <option value="without" {{ $filter === 'without' ? 'selected' : '' }}>بدون محصول</option>
-        </select>
-    </form>
     {{-- جدول --}}
     <div class="table-wrap">
+        <div class="text-start mb-4">
+            {{-- فیلتر دانش‌آموزان --}}
+            <form method="GET" action="{{ route('students.index') }}" class="mb-3 d-flex align-items-center">
+                <label for="filter" class="me-2 fw-bold">فیلتر:</label>
+                <select name="filter" id="filter" class="form-select w-auto me-2" onchange="this.form.submit()">
+                    <option value="">همه دانش‌آموزان</option>
+                    <option value="with" {{ $filter === 'with' ? 'selected' : '' }}>دارای محصول</option>
+                    <option value="without" {{ $filter === 'without' ? 'selected' : '' }}>بدون محصول</option>
+                </select>
+            </form>
+        </div>
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>#</th>
                     <th>عکس</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
@@ -44,19 +45,20 @@
                     <th>استان</th>
                     <th>شهر</th>
                     <th>موبایل</th>
+                    <th>محصول دارد؟</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($students as $student)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
+                    <!-- <td>{{ $loop->iteration }}</td> -->
 
                     {{-- عکس --}}
                     <td>
                         @if($student->photo)
-                        <img src="{{ asset('storage/'.$student->photo) }}" alt="photo"
-                            width="50" height="50" class="rounded-circle">
+                        <img src="{{ route('students.photo', basename($student->photo)) }}"
+                            alt="photo" width="50" height="50" class="rounded-circle">
                         @else
                         <img src="{{ asset('images/no-photo.png') }}" width="50" height="50" class="rounded-circle">
                         @endif
@@ -70,6 +72,13 @@
                     <td>{{ $student->province->name ?? '-' }}</td>
                     <td>{{ $student->city->name ?? '-' }}</td>
                     <td>{{ $student->mobile_student }}</td>
+                    <td>
+                        @if($student->products->count() > 0)
+                        <span class="badge bg-admin-green">دارد</span>
+                        @else
+                        <span class="badge bg-danger">ندارد</span>
+                        @endif
+                    </td>
 
                     <td>
                         <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
@@ -90,7 +99,6 @@
             </tbody>
         </table>
     </div>
-
     {{-- صفحه‌بندی --}}
     <div class="mt-3">
         {{ $students->links('pagination::bootstrap-5') }}

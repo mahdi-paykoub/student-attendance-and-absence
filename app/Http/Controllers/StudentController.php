@@ -22,14 +22,14 @@ class StudentController extends Controller
 
         $students = Student::with(['grade', 'major', 'school', 'province', 'city', 'products'])
             ->when($filter === 'with', function ($query) {
-                $query->whereHas('products'); // فقط دانش‌آموزان دارای محصول
+                $query->whereHas('products');
             })
             ->when($filter === 'without', function ($query) {
-                $query->whereDoesntHave('products'); // فقط بدون محصول
+                $query->whereDoesntHave('products');
             })
             ->paginate(10);
 
-        return view('students.index', compact('students'));
+        return view('students.index', compact('students', 'filter'));
     }
 
     /**
@@ -80,20 +80,20 @@ class StudentController extends Controller
     /**
      * نمایش عکس دانش‌آموز از مسیر private
      */
-    public function showPhoto($id)
+    public function showPhoto($filename)
     {
-        $student = Student::findOrFail($id);
+        $path = 'students/' . $filename;
 
-        if (!$student->photo || !Storage::disk('private')->exists($student->photo)) {
+        if (!Storage::disk('private')->exists($path)) {
             abort(404);
         }
 
-        // ⚠️ اینجا می‌تونی کنترل دسترسی بذاری (مثلاً فقط ادمین یا معلم‌ها)
-        // if (!auth()->check() || !auth()->user()->isAdmin()) abort(403);
+        $file = Storage::disk('private')->get($path);
+        $type = Storage::disk('private')->mimeType($path);
 
-        return response()->file(Storage::disk('private')->path($student->photo));
+        return response($file, 200)
+            ->header('Content-Type', $type);
     }
-
     /**
      * حذف دانش‌آموز
      */

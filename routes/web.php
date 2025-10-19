@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     SchoolController,
     ProvinceController,
     CityController,
+    ExamController,
     StudentProductController
 };
 use App\Http\Controllers\ProductController;
@@ -24,7 +25,7 @@ Route::get('/', [StudentController::class, 'index'])->name('home');
 // ---------------------
 Route::resource('students', StudentController::class);
 Route::resource('products', ProductController::class);
-
+Route::resource('exams', ExamController::class);
 
 // ---------------------
 // ⚙️ مدیریت گزینه‌های انتخابی
@@ -45,3 +46,14 @@ Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name
 // add product to student
 Route::get('student-products/create', [StudentProductController::class, 'create'])->name('student-products.create');
 Route::post('student-products', [StudentProductController::class, 'store'])->name('student-products.store');
+
+
+
+// get student image
+Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])
+    ->name('students.photo');
+
+
+
+// دکمه حضور و غیاب خارج از ریسورس
+Route::get('exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');

@@ -60,9 +60,6 @@ class Student extends Model
                 'payment_type',
                 'pos_type',
                 'card_type',
-                'check_owner',
-                'check_image',
-                'check_phone'
             ])
             ->withTimestamps();
     }
