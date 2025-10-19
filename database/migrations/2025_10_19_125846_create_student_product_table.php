@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('student_product', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->enum('payment_type', ['cash', 'installment']); // نوع پرداخت
+            $table->string('pos_type')->nullable(); // نقدی: نوع دستگاه پوز
+            $table->string('card_type')->nullable(); // نقدی: نوع کارت
             $table->timestamps();
         });
     }

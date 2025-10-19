@@ -7,7 +7,8 @@ use App\Http\Controllers\{
     MajorController,
     SchoolController,
     ProvinceController,
-    CityController
+    CityController,
+    StudentProductController
 };
 use App\Http\Controllers\ProductController;
 
@@ -35,10 +36,12 @@ Route::resource('provinces', ProvinceController::class)->except(['show']);
 Route::resource('cities', CityController::class)->except(['show']);
 
 // ---------------------
-// 🌍 برای AJAX وابستگی استان ← شهر
+// 🌍ajax for city
 // ---------------------
 Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name('cities.byProvince');
 
 
 
-
+// add product to student
+Route::get('student-products/create', [StudentProductController::class, 'create'])->name('student-products.create');
+Route::post('student-products', [StudentProductController::class, 'store'])->name('student-products.store');

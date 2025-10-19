@@ -1,0 +1,75 @@
+body {
+    font-family: IRANSans;
+}
+
+@font-face {
+    font-family: IRANSans;
+    font-weight: 500;
+    src: url('../IRANSans/IRANSans.ttf');
+}
+
+@font-face {
+    font-family: IRANSans;
+    font-weight: 800;
+    src: url('../IRANSans/IRANSans_Black.ttf');
+}
+
+@font-face {
+    font-family: IRANSans;
+    font-weight: 600;
+    src: url('../IRANSans/IRANSans_Bold.ttf');
+}
+
+
+.admin-right-panel {
+    background-color: #47857e;
+    color: #ffffff;
+
+}
+
+.admin-right-panel a {
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.admin-right-panel ul li {
+    margin-top: 15px;
+}
+
+
+
+
+
+
+.fw-blod {
+    font-weight: bold;
+}
+
+.bg-admin-green {
+    background-color: #47857e;
+}
+
+.nav-item.active {
+    background: white;
+    border-radius: 5px;
+}
+
+.nav-item.active a {
+    color: #000000;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+li a:hover {
+    color: white !important;
+}
+
+li.active a:hover {
+    color: rgb(0, 0, 0) !important;
+}
+
+.nav-link:focus,
+.nav-link:hover {
+    color: inherit !important;
+}
