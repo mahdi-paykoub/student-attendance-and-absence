@@ -10,12 +10,12 @@ class GradeController extends Controller
     public function index()
     {
         $grades = Grade::latest()->get();
-        return view('grades.index', compact('grades'));
+        return view('partials.grades.index', compact('grades'));
     }
 
     public function create()
     {
-        return view('grades.create');
+        return view('partials.grades.create');
     }
 
     public function store(Request $request)
@@ -27,7 +27,7 @@ class GradeController extends Controller
 
     public function edit(Grade $grade)
     {
-        return view('grades.edit', compact('grade'));
+        return view('partials.grades.edit', compact('grade'));
     }
 
     public function update(Request $request, Grade $grade)

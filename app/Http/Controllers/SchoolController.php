@@ -11,12 +11,12 @@ class SchoolController extends Controller
      public function index()
     {
         $schools = School::latest()->get();
-        return view('schools.index', compact('schools'));
+        return view('partials.schools.index', compact('schools'));
     }
 
     public function create()
     {
-        return view('schools.create');
+        return view('partials.schools.create');
     }
 
     public function store(Request $request)
@@ -28,7 +28,7 @@ class SchoolController extends Controller
 
     public function edit(School $school)
     {
-        return view('schools.edit', compact('school'));
+        return view('partials.schools.edit', compact('school'));
     }
 
     public function update(Request $request, School $school)

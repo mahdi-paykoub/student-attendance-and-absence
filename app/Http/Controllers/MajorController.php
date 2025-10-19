@@ -11,12 +11,12 @@ class MajorController extends Controller
     public function index()
     {
         $majors = Major::latest()->get();
-        return view('majors.index', compact('majors'));
+        return view('partials.majors.index', compact('majors'));
     }
 
     public function create()
     {
-        return view('majors.create');
+        return view('partials.majors.create');
     }
 
     public function store(Request $request)
@@ -28,7 +28,7 @@ class MajorController extends Controller
 
     public function edit(Major $major)
     {
-        return view('majors.edit', compact('major'));
+        return view('partials.majors.edit', compact('major'));
     }
 
     public function update(Request $request, Major $major)

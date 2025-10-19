@@ -12,13 +12,13 @@ class CityController extends Controller
     public function index()
     {
         $cities = City::with('province')->latest()->get();
-        return view('cities.index', compact('cities'));
+        return view('partials.cities.index', compact('cities'));
     }
 
     public function create()
     {
         $provinces = Province::all();
-        return view('cities.create', compact('provinces'));
+        return view('partials.cities.create', compact('provinces'));
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class CityController extends Controller
     public function edit(City $city)
     {
         $provinces = Province::all();
-        return view('cities.edit', compact('city', 'provinces'));
+        return view('partials.cities.edit', compact('city', 'provinces'));
     }
 
     public function update(Request $request, City $city)

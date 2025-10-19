@@ -11,12 +11,12 @@ class ProvinceController extends Controller
     public function index()
     {
         $provinces = Province::latest()->get();
-        return view('provinces.index', compact('provinces'));
+        return view('partials.provinces.index', compact('provinces'));
     }
 
     public function create()
     {
-        return view('provinces.create');
+        return view('partials.provinces.create');
     }
 
     public function store(Request $request)
@@ -28,7 +28,7 @@ class ProvinceController extends Controller
 
     public function edit(Province $province)
     {
-        return view('provinces.edit', compact('province'));
+        return view('partials.provinces.edit', compact('province'));
     }
 
     public function update(Request $request, Province $province)

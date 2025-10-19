@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     StudentController,
     GradeController,
@@ -8,27 +9,27 @@ use App\Http\Controllers\{
     ProvinceController,
     CityController
 };
-use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
+
+// صفحه اصلی → می‌تونه لیست دانش‌آموزان باشه
+Route::get('/', [StudentController::class, 'index'])->name('home');
+
+// ---------------------
+// 🧑‍🎓 بخش دانش‌آموزان
+// ---------------------
 Route::resource('students', StudentController::class);
-Route::resource('grades', GradeController::class);
-Route::resource('majors', MajorController::class);
-Route::resource('schools', SchoolController::class);
-Route::resource('provinces', ProvinceController::class);
-Route::resource('cities', CityController::class);
+
+// ---------------------
+// ⚙️ مدیریت گزینه‌های انتخابی
+// ---------------------
+Route::resource('grades', GradeController::class)->except(['show']);
+Route::resource('majors', MajorController::class)->except(['show']);
+Route::resource('schools', SchoolController::class)->except(['show']);
+Route::resource('provinces', ProvinceController::class)->except(['show']);
+Route::resource('cities', CityController::class)->except(['show']);
+
+// ---------------------
+// 🌍 برای AJAX وابستگی استان ← شهر
+// ---------------------
+Route::get('/get-cities/{province}', [CityController::class, 'getCities'])->name('get.cities');
