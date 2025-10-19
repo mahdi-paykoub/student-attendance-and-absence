@@ -7,8 +7,8 @@
 
     {{-- هدر صفحه --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">لیست دانش‌آموزان</h4>
-        <a href="{{ route('students.create') }}" class="btn btn-primary">
+        <h4 class="mb-0 fw-bold fs18">لیست دانش‌آموزان</h4>
+        <a href="{{ route('students.create') }}" class="btn btn-success bg-admin-green">
             + افزودن دانش‌آموز جدید
         </a>
     </div>
@@ -64,13 +64,13 @@
                             <td>{{ $student->mobile_student }}</td>
 
                             <td>
-                                <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-warning">ویرایش</a>
+                                <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
 
                                 <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline"
                                       onsubmit="return confirm('آیا از حذف این دانش‌آموز مطمئن هستید؟')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">حذف</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary">حذف</button>
                                 </form>
                             </td>
                         </tr>

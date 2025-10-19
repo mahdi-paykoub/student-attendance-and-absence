@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-admin-green text-white">
             افزودن محصول جدید
         </div>
         <div class="card-body">
@@ -34,7 +34,7 @@
                     <label class="form-label">درصد مالیات</label>
                     <input type="number" name="tax_percent" class="form-control" value="{{ old('tax_percent', 0) }}" step="0.01" min="0" max="100" required>
                 </div>
-                <button type="submit" class="btn btn-success">ثبت محصول</button>
+                <button type="submit" class="btn btn-success bg-admin-green">ثبت محصول</button>
             </form>
 
         </div>

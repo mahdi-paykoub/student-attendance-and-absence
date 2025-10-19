@@ -5,8 +5,8 @@
 @section('content')
 <div class="container mt-4">
     <div class="d-flex justify-content-between mb-3">
-        <h4>لیست محصولات</h4>
-        <a href="{{ route('products.create') }}" class="btn btn-primary">افزودن محصول جدید</a>
+        <h4 class="fw-bold fs18">لیست محصولات</h4>
+        <a href="{{ route('products.create') }}" class="btn btn-success bg-admin-green">افزودن محصول جدید</a>
     </div>
 
     @if(session('success'))
@@ -31,11 +31,11 @@
                     <td>{{ number_format($product->price) }}</td>
                     <td>{{ $product->tax_percent }}%</td>
                     <td>
-                        <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-warning">ویرایش</a>
+                        <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('آیا مطمئن هستید؟');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">حذف</button>
+                            <button type="submit" class="btn btn-sm btn-secondary">حذف</button>
                         </form>
                     </td>
                 </tr>

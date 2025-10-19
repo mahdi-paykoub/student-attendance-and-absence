@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4>مدیریت رشته‌های تحصیلی</h4>
-    <a href="{{ route('majors.create') }}" class="btn btn-primary">افزودن رشته جدید</a>
+    <h4 class="fs18 fw-bold">مدیریت رشته‌های تحصیلی</h4>
+    <a href="{{ route('majors.create') }}" class="btn btn-success bg-admin-green">افزودن رشته جدید</a>
 </div>
 
 @if(session('success'))
@@ -26,10 +26,10 @@
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $major->name }}</td>
                 <td>
-                    <a href="{{ route('majors.edit', $major) }}" class="btn btn-sm btn-warning">ویرایش</a>
+                    <a href="{{ route('majors.edit', $major) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
                     <form action="{{ route('majors.destroy', $major) }}" method="POST" class="d-inline">
                         @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('حذف شود؟')">حذف</button>
+                        <button class="btn btn-sm btn-secondary" onclick="return confirm('حذف شود؟')">حذف</button>
                     </form>
                 </td>
             </tr>

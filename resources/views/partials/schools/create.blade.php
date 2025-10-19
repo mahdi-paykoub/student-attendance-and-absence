@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header bg-primary text-white">افزودن مدرسه</div>
+    <div class="card-header bg-admin-green text-white">افزودن مدرسه</div>
     <div class="card-body">
 
         <form action="{{ route('schools.store') }}" method="POST">
@@ -16,8 +16,8 @@
                 @error('name') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-            <button type="submit" class="btn btn-success">ذخیره</button>
-            <a href="{{ route('schools.index') }}" class="btn btn-secondary">بازگشت</a>
+            <button type="submit" class="btn btn-success bg-admin-green btn-sm">ذخیره</button>
+            <a href="{{ route('schools.index') }}" class="btn btn-secondary btn-sm">بازگشت</a>
         </form>
 
     </div>

@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4>مدیریت استان‌ها</h4>
-    <a href="{{ route('provinces.create') }}" class="btn btn-primary">افزودن استان جدید</a>
+    <h4 class="fw-bold fs18">مدیریت استان‌ها</h4>
+    <a href="{{ route('provinces.create') }}" class="btn btn-success bg-admin-green">افزودن استان جدید</a>
 </div>
 
 @if(session('success'))
@@ -26,10 +26,10 @@
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $province->name }}</td>
                 <td>
-                    <a href="{{ route('provinces.edit', $province) }}" class="btn btn-sm btn-warning">ویرایش</a>
+                    <a href="{{ route('provinces.edit', $province) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
                     <form action="{{ route('provinces.destroy', $province) }}" method="POST" class="d-inline">
                         @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('حذف شود؟')">حذف</button>
+                        <button class="btn btn-sm btn-secondary" onclick="return confirm('حذف شود؟')">حذف</button>
                     </form>
                 </td>
             </tr>

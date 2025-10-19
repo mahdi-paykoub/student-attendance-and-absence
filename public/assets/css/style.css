@@ -20,6 +20,9 @@ body {
     src: url('../IRANSans/IRANSans_Bold.ttf');
 }
 
+.fs18{
+    font-size: 18px;
+}
 
 .admin-right-panel {
     background-color: #47857e;
@@ -72,4 +75,12 @@ li.active a:hover {
 .nav-link:focus,
 .nav-link:hover {
     color: inherit !important;
+}
+
+.btn-success.bg-admin-green:hover {
+    background-color: #366b66;
+}
+
+.btn-success.bg-admin-green {
+    font-size: 14px;
 }

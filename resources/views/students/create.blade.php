@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-admin-green text-white">
             <h5 class="mb-0">فرم ثبت‌نام دانش‌آموز</h5>
         </div>
         <div class="card-body">

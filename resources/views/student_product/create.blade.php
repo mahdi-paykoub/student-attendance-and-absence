@@ -78,7 +78,7 @@
                 <button type="button" class="btn btn-secondary mb-2" id="add_check">افزودن چک</button>
             </div>
 
-            <button type="submit" class="btn btn-success">تخصیص محصول</button>
+            <button type="submit" class="btn btn-success bg-admin-green">تخصیص محصول</button>
         </form>
 
     </div>
