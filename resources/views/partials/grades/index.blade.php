@@ -12,7 +12,7 @@
 <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-bordered table-hover">
+<table class="table table-hover">
     <thead class="table-light">
         <tr>
             <th>ردیف</th>

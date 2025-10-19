@@ -10,20 +10,21 @@
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+<div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-bordered">
-    <thead class="table-light">
-        <tr>
-            <th>ردیف</th>
-            <th>نام شهرستان</th>
-            <th>استان مربوطه</th>
-            <th>عملیات</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($cities as $key => $city)
+<div class="table-wrap">
+    <table class="table">
+        <thead class="table-light">
+            <tr>
+                <th>ردیف</th>
+                <th>نام شهرستان</th>
+                <th>استان مربوطه</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($cities as $key => $city)
             <tr>
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $city->name }}</td>
@@ -36,7 +37,8 @@
                     </form>
                 </td>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

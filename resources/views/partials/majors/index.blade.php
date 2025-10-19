@@ -9,19 +9,20 @@
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+<div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-bordered">
-    <thead class="table-light">
-        <tr>
-            <th>ردیف</th>
-            <th>نام رشته</th>
-            <th>عملیات</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($majors as $key => $major)
+<div class="table-wrap">
+    <table class="table">
+        <thead class="table-light">
+            <tr>
+                <th>ردیف</th>
+                <th>نام رشته</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($majors as $key => $major)
             <tr>
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $major->name }}</td>
@@ -33,7 +34,8 @@
                     </form>
                 </td>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

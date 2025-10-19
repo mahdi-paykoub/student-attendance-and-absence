@@ -84,3 +84,10 @@ li.active a:hover {
 .btn-success.bg-admin-green {
     font-size: 14px;
 }
+
+.table-wrap{
+    background-color: white;
+    padding: 15px;
+    padding-top: 20px;
+    border-radius: 20px;
+}

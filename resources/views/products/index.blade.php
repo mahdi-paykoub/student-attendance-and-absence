@@ -10,21 +10,22 @@
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>عنوان محصول</th>
-                <th>قیمت</th>
-                <th>درصد مالیات</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($products as $product)
+    <div class="table-wrap">
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>عنوان محصول</th>
+                    <th>قیمت</th>
+                    <th>درصد مالیات</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($products as $product)
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->title }}</td>
@@ -39,13 +40,14 @@
                         </form>
                     </td>
                 </tr>
-            @empty
+                @empty
                 <tr>
                     <td colspan="5" class="text-center">هیچ محصولی ثبت نشده است.</td>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     {{ $products->links() }}
 </div>
