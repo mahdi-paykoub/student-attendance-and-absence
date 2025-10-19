@@ -9,6 +9,8 @@ use App\Http\Controllers\{
     ProvinceController,
     CityController
 };
+use App\Http\Controllers\ProductController;
+
 
 
 
@@ -17,8 +19,11 @@ Route::get('/', [StudentController::class, 'index'])->name('home');
 
 // ---------------------
 // 🧑‍🎓 بخش دانش‌آموزان
+// 🧑‍🎓 بخش محصولات
 // ---------------------
 Route::resource('students', StudentController::class);
+Route::resource('products', ProductController::class);
+
 
 // ---------------------
 // ⚙️ مدیریت گزینه‌های انتخابی
@@ -33,3 +38,7 @@ Route::resource('cities', CityController::class)->except(['show']);
 // 🌍 برای AJAX وابستگی استان ← شهر
 // ---------------------
 Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name('cities.byProvince');
+
+
+
+
