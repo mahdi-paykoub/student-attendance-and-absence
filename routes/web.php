@@ -32,4 +32,4 @@ Route::resource('cities', CityController::class)->except(['show']);
 // ---------------------
 // 🌍 برای AJAX وابستگی استان ← شهر
 // ---------------------
-Route::get('/get-cities/{province}', [CityController::class, 'getCities'])->name('get.cities');
+Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name('cities.byProvince');

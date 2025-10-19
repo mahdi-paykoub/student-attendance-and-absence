@@ -2,62 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Student, Grade, Major, School, Province, City};
-
+use App\Models\Student;
+use App\Models\Grade;
+use App\Models\Major;
+use App\Models\School;
+use App\Models\Province;
+use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * لیست دانش‌آموزان
      */
     public function index()
     {
-        //
+        $students = Student::with(['grade', 'major', 'school', 'province', 'city'])
+            ->latest()
+            ->paginate(10);
+
+        return view('students.index', compact('students'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * فرم ایجاد دانش‌آموز جدید
      */
     public function create()
     {
-        return view('students.create', [
-            'grades' => Grade::all(),
-            'majors' => Major::all(),
-            'schools' => School::all(),
-            'provinces' => Province::all(),
-            'cities' => City::all(),
-        ]);
+        $grades = Grade::all();
+        $majors = Major::all();
+        $schools = School::all();
+        $provinces = Province::all();
+
+        return view('students.create', compact('grades', 'majors', 'schools', 'provinces'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * ذخیره دانش‌آموز جدید
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'father_name' => ['required', 'string', 'max:100'],
-            'national_code' => ['required', 'digits:10', 'unique:students,national_code'],
-            'mobile_student' => ['required', 'regex:/^09\d{9}$/'],
-            'grade_id' => ['nullable', 'exists:grades,id'],
-            'major_id' => ['nullable', 'exists:majors,id'],
-            'school_id' => ['nullable', 'exists:schools,id'],
-            'province_id' => ['nullable', 'exists:provinces,id'],
-            'city_id' => ['nullable', 'exists:cities,id'],
-            'consultant_name' => ['nullable', 'string', 'max:100'],
-            'referrer_name' => ['nullable', 'string', 'max:100'],
-            'address' => ['nullable', 'string'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'mobile_father' => ['nullable', 'regex:/^09\d{9}$/'],
-            'mobile_mother' => ['nullable', 'regex:/^09\d{9}$/'],
-            'notes' => ['nullable', 'string'],
+            'first_name'      => 'required|string|max:255',
+            'last_name'       => 'required|string|max:255',
+            'father_name'     => 'required|string|max:255',
+            'national_code'   => 'required|digits:10|unique:students,national_code',
+            'mobile_student'  => 'required|string|max:15',
+            'grade_id'        => 'required|exists:grades,id',
+            'major_id'        => 'nullable|exists:majors,id',
+            'school_id'       => 'nullable|exists:schools,id',
+            'province_id'     => 'nullable|exists:provinces,id',
+            'city_id'         => 'nullable|exists:cities,id',
+            'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
+        // 🔹 ذخیره عکس در مسیر private/students با نام امن
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('students', 'public');
+            $file = $request->file('photo');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('students', $filename, 'private');
+            $validated['photo'] = $path;
         }
 
         Student::create($validated);
@@ -66,34 +71,34 @@ class StudentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * نمایش عکس دانش‌آموز از مسیر private
      */
-    public function show(string $id)
+    public function showPhoto($id)
     {
-        //
+        $student = Student::findOrFail($id);
+
+        if (!$student->photo || !Storage::disk('private')->exists($student->photo)) {
+            abort(404);
+        }
+
+        // ⚠️ اینجا می‌تونی کنترل دسترسی بذاری (مثلاً فقط ادمین یا معلم‌ها)
+        // if (!auth()->check() || !auth()->user()->isAdmin()) abort(403);
+
+        return response()->file(Storage::disk('private')->path($student->photo));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * حذف دانش‌آموز
      */
-    public function edit(string $id)
+    public function destroy(Student $student)
     {
-        //
-    }
+        // حذف عکس از storage
+        if ($student->photo && Storage::disk('private')->exists($student->photo)) {
+            Storage::disk('private')->delete($student->photo);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $student->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('students.index')->with('success', 'دانش‌آموز حذف شد.');
     }
 }

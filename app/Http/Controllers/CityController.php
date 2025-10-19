@@ -62,4 +62,11 @@ class CityController extends Controller
         $city->delete();
         return back()->with('success', 'شهر حذف شد.');
     }
+
+
+    public function getByProvince(Province $province)
+    {
+        $cities = City::where('province_id', $province->id)->get(['id', 'name']);
+        return response()->json($cities);
+    }
 }
