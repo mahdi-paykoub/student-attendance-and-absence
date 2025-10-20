@@ -46,10 +46,6 @@ Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name
 
 
 
-// add product to student
-Route::get('student-products/create', [StudentProductController::class, 'create'])->name('student-products.create');
-Route::post('student-products', [StudentProductController::class, 'store'])->name('student-products.store');
-
 
 
 // get student image

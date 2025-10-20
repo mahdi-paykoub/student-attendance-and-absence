@@ -68,11 +68,6 @@
                         </div>
                     </li>
 
-                    {{-- تخصیص محصول به دانش آموز --}}
-                    <li class="nav-item {{ request()->routeIs('student-products.*') ? 'active' : '' }}">
-                        <a href="{{ route('student-products.create') }}" class="nav-link">تخصیص محصول</a>
-                    </li>
-
                     {{-- منوی آزمون‌ها --}}
                     <li class="nav-item">
                         <a class="nav-link d-flex justify-content-between align-items-center"
