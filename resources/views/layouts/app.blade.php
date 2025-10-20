@@ -126,7 +126,11 @@
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
                                     <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
-                                </li>                          
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('payment-cards.*') ? 'active' : '' }}">
+                                    <a href="{{ route('payment-cards.index') }}" class="nav-link">پوز ها</a>
+                                </li>
+
                             </ul>
                         </div>
                     </li>
