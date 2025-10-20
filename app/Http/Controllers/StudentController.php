@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advisor;
 use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Major;
@@ -37,12 +38,13 @@ class StudentController extends Controller
      */
     public function create()
     {
+        $advisors = Advisor::all();
         $grades = Grade::all();
         $majors = Major::all();
         $schools = School::all();
         $provinces = Province::all();
 
-        return view('students.create', compact('grades', 'majors', 'schools', 'provinces'));
+        return view('students.create', compact('grades', 'majors', 'schools', 'provinces', 'advisors'));
     }
 
     /**
@@ -96,7 +98,7 @@ class StudentController extends Controller
     }
 
 
-  
+
 
     /**
      * حذف دانش‌آموز

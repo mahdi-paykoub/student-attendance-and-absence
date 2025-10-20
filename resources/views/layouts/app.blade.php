@@ -35,14 +35,10 @@
                         <div class="collapse {{ request()->routeIs('students.*') ? 'show' : '' }}" id="studentsMenu">
                             <ul class="nav flex-column ms-3">
                                 <li class="nav-item {{ request()->routeIs('students.index') ? 'active' : '' }}">
-                                    <a href="{{ route('students.index') }}" class="nav-link">
-                                        لیست دانش‌آموزان
-                                    </a>
+                                    <a href="{{ route('students.index') }}" class="nav-link">لیست دانش‌آموزان</a>
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('students.create') ? 'active' : '' }}">
-                                    <a href="{{ route('students.create') }}" class="nav-link">
-                                        افزودن دانش‌آموز
-                                    </a>
+                                    <a href="{{ route('students.create') }}" class="nav-link">افزودن دانش‌آموز</a>
                                 </li>
                             </ul>
                         </div>
@@ -63,14 +59,10 @@
                         <div class="collapse {{ request()->routeIs('products.*') ? 'show' : '' }}" id="productsMenu">
                             <ul class="nav flex-column ms-3">
                                 <li class="nav-item {{ request()->routeIs('products.index') ? 'active' : '' }}">
-                                    <a href="{{ route('products.index') }}" class="nav-link">
-                                        لیست محصولات
-                                    </a>
+                                    <a href="{{ route('products.index') }}" class="nav-link">لیست محصولات</a>
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('products.create') ? 'active' : '' }}">
-                                    <a href="{{ route('products.create') }}" class="nav-link">
-                                        افزودن محصول
-                                    </a>
+                                    <a href="{{ route('products.create') }}" class="nav-link">افزودن محصول</a>
                                 </li>
                             </ul>
                         </div>
@@ -80,7 +72,6 @@
                     <li class="nav-item {{ request()->routeIs('student-products.*') ? 'active' : '' }}">
                         <a href="{{ route('student-products.create') }}" class="nav-link">تخصیص محصول</a>
                     </li>
-
 
                     {{-- منوی آزمون‌ها --}}
                     <li class="nav-item">
@@ -97,18 +88,16 @@
                         <div class="collapse {{ request()->routeIs('exams.*') ? 'show' : '' }}" id="examsMenu">
                             <ul class="nav flex-column ms-3">
                                 <li class="nav-item {{ request()->routeIs('exams.index') ? 'active' : '' }}">
-                                    <a href="{{ route('exams.index') }}" class="nav-link">
-                                        لیست آزمون‌ها
-                                    </a>
+                                    <a href="{{ route('exams.index') }}" class="nav-link">لیست آزمون‌ها</a>
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('exams.create') ? 'active' : '' }}">
-                                    <a href="{{ route('exams.create') }}" class="nav-link">
-                                        افزودن آزمون
-                                    </a>
+                                    <a href="{{ route('exams.create') }}" class="nav-link">افزودن آزمون</a>
                                 </li>
                             </ul>
                         </div>
                     </li>
+
+
 
 
                     {{-- زیرمنوی تنظیمات پایه‌ای --}}
@@ -140,10 +129,12 @@
                                 <li class="nav-item {{ request()->routeIs('cities.*') ? 'active' : '' }}">
                                     <a href="{{ route('cities.index') }}" class="nav-link">شهرستان‌ها</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
+                                    <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
+                                </li>                          
                             </ul>
                         </div>
                     </li>
-
 
                 </ul>
             </div>

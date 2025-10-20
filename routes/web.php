@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
+    AdvisorController,
     AttendanceController,
     StudentController,
     GradeController,
@@ -36,6 +37,7 @@ Route::resource('majors', MajorController::class)->except(['show']);
 Route::resource('schools', SchoolController::class)->except(['show']);
 Route::resource('provinces', ProvinceController::class)->except(['show']);
 Route::resource('cities', CityController::class)->except(['show']);
+Route::resource('advisors', AdvisorController::class);
 
 // ---------------------
 // 🌍ajax for city

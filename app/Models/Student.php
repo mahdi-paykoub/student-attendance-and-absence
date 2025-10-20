@@ -50,8 +50,12 @@ class Student extends Model
     {
         return $this->belongsTo(City::class);
     }
+    public function advisor()
+    {
+        return $this->belongsTo(Advisor::class);
+    }
 
-   
+
 
     public function products()
     {

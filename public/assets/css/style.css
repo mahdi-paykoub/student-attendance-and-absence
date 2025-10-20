@@ -20,14 +20,20 @@ body {
     src: url('../IRANSans/IRANSans_Bold.ttf');
 }
 
-.fs18{
+.fs18 {
     font-size: 18px;
 }
 
 .admin-right-panel {
     background-color: #47857e;
     color: #ffffff;
-
+    height: 100vh;
+    /* همیشه کل ارتفاع صفحه */
+    position: sticky;
+    /* باعث میشه وقتی اسکرول می‌کنید، منو ثابت بمونه */
+    top: 0;
+    overflow-y: auto;
+    /* اگر محتوا زیاد شد، اسکرول بده */
 }
 
 .admin-right-panel a {
@@ -84,7 +90,7 @@ li.active a:hover {
     font-size: 14px;
 }
 
-.table-wrap{
+.table-wrap {
     background-color: white;
     padding: 15px;
     padding-top: 22px;

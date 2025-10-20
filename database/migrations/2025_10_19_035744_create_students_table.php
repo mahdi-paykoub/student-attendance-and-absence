@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('father_name');
             $table->string('national_code')->unique();
             $table->string('mobile_student');
+            $table->foreignId('advisor_id')->nullable()->constrained('advisors')->cascadeOnDelete();
             $table->foreignId('grade_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('major_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('school_id')->nullable()->constrained()->nullOnDelete();

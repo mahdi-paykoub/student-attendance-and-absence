@@ -12,14 +12,14 @@
 
             {{-- نمایش پیام کلی خطا --}}
             @if ($errors->any())
-                <div class="alert alert-danger">
-                    لطفا خطاهای زیر را اصلاح کنید:
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert alert-danger">
+                لطفا خطاهای زیر را اصلاح کنید:
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data">
@@ -30,7 +30,7 @@
                     <label class="form-label">عکس 3x4</label>
                     <input type="file" name="photo" class="form-control" required>
                     @error('photo')
-                        <small class="text-danger">{{ $message }}</small>
+                    <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -40,21 +40,21 @@
                         <label class="form-label">نام</label>
                         <input type="text" name="first_name" class="form-control" value="{{ old('first_name') }}" required>
                         @error('first_name')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">نام خانوادگی</label>
                         <input type="text" name="last_name" class="form-control" value="{{ old('last_name') }}" required>
                         @error('last_name')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">نام پدر</label>
                         <input type="text" name="father_name" class="form-control" value="{{ old('father_name') }}" required>
                         @error('father_name')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -65,14 +65,14 @@
                         <label class="form-label">کد ملی</label>
                         <input type="text" name="national_code" class="form-control" value="{{ old('national_code') }}" required>
                         @error('national_code')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">شماره موبایل دانش‌آموز</label>
                         <input type="text" name="mobile_student" class="form-control" value="{{ old('mobile_student') }}" required>
                         @error('mobile_student')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -84,11 +84,11 @@
                         <select name="grade_id" class="form-select" required>
                             <option value="">انتخاب کنید...</option>
                             @foreach($grades as $grade)
-                                <option value="{{ $grade->id }}" {{ old('grade_id') == $grade->id ? 'selected' : '' }}>{{ $grade->name }}</option>
+                            <option value="{{ $grade->id }}" {{ old('grade_id') == $grade->id ? 'selected' : '' }}>{{ $grade->name }}</option>
                             @endforeach
                         </select>
                         @error('grade_id')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
 
@@ -97,11 +97,11 @@
                         <select name="major_id" class="form-select">
                             <option value="">انتخاب کنید...</option>
                             @foreach($majors as $major)
-                                <option value="{{ $major->id }}" {{ old('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
+                            <option value="{{ $major->id }}" {{ old('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
                             @endforeach
                         </select>
                         @error('major_id')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
 
@@ -110,11 +110,11 @@
                         <select name="school_id" class="form-select">
                             <option value="">انتخاب کنید...</option>
                             @foreach($schools as $school)
-                                <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
+                            <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
                             @endforeach
                         </select>
                         @error('school_id')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -126,11 +126,11 @@
                         <select name="province_id" id="province_id" class="form-select">
                             <option value="">انتخاب کنید</option>
                             @foreach($provinces as $province)
-                                <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
+                            <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
                             @endforeach
                         </select>
                         @error('province_id')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
 
@@ -140,7 +140,7 @@
                             <option value="">ابتدا استان را انتخاب کنید</option>
                         </select>
                         @error('city_id')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -148,24 +148,34 @@
                 {{-- بقیه فیلدها --}}
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">نام مشاور</label>
-                        <input type="text" name="advisor_name" class="form-control" value="{{ old('advisor_name') }}">
-                        @error('advisor_name')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
+                        <label for="advisor_id" class="form-label">مشاور</label>
+                        <select name="advisor_id" id="advisor_id" class="form-select">
+                            <option value="">انتخاب مشاور</option>
+                            @foreach($advisors as $advisor)
+                            <option value="{{ $advisor->id }}" {{ old('advisor_id', $student->advisor_id ?? '') == $advisor->id ? 'selected' : '' }}>
+                                {{ $advisor->name }} - {{ $advisor->phone }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
+
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">نام معرف</label>
-                        <input type="text" name="referrer_name" class="form-control" value="{{ old('referrer_name') }}">
-                        @error('referrer_name')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
+                        <label for="referrer_id" class="form-label">معرف</label>
+                        <select name="referrer_id" id="referrer_id" class="form-select">
+                            <option value="">انتخاب معرف</option>
+                            @foreach($advisors as $referrer)
+                            <option value="{{ $referrer->id }}" {{ old('referrer_id', $student->referrer_id ?? '') == $referrer->id ? 'selected' : '' }}>
+                                {{ $referrer->name }} - {{ $referrer->phone }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
+
                     <div class="col-md-4 mb-3">
                         <label class="form-label">شماره ثابت</label>
                         <input type="text" name="home_phone" class="form-control" value="{{ old('home_phone') }}">
                         @error('home_phone')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -175,14 +185,14 @@
                         <label class="form-label">شماره موبایل پدر</label>
                         <input type="text" name="father_mobile" class="form-control" value="{{ old('father_mobile') }}">
                         @error('father_mobile')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">شماره موبایل مادر</label>
                         <input type="text" name="mother_mobile" class="form-control" value="{{ old('mother_mobile') }}">
                         @error('mother_mobile')
-                            <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
@@ -191,7 +201,7 @@
                     <label class="form-label">آدرس</label>
                     <textarea name="address" class="form-control" rows="2">{{ old('address') }}</textarea>
                     @error('address')
-                        <small class="text-danger">{{ $message }}</small>
+                    <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -199,7 +209,7 @@
                     <label class="form-label">توضیحات</label>
                     <textarea name="description" class="form-control" rows="2">{{ old('description') }}</textarea>
                     @error('description')
-                        <small class="text-danger">{{ $message }}</small>
+                    <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -213,34 +223,34 @@
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var provinceSelect = document.getElementById('province_id');
-    var citySelect = document.getElementById('city_id');
+    document.addEventListener('DOMContentLoaded', function() {
+        var provinceSelect = document.getElementById('province_id');
+        var citySelect = document.getElementById('city_id');
 
-    provinceSelect.addEventListener('change', function() {
-        var provinceId = this.value;
-        citySelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
+        provinceSelect.addEventListener('change', function() {
+            var provinceId = this.value;
+            citySelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
 
-        if (provinceId) {
-            fetch('/cities/' + provinceId)
-                .then(response => response.json())
-                .then(data => {
-                    citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
-                    data.forEach(function(city) {
-                        var option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = city.name;
-                        citySelect.appendChild(option);
+            if (provinceId) {
+                fetch('/cities/' + provinceId)
+                    .then(response => response.json())
+                    .then(data => {
+                        citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
+                        data.forEach(function(city) {
+                            var option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            citySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        citySelect.innerHTML = '<option value="">خطا در دریافت داده‌ها</option>';
                     });
-                })
-                .catch(error => {
-                    console.error(error);
-                    citySelect.innerHTML = '<option value="">خطا در دریافت داده‌ها</option>';
-                });
-        } else {
-            citySelect.innerHTML = '<option value="">ابتدا استان را انتخاب کنید</option>';
-        }
+            } else {
+                citySelect.innerHTML = '<option value="">ابتدا استان را انتخاب کنید</option>';
+            }
+        });
     });
-});
 </script>
 @endsection
