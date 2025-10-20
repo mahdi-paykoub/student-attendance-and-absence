@@ -41,10 +41,8 @@
                     <th>نام خانوادگی</th>
                     <th>پایه تحصیلی</th>
                     <th>رشته</th>
-                    <th>مدرسه</th>
-                    <th>استان</th>
-                    <th>شهر</th>
                     <th>موبایل</th>
+                    <th>تاریخ عضویت</th>
                     <th>محصول دارد؟</th>
                     <th>عملیات</th>
                 </tr>
@@ -68,10 +66,8 @@
                     <td>{{ $student->last_name }}</td>
                     <td>{{ $student->grade->name ?? '-' }}</td>
                     <td>{{ $student->major->name ?? '-' }}</td>
-                    <td>{{ $student->school->name ?? '-' }}</td>
-                    <td>{{ $student->province->name ?? '-' }}</td>
-                    <td>{{ $student->city->name ?? '-' }}</td>
                     <td>{{ $student->mobile_student }}</td>
+                    <td class="fs14 text-end" dir="ltr">{{ \Morilog\Jalali\Jalalian::fromDateTime($student->created_at)->format('Y/m/d H:i') }}</td>
                     <td>
                         @if($student->products->count() > 0)
                         <span class="badge bg-admin-green">دارد</span>

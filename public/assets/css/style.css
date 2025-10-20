@@ -20,6 +20,10 @@ body {
     src: url('../IRANSans/IRANSans_Bold.ttf');
 }
 
+.fs14 {
+    font-size: 14px;
+}
+
 .fs18 {
     font-size: 18px;
 }
