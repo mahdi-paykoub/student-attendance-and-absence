@@ -31,13 +31,8 @@ body {
 .admin-right-panel {
     background-color: #47857e;
     color: #ffffff;
-    height: 100vh;
-    /* همیشه کل ارتفاع صفحه */
-    position: sticky;
-    /* باعث میشه وقتی اسکرول می‌کنید، منو ثابت بمونه */
-    top: 0;
-    overflow-y: auto;
-    /* اگر محتوا زیاد شد، اسکرول بده */
+    height: fit-content;
+
 }
 
 .admin-right-panel a {
@@ -100,3 +95,31 @@ li.active a:hover {
     padding-top: 22px;
     border-radius: 20px;
 }
+
+
+
+
+
+
+
+@media (min-width: 576px) {}
+
+/* md و بالاتر */
+@media (min-width: 768px) {}
+
+/* lg و بالاتر */
+@media (min-width: 992px) {}
+
+/* xl و بالاتر */
+@media (min-width: 1200px) {
+
+    .admin-right-panel {
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+    }
+}
+
+/* xxl و بالاتر */
+@media (min-width: 1400px) {}

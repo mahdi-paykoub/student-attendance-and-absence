@@ -39,11 +39,9 @@
                     <th>عکس</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
-                    <th>پایه تحصیلی</th>
-                    <th>رشته</th>
                     <th>موبایل</th>
                     <th>تاریخ عضویت</th>
-                    <th>محصول دارد؟</th>
+                    <th>محصول؟</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
@@ -64,8 +62,6 @@
 
                     <td>{{ $student->first_name }}</td>
                     <td>{{ $student->last_name }}</td>
-                    <td>{{ $student->grade->name ?? '-' }}</td>
-                    <td>{{ $student->major->name ?? '-' }}</td>
                     <td>{{ $student->mobile_student }}</td>
                     <td class="fs14 text-end" dir="ltr">{{ \Morilog\Jalali\Jalalian::fromDateTime($student->created_at)->format('Y/m/d H:i') }}</td>
                     <td>

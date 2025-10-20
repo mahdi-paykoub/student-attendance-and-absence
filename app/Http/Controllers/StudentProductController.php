@@ -7,6 +7,9 @@ use App\Models\Product;
 use App\Models\ProductStudent;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
+
+
 
 class StudentProductController extends Controller
 {
@@ -27,10 +30,13 @@ class StudentProductController extends Controller
         ]);
     }
 
+
+
     public function storeAssign(Request $request, Student $student)
     {
-        // ابتدا ProductStudentها رو ایجاد می‌کنیم
         $studentProducts = [];
+
+        // ایجاد ProductStudentها
         foreach ($request->products as $productId) {
             $studentProducts[] = ProductStudent::create([
                 'student_id' => $student->id,
@@ -39,15 +45,17 @@ class StudentProductController extends Controller
             ]);
         }
 
-        // اگر حداقل یک محصول داریم، پرداخت‌ها را فقط برای اولین محصول ثبت می‌کنیم
         if (!empty($studentProducts)) {
             $mainProduct = $studentProducts[0];
 
-            // پرداخت نقدی
+            // --- پرداخت نقدی ---
             if ($request->payment_type === 'cash') {
-                foreach ($request->cash_date ?? [] as $i => $date) {
+                foreach ($request->cash_date ?? [] as $i => $shamsiDate) {
+                    // تبدیل تاریخ شمسی به میلادی
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+
                     $mainProduct->payments()->create([
-                        'date' => $date,
+                        'date' => $gregorianDate,
                         'time' => $request->cash_time[$i],
                         'amount' => $request->cash_amount[$i],
                         'voucher_number' => $request->cash_voucher[$i] ?? null,
@@ -57,12 +65,14 @@ class StudentProductController extends Controller
                 }
             }
 
-            // پرداخت اقساط
+            // --- پرداخت اقساط ---
             if ($request->payment_type === 'installment') {
                 // پیش‌پرداخت‌ها
-                foreach ($request->pre_date ?? [] as $i => $date) {
+                foreach ($request->pre_date ?? [] as $i => $shamsiDate) {
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+
                     $mainProduct->payments()->create([
-                        'date' => $date,
+                        'date' => $gregorianDate,
                         'time' => $request->pre_time[$i],
                         'amount' => $request->pre_amount[$i],
                         'voucher_number' => $request->pre_voucher[$i] ?? null,
@@ -72,9 +82,11 @@ class StudentProductController extends Controller
                 }
 
                 // چک‌ها
-                foreach ($request->check_date ?? [] as $i => $date) {
+                foreach ($request->check_date ?? [] as $i => $shamsiDate) {
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+
                     $mainProduct->checks()->create([
-                        'date' => $date,
+                        'date' => $gregorianDate,
                         'amount' => $request->check_amount[$i],
                         'serial' => $request->check_serial[$i],
                         'sayad_code' => $request->check_sayad[$i],

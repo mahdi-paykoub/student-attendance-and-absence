@@ -7,6 +7,7 @@
     <title>@yield('title', 'مدیریت')</title>
     <!-- Bootstrap RTL -->
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet">
+    @yield('styles')
     <link href="{{asset('assets/css/style.css')}}" rel="stylesheet">
 </head>
 
@@ -16,7 +17,7 @@
         <div class="row">
 
             {{-- منوی راست --}}
-            <div class="col-md-3 col-lg-2 vh-100 p-3 admin-right-panel">
+            <div class="col-xl-2 p-3 admin-right-panel">
                 <h3 class="mb-4 fw-blod">مدیریت</h3>
                 <ul class="nav flex-column p-0">
 
@@ -33,7 +34,7 @@
                         </a>
 
                         <div class="collapse {{ request()->routeIs('students.*') ? 'show' : '' }}" id="studentsMenu">
-                            <ul class="nav flex-column ms-3">
+                            <ul class="nav flex-column  pe-4">
                                 <li class="nav-item {{ request()->routeIs('students.index') ? 'active' : '' }}">
                                     <a href="{{ route('students.index') }}" class="nav-link">لیست دانش‌آموزان</a>
                                 </li>
@@ -57,7 +58,7 @@
                         </a>
 
                         <div class="collapse {{ request()->routeIs('products.*') ? 'show' : '' }}" id="productsMenu">
-                            <ul class="nav flex-column ms-3">
+                            <ul class="nav flex-column  pe-4">
                                 <li class="nav-item {{ request()->routeIs('products.index') ? 'active' : '' }}">
                                     <a href="{{ route('products.index') }}" class="nav-link">لیست محصولات</a>
                                 </li>
@@ -81,7 +82,7 @@
                         </a>
 
                         <div class="collapse {{ request()->routeIs('exams.*') ? 'show' : '' }}" id="examsMenu">
-                            <ul class="nav flex-column ms-3">
+                            <ul class="nav flex-column  pe-4">
                                 <li class="nav-item {{ request()->routeIs('exams.index') ? 'active' : '' }}">
                                     <a href="{{ route('exams.index') }}" class="nav-link">لیست آزمون‌ها</a>
                                 </li>
@@ -108,7 +109,7 @@
                         </a>
 
                         <div class="collapse {{ request()->routeIs('grades.*') || request()->routeIs('majors.*') || request()->routeIs('schools.*') || request()->routeIs('provinces.*') || request()->routeIs('cities.*') ? 'show' : '' }}" id="basicSettingsMenu">
-                            <ul class="nav flex-column ms-3">
+                            <ul class="nav flex-column  pe-4">
                                 <li class="nav-item {{ request()->routeIs('grades.*') ? 'active' : '' }}">
                                     <a href="{{ route('grades.index') }}" class="nav-link">پایه تحصیلی</a>
                                 </li>
@@ -139,7 +140,7 @@
             </div>
 
             {{-- محتوای اصلی --}}
-            <div class="col-md-9 col-lg-10 p-4">
+            <div class="col-xl-10 p-4">
                 @yield('content')
             </div>
 

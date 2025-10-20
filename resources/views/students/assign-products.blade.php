@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('styles')
+<link rel="stylesheet" href="{{asset('assets/css/data-picker.css')}}">
+@endsection
 @section('content')
 <div class="container mt-4">
 
@@ -86,14 +88,13 @@
         </form>
     </div>
 </div>
-
-
-
 @endsection
 
 @section('scripts')
+<script src="{{asset('assets/js/data-picker.js')}}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        jalaliDatepicker.startWatch();
         // ---------- محصولات ----------
         const checkboxes = document.querySelectorAll('.product-checkbox');
         const selectedList = document.getElementById('selectedProducts');
@@ -136,7 +137,7 @@
             document.getElementById('add-cash').addEventListener('click', () => {
                 const html = `<div class="row mb-2 border p-2 rounded">
                                     <div class="col-4 mt-3">
-                                        <input type="date" class="form-control" name="cash_date[]" required>
+                                        <input type="text" data-jdp class="form-control" name="cash_date[]" required>
                                     </div>
                                     <div class="col-4 mt-3">
                                         <input type="time" name="cash_time[]" class="form-control" required>
@@ -173,7 +174,7 @@
             document.getElementById('add-prepayment').addEventListener('click', () => {
                 const html = `<div class="row mb-2 border p-2 rounded">
                                 <div class="col-4 mt-3">
-                                    <input type="date" name="pre_date[]" class="form-control" required>
+                                    <input type="text" data-jdp name="pre_date[]" class="form-control" required>
                                 </div>
                                 <div class="col-4 mt-3">
                                     <input type="time" name="pre_time[]" class="form-control" required>
@@ -200,7 +201,7 @@
             document.getElementById('add-check').addEventListener('click', () => {
                 const html = `<div class="row mb-2 border p-2 rounded">
                                     <div class="col-4 mt-3">
-                                        <input type="date" name="check_date[]" class="form-control" required>
+                                        <input type="text" data-jdp name="check_date[]" class="form-control" required>
                                     </div>
                                     <div class="col-4 mt-3">
                                         <input type="number" name="check_amount[]" class="form-control" placeholder="مبلغ" required>
