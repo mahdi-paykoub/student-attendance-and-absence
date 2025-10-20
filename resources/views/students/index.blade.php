@@ -79,6 +79,8 @@
                     <td>
                         <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
 
+                        <a href="{{ route('students.assign-products', $student->id) }}" class="btn btn-success bg-admin-green btn-sm">تخصیص</a>
+
                         <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline"
                             onsubmit="return confirm('آیا از حذف این دانش‌آموز مطمئن هستید؟')">
                             @csrf

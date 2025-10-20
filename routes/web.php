@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     ProvinceController,
     CityController,
     ExamController,
+    ProductAssignmentController,
     StudentProductController
 };
 use App\Http\Controllers\ProductController;
@@ -69,4 +70,11 @@ Route::get('/student-info/by-national-code', [AttendanceController::class, 'find
 Route::get('/exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');
 
 // دسترسی به امضا
-Route::get('/signatures/{attendance}', [AttendanceController::class, 'showSignature'])->name('signatures.show'); 
+Route::get('/signatures/{attendance}', [AttendanceController::class, 'showSignature'])->name('signatures.show');
+
+
+
+
+
+Route::get('/students/{student}/assign-products', [ProductAssignmentController::class, 'create'])->name('students.assign-products');
+Route::post('/students/{student}/assign-products', [ProductAssignmentController::class, 'store'])->name('students.assign-products.store');
