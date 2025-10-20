@@ -32,7 +32,10 @@
                     <td>{{ number_format($product->price) }}</td>
                     <td>{{ $product->tax_percent }}%</td>
                     <td>
-                        <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
+                        <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green">
+                            دانش‌آموزان
+                        </a>
+
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('آیا مطمئن هستید؟');">
                             @csrf
                             @method('DELETE')

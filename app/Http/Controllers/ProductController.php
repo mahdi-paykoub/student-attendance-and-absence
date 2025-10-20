@@ -54,4 +54,13 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('products.index')->with('success', 'محصول حذف شد.');
     }
+
+    public function students(Product $product)
+    {
+        $students = $product->students()
+            ->with('grade', 'major') // اگر روابطشون وجود داره
+            ->get();
+
+        return view('products.students', compact('product', 'students'));
+    }
 }

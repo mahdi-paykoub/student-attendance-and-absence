@@ -87,3 +87,8 @@ Route::prefix('student-products')->name('student-products.')->group(function () 
 });
 
 // Route::get('/private/{path}', [PrivateFileController::class, 'show'])->where('path', '.*')->name('private.file');
+
+
+
+Route::get('/products/{product}/students', [ProductController::class, 'students'])
+    ->name('products.students');
