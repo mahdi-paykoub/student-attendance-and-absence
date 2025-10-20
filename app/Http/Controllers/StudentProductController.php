@@ -20,6 +20,8 @@ class StudentProductController extends Controller
 
         return view('students.assign-products', [
             'student' => $student,
+            'grade' => $student->grade()->first()->name,
+            'major' => $student->major()->first()->name,
             'products' => $products,
             'paymentCards' => $paymentCards,
         ]);
