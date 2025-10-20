@@ -12,7 +12,6 @@ use App\Http\Controllers\{
     CityController,
     ExamController,
     PaymentCardController,
-    ProductAssignmentController,
     StudentProductController
 };
 use App\Http\Controllers\ProductController;
@@ -78,5 +77,13 @@ Route::get('/signatures/{attendance}', [AttendanceController::class, 'showSignat
 
 
 
-Route::get('/students/{student}/assign-products', [ProductAssignmentController::class, 'create'])->name('students.assign-products');
-Route::post('/students/{student}/assign-products', [ProductAssignmentController::class, 'store'])->name('students.assign-products.store');
+// Route::get('/students/{student}/assign-products', [ProductAssignmentController::class, 'create'])->name('students.assign-products');
+// Route::post('/students/{student}/assign-products', [ProductAssignmentController::class, 'store'])->name('students.assign-products.store');
+
+
+Route::prefix('student-products')->name('student-products.')->group(function () {
+    Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
+    Route::post('/assign/{student}', [StudentProductController::class, 'storeAssign'])->name('storeAssign');
+});
+
+// Route::get('/private/{path}', [PrivateFileController::class, 'show'])->where('path', '.*')->name('private.file');
