@@ -13,6 +13,7 @@ class Student extends Model
         'photo',
         'first_name',
         'last_name',
+        'gender',
         'father_name',
         'national_code',
         'mobile_student',

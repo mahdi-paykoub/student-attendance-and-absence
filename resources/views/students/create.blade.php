@@ -57,18 +57,31 @@
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+
                 </div>
 
                 {{-- کد ملی و موبایل --}}
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">جنسیت</label>
+                        <select name="gender" class="form-select">
+                            <option value="">انتخاب کنید</option>
+                            <option value="male">پسر</option>
+                            <option value="female">دختر</option>
+                        </select>
+                        @error('gender')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">کد ملی</label>
                         <input type="text" name="national_code" class="form-control" value="{{ old('national_code') }}" required>
                         @error('national_code')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">شماره موبایل دانش‌آموز</label>
                         <input type="text" name="mobile_student" class="form-control" value="{{ old('mobile_student') }}" required>
                         @error('mobile_student')

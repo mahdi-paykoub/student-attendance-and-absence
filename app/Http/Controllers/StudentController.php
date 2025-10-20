@@ -64,6 +64,7 @@ class StudentController extends Controller
             'province_id'     => 'nullable|exists:provinces,id',
             'city_id'         => 'nullable|exists:cities,id',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'gender'          => 'nullable|in:male,female',
         ]);
 
         // 🔹 ذخیره عکس در مسیر private/students با نام امن

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->string('first_name');
             $table->string('last_name');
+            $table->enum('gender', ['male', 'female']);
             $table->string('father_name');
             $table->string('national_code')->unique();
             $table->string('mobile_student');
