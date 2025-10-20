@@ -34,6 +34,9 @@
                         <a href="{{ route('attendances.create', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
                             حضور و غیاب
                         </a>
+                        <a href="{{ route('exams.attendance', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
+                            دانش‌آموزان حاظر
+                        </a>
                         <a href="{{ route('exams.edit', $exam) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
                         <form action="{{ route('exams.destroy', $exam) }}" method="POST" class="d-inline"
                             onsubmit="return confirm('آیا از حذف این آزمون مطمئن هستید؟')">

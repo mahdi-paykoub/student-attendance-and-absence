@@ -76,7 +76,7 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', 'دانش‌آموز با موفقیت ثبت شد.');
     }
-    public function show($id){}
+    public function show($id) {}
     /**
      * نمایش عکس دانش‌آموز از مسیر private
      */
@@ -94,6 +94,10 @@ class StudentController extends Controller
         return response($file, 200)
             ->header('Content-Type', $type);
     }
+
+
+  
+
     /**
      * حذف دانش‌آموز
      */

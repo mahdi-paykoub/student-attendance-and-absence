@@ -63,10 +63,13 @@ class ExamController extends Controller
         return redirect()->route('exams.index')->with('success', 'آزمون با موفقیت حذف شد.');
     }
 
-    // حضور و غیاب
+
+
     public function attendance(Exam $exam)
     {
-        // اینجا بعداً می‌توان دانش‌آموزان را برای این آزمون نمایش داد
-        return view('exams.attendance', compact('exam'));
+        // گرفتن همه حضورهای این آزمون همراه با اطلاعات دانش‌آموز
+        $attendances = $exam->attendances()->with('student')->get();
+
+        return view('exams.attendance', compact('exam', 'attendances'));
     }
 }

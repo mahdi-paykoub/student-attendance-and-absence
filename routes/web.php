@@ -67,4 +67,8 @@ Route::get('exams/{exam}/attendance', [ExamController::class, 'attendance'])->na
 
 Route::get('/attendances/{exam}', [AttendanceController::class, 'create'])->name('attendances.create');
 Route::post('/attendances/store', [AttendanceController::class, 'store'])->name('attendances.store');
-Route::get('/students/by-national-code', [AttendanceController::class, 'findStudent'])->name('students.byNationalCode');
+Route::get('/student-info/by-national-code', [AttendanceController::class, 'findStudent'])->name('students.byNationalCode');
+Route::get('/exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');
+
+// دسترسی به امضا
+Route::get('/signatures/{attendance}', [AttendanceController::class, 'showSignature'])->name('signatures.show'); 

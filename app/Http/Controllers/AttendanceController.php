@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Exam;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AttendanceController extends Controller
 {
@@ -17,9 +18,12 @@ class AttendanceController extends Controller
 
     public function findStudent(Request $request)
     {
-        // بررسی اینکه چنین کد ملی محصول مورد نظر را دارد یا نع؟
+        $national = $request->query('national_code');
+        if (!$national) {
+            return response()->json(['success' => false]);
+        }
 
-        $student = Student::where('national_code', $request->national_code)->first();
+        $student = Student::where('national_code', $national)->first();
 
         if (!$student) {
             return response()->json(['success' => false]);
@@ -28,14 +32,18 @@ class AttendanceController extends Controller
         return response()->json([
             'success' => true,
             'student' => [
+                'id' => $student->id,
                 'first_name' => $student->first_name,
                 'last_name' => $student->last_name,
                 'grade' => $student->grade?->name,
                 'major' => $student->major?->name,
-                'photo' => asset('storage/' . $student->photo),
+                'photo' => $student->photo
+                    ? route('students.photo', ['filename' => basename($student->photo)])
+                    : null,
             ]
         ]);
     }
+
 
 
     public function store(Request $request)
@@ -43,18 +51,53 @@ class AttendanceController extends Controller
         $request->validate([
             'exam_id' => 'required|exists:exams,id',
             'student_id' => 'required|exists:students,id',
-            'signature' => 'required|file|image|mimes:png,jpg,jpeg|max:2048',
+            'signature' => 'nullable|file|image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
-        $path = $request->file('signature')->store('signatures', 'public');
+        $signaturePath = null;
 
-        Attendance::create([
+        // ذخیره امضا در فضای خصوصی
+        if ($request->hasFile('signature')) {
+            $signaturePath = $request->file('signature')->store('signatures', 'private');
+        }
+
+        // ثبت حضور
+        // بررسی اینکه آیا دانش‌آموز قبلا برای این آزمون ثبت شده
+        $exists = Attendance::where('exam_id', $request->exam_id)
+            ->where('student_id', $request->student_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'این دانش‌آموز قبلا در این آزمون ثبت شده است.'
+            ], 422); // یا هر کد وضعیت مناسب
+        }
+
+        // اگر وجود نداشت، رکورد جدید ایجاد شود
+        $attendance = Attendance::create([
             'exam_id' => $request->exam_id,
             'student_id' => $request->student_id,
-            'signature' => $path,
+            'signature' => $signaturePath,
             'is_present' => true,
         ]);
 
-        return back()->with('success', 'حضور با موفقیت ثبت شد.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'حضور با موفقیت ثبت شد.',
+            'attendance' => $attendance
+        ]);
+    }
+
+
+    public function showSignature(Attendance $attendance)
+    {
+        if (!$attendance->signature || !Storage::disk('private')->exists($attendance->signature)) {
+            abort(404);
+        }
+
+        return response()->file(
+            Storage::disk('private')->path($attendance->signature)
+        );
     }
 }
