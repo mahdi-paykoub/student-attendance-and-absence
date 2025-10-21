@@ -198,11 +198,51 @@ class StudentController extends Controller
     public function details(Student $student)
     {
         $student->load([
-            'products',
-            'productStudents.payments.paymentCard',
+            'productStudents.product',
+            'productStudents.payments',
             'productStudents.checks',
         ]);
 
-        return view('students.details', compact('student'));
+        // مجموع مبلغ محصولات (با مالیات)
+        $totalProducts = $student->productStudents->sum(function ($ps) {
+            if (!$ps->product) return 0;
+
+            $price = $ps->product->price;
+            $taxPercent = $ps->product->tax_percent ?? 0;
+
+            // اضافه کردن مالیات به قیمت
+            $finalPrice = $price + ($price * ($taxPercent / 100));
+
+            return $finalPrice;
+        });
+
+        // مجموع پرداخت‌های نقدی
+        $totalPayments = $student->productStudents->sum(function ($ps) {
+            return $ps->payments->sum('amount');
+        });
+
+        // مجموع چک‌ها
+        $totalChecks = $student->productStudents->sum(function ($ps) {
+            return $ps->checks->sum('amount');
+        });
+
+        // مجموع پرداختی کل (پرداخت نقدی + چک‌ها)
+        $totalPaid = $totalPayments + $totalChecks;
+
+        // بدهکاری (اگر پرداختی کمتر از محصولات بود)
+        $debt = max(0, $totalProducts - $totalPaid);
+
+        // بستانکاری (اگر پرداختی بیشتر از محصولات بود)
+        $credit = max(0, $totalPaid - $totalProducts);
+
+        return view('students.details', compact(
+            'student',
+            'totalProducts',
+            'totalPayments',
+            'totalChecks',
+            'totalPaid',
+            'debt',
+            'credit'
+        ));
     }
 }

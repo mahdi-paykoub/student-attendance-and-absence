@@ -35,7 +35,7 @@
                             <div class="row">
                                 @foreach($products as $product)
                                 @php
-                                $finalPrice = $product->price - ($product->price * ($product->tax_percent / 100));
+                                $finalPrice = $product->price + ($product->price * ($product->tax_percent / 100));
                                 @endphp
                                 <div class="col-md-6 mb-2">
                                     <div class="form-check border p-2 rounded">
