@@ -46,7 +46,7 @@
                                             data-name="{{ $product->name }}"
                                             data-price="{{ $finalPrice }}">
                                         <label class="form-check-label" for="product_{{ $product->id }}">
-                                            {{ $product->name }}
+                                            {{ $product->title }}
                                             <small class="text-muted d-block">قیمت نهایی: {{ number_format($finalPrice) }} تومان</small>
                                         </label>
                                     </div>

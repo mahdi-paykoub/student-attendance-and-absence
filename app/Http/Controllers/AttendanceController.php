@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Exam;
+use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +30,25 @@ class AttendanceController extends Controller
         if (!$student) {
             return response()->json(['success' => false]);
         }
+
+
+
+
+        $mandatoryProductId = Setting::get('mandatory_exam_product_id');
+        $hasMandatoryProduct = $mandatoryProductId
+            ? $student->productStudents()->where('product_id', $mandatoryProductId)->exists()
+            : true; // اگر محصول الزامی تعریف نشده باشد، اجازه شرکت بده
+
+        if (!$hasMandatoryProduct) {
+            return response()->json([
+                'success' => false,
+                'message' => 'دانش‌آموز محصول الزامی برای آزمون را ندارد و نمی‌تواند در آزمون شرکت کند.'
+            ]);
+        }
+
+
+
+
 
         return response()->json([
             'success' => true,

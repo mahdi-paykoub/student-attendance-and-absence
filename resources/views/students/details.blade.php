@@ -47,8 +47,16 @@
     @if($ps->payments->count() || $ps->checks->count())
     <div class="card mb-4">
         <div class="card-header bg-light">
-            <strong>{{ $ps->product->name }}</strong>
-            <span class="badge bg-secondary">{{ $ps->payment_type }}</span>
+            <strong>
+                {{$ps->product->name}}
+            </strong>
+            <span class="badge bg-secondary">
+                @if($ps->payment_type == 'cash')
+                نقدی
+                @elseif($ps->payment_type == 'installment')
+                اقساطی
+                @endif
+            </span>
         </div>
         <div class="card-body">
 

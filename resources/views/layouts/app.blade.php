@@ -131,7 +131,13 @@
                                 <li class="nav-item {{ request()->routeIs('payment-cards.*') ? 'active' : '' }}">
                                     <a href="{{ route('payment-cards.index') }}" class="nav-link">پوز ها</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('settings.editExamProduct.*') ? 'active' : '' }}">
+                                    <a href="{{ route('settings.editExamProduct') }}" class="nav-link">
+                                        آزمون الزامی
+                                    </a>
+                                </li>
 
+                                
                             </ul>
                         </div>
                     </li>

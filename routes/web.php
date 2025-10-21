@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     CityController,
     ExamController,
     PaymentCardController,
+    SettingsController,
     StudentProductController
 };
 use App\Http\Controllers\ProductController;
@@ -102,3 +103,8 @@ Route::get('/payments/{payment}/receipt', [PaymentCardController::class, 'showRe
     ->name('payments.receipt');
 Route::get('/checks/{check}/image', [CheckController::class, 'showImage'])
     ->name('checks.image');
+
+
+
+Route::get('settings/exam-product', [SettingsController::class, 'editExamProduct'])->name('settings.editExamProduct');
+Route::put('settings/exam-product', [SettingsController::class, 'updateExamProduct'])->name('settings.updateExamProduct');

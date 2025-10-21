@@ -131,25 +131,20 @@
                 const data = await res.json();
 
                 if (data && data.success) {
-                    const s = data.student;
-
+                    // پر کردن فیلدها
                     firstNameEl.value = s.first_name ?? '';
                     lastNameEl.value = s.last_name ?? '';
                     gradeEl.value = s.grade ?? '';
                     majorEl.value = s.major ?? '';
                     studentIdInput.value = s.id ?? '';
 
-                    // -----------------------------
-                    // نمایش تصویر با onload و onerror
-
-                    console.log(s.photo)
                     if (s.photo) {
                         studentPhoto.onload = () => {
                             studentPhoto.style.display = 'block';
                         };
                         studentPhoto.onerror = () => {
                             studentPhoto.style.display = 'none';
-                            studentPhoto.src = ''; // یا '/images/placeholder.png' اگر میخوای تصویر پیش‌فرض داشته باشی
+                            studentPhoto.src = '';
                         };
                         studentPhoto.src = s.photo;
                     } else {
@@ -157,8 +152,12 @@
                         studentPhoto.src = '';
                     }
                 } else {
+                    // اینجا alert اضافه شد
+                    const errorMsg = data && data.message ? data.message : 'دانش‌آموز یافت نشد';
+                    alert('❌ ' + errorMsg);
                     clearStudentFields();
                 }
+
             } catch (err) {
                 clearStudentFields();
             }
