@@ -23,4 +23,16 @@ class ProductStudent extends Model
     {
         return $this->hasMany(Check::class);
     }
+
+
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

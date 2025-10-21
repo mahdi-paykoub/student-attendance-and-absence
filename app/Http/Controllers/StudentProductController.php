@@ -36,13 +36,20 @@ class StudentProductController extends Controller
     {
         $studentProducts = [];
 
-        // ایجاد ProductStudentها
         foreach ($request->products as $productId) {
-            $studentProducts[] = ProductStudent::create([
-                'student_id' => $student->id,
-                'product_id' => $productId,
-                'payment_type' => $request->payment_type,
-            ]);
+            // بررسی وجود قبلی
+            $exists = ProductStudent::where('student_id', $student->id)
+                ->where('product_id', $productId)
+                ->exists();
+
+            if (!$exists) {
+                // فقط اگر وجود ندارد، ایجادش کن
+                $studentProducts[] = ProductStudent::create([
+                    'student_id' => $student->id,
+                    'product_id' => $productId,
+                    'payment_type' => $request->payment_type,
+                ]);
+            }
         }
 
         if (!empty($studentProducts)) {
@@ -51,8 +58,8 @@ class StudentProductController extends Controller
             // --- پرداخت نقدی ---
             if ($request->payment_type === 'cash') {
                 foreach ($request->cash_date ?? [] as $i => $shamsiDate) {
-                    // تبدیل تاریخ شمسی به میلادی
-                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)
+                        ->toCarbon()->format('Y-m-d');
 
                     $mainProduct->payments()->create([
                         'date' => $gregorianDate,
@@ -69,7 +76,8 @@ class StudentProductController extends Controller
             if ($request->payment_type === 'installment') {
                 // پیش‌پرداخت‌ها
                 foreach ($request->pre_date ?? [] as $i => $shamsiDate) {
-                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)
+                        ->toCarbon()->format('Y-m-d');
 
                     $mainProduct->payments()->create([
                         'date' => $gregorianDate,
@@ -83,7 +91,8 @@ class StudentProductController extends Controller
 
                 // چک‌ها
                 foreach ($request->check_date ?? [] as $i => $shamsiDate) {
-                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)->toCarbon()->format('Y-m-d');
+                    $gregorianDate = Jalalian::fromFormat('Y/m/d', $shamsiDate)
+                        ->toCarbon()->format('Y-m-d');
 
                     $mainProduct->checks()->create([
                         'date' => $gregorianDate,

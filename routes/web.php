@@ -92,3 +92,6 @@ Route::prefix('student-products')->name('student-products.')->group(function () 
 
 Route::get('/products/{product}/students', [ProductController::class, 'students'])
     ->name('products.students');
+
+
+Route::get('/students/{student}/details', [StudentController::class, 'details'])->name('students.details');

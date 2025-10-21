@@ -193,4 +193,16 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', 'دانش‌آموز حذف شد.');
     }
+
+
+    public function details(Student $student)
+    {
+        $student->load([
+            'products',
+            'productStudents.payments.paymentCard',
+            'productStudents.checks',
+        ]);
+
+        return view('students.details', compact('student'));
+    }
 }

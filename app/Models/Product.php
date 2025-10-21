@@ -14,6 +14,13 @@ class Product extends Model
         'tax_percent',
     ];
 
+    
+
+    public function productStudents()
+    {
+        return $this->hasMany(ProductStudent::class);
+    }
+
     public function students()
     {
         return $this->belongsToMany(Student::class, 'product_student')

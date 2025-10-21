@@ -56,8 +56,17 @@ class Student extends Model
         return $this->belongsTo(Advisor::class);
     }
 
+   
+
+    public function productStudents()
+    {
+        return $this->hasMany(ProductStudent::class);
+    }
+
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_student')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'product_student')
+            ->withPivot('payment_type')
+            ->withTimestamps();
     }
 }

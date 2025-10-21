@@ -17,8 +17,6 @@
                             <th>نام خانوادگی</th>
                             <th>کد ملی</th>
                             <th>شماره تماس</th>
-                            <th>پایه</th>
-                            <th>رشته</th>
                             <th>نوع پرداخت</th>
                         </tr>
                     </thead>
@@ -29,8 +27,6 @@
                             <td>{{ $student->last_name }}</td>
                             <td>{{ $student->national_code }}</td>
                             <td>{{ $student->phone }}</td>
-                            <td>{{ $student->grade->name ?? '-' }}</td>
-                            <td>{{ $student->major->name ?? '-' }}</td>
                             <td>
                                 @switch($student->pivot->payment_type)
                                 @case('cash') نقدی @break
