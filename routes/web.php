@@ -95,3 +95,7 @@ Route::get('/products/{product}/students', [ProductController::class, 'students'
 
 
 Route::get('/students/{student}/details', [StudentController::class, 'details'])->name('students.details');
+
+
+Route::get('/payments/{payment}/receipt', [PaymentCardController::class, 'showReceipt'])
+    ->name('payments.receipt');

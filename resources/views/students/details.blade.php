@@ -41,11 +41,11 @@
             <hr>
 
             @if($debt > 0)
-                <p class="text-danger fw-bold"><strong>🔻 بدهکار:</strong> {{ number_format($debt) }} تومان</p>
+            <p class="text-danger fw-bold"><strong>🔻 بدهکار:</strong> {{ number_format($debt) }} تومان</p>
             @elseif($credit > 0)
-                <p class="text-success fw-bold"><strong>✅ بستانکار:</strong> {{ number_format($credit) }} تومان</p>
+            <p class="text-success fw-bold"><strong>✅ بستانکار:</strong> {{ number_format($credit) }} تومان</p>
             @else
-                <p class="text-secondary fw-bold">تسویه‌شده ✅</p>
+            <p class="text-secondary fw-bold">تسویه‌شده ✅</p>
             @endif
         </div>
     </div>
@@ -53,17 +53,17 @@
     {{-- نمایش محصولات --}}
     <h5 class="mb-3">محصولات تخصیص داده‌شده</h5>
 
-    @foreach($student->productStudents as $ps)
+    @foreach($student->productStudents as $index => $ps)
+    {{-- فقط اگر محصول پرداخت یا چک داشته باشد جدول را نمایش بده --}}
+    @if($ps->payments->count() || $ps->checks->count())
     <div class="card mb-4">
         <div class="card-header bg-light">
             <strong>{{ $ps->product->name }}</strong>
             <span class="badge bg-secondary">{{ $ps->payment_type }}</span>
         </div>
         <div class="card-body">
-            {{-- جمع پرداختی محصول --}}
-            <p class="fw-bold mb-3">💰 مجموع پرداختی این محصول: 
-                {{ number_format($ps->payments->sum('amount') + $ps->checks->sum('amount')) }} تومان
-            </p>
+
+
 
             {{-- پرداخت‌ها --}}
             @if($ps->payments->count())
@@ -89,10 +89,11 @@
                         <td>{{ $pay->paymentCard->name ?? '-' }}</td>
                         <td>
                             @if($pay->receipt_image)
-                                <a href="{{ Storage::url($pay->receipt_image) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
+                            <a href="{{ route('payments.receipt', $pay->id) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
                             @else
-                                -
+                            -
                             @endif
+
                         </td>
                     </tr>
                     @endforeach
@@ -128,9 +129,9 @@
                         <td>{{ $check->owner_phone }}</td>
                         <td>
                             @if($check->check_image)
-                                <a href="{{ Storage::url($check->check_image) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
+                            <a href="{{ Storage::url($check->check_image) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
                             @else
-                                -
+                            -
                             @endif
                         </td>
                     </tr>
@@ -139,9 +140,14 @@
             </table>
             @endif
 
+
+
         </div>
     </div>
+    @endif
     @endforeach
+
+
 
     <a href="{{ route('students.index') }}" class="btn btn-secondary mt-3">بازگشت</a>
 </div>
