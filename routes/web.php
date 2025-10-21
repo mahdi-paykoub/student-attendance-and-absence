@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AdvisorController,
     AttendanceController,
+    CheckController,
     StudentController,
     GradeController,
     MajorController,
@@ -99,3 +100,5 @@ Route::get('/students/{student}/details', [StudentController::class, 'details'])
 
 Route::get('/payments/{payment}/receipt', [PaymentCardController::class, 'showReceipt'])
     ->name('payments.receipt');
+Route::get('/checks/{check}/image', [CheckController::class, 'showImage'])
+    ->name('checks.image');

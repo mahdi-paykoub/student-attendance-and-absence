@@ -1,23 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h3 class="mb-4">جزئیات دانش‌آموز: {{ $student->first_name }} {{ $student->last_name }}</h3>
+<h3 class="mb-4 fw-blod fs18">جزئیات دانش‌آموز: {{ $student->first_name }} {{ $student->last_name }}</h3>
 
-    {{-- اطلاعات پایه --}}
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>اطلاعات پایه</h5>
-            <p><strong>کد ملی:</strong> {{ $student->national_code }}</p>
-            <p><strong>تلفن:</strong> {{ $student->phone }}</p>
-            <p><strong>پایه تحصیلی:</strong> {{ $student->grade->name ?? '-' }}</p>
-            <p><strong>رشته:</strong> {{ $student->major->name ?? '-' }}</p>
-        </div>
-    </div>
-
+<div class="table-wrap">
     {{-- خلاصه مالی دانش‌آموز --}}
-    <div class="card mb-4 border-info">
-        <div class="card-header bg-info text-white">📊 خلاصه مالی دانش‌آموز</div>
+    <div class="card mb-4">
+        <div class="card-header bg-admin-green text-white">📊 خلاصه مالی دانش‌آموز</div>
         <div class="card-body">
             <div class="row text-center">
                 <div class="col-md-3">
@@ -51,7 +40,7 @@
     </div>
 
     {{-- نمایش محصولات --}}
-    <h5 class="mb-3">محصولات تخصیص داده‌شده</h5>
+    <h5 class="mb-3 fw-bold fs18">محصولات تخصیص داده‌شده</h5>
 
     @foreach($student->productStudents as $index => $ps)
     {{-- فقط اگر محصول پرداخت یا چک داشته باشد جدول را نمایش بده --}}
@@ -89,7 +78,7 @@
                         <td>{{ $pay->paymentCard->name ?? '-' }}</td>
                         <td>
                             @if($pay->receipt_image)
-                            <a href="{{ route('payments.receipt', $pay->id) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
+                            <a href="{{ route('payments.receipt', $pay->id) }}" target="_blank" class="btn btn-success bg-admin-green btn-sm">مشاهده</a>
                             @else
                             -
                             @endif
@@ -103,7 +92,7 @@
 
             {{-- چک‌ها --}}
             @if($ps->checks->count())
-            <h6 class="text-warning mt-4">چک‌ها</h6>
+            <h6 class="text-success mt-4">چک‌ها</h6>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -128,11 +117,14 @@
                         <td>{{ $check->owner_national_code }}</td>
                         <td>{{ $check->owner_phone }}</td>
                         <td>
+                        <td>
                             @if($check->check_image)
-                            <a href="{{ Storage::url($check->check_image) }}" target="_blank" class="btn btn-outline-primary btn-sm">مشاهده</a>
+                            <a href="{{ route('checks.image', $check->id) }}" target="_blank" class="btn btn-success bg-admin-green btn-sm">مشاهده</a>
                             @else
                             -
                             @endif
+                        </td>
+
                         </td>
                     </tr>
                     @endforeach
@@ -148,7 +140,8 @@
     @endforeach
 
 
-
-    <a href="{{ route('students.index') }}" class="btn btn-secondary mt-3">بازگشت</a>
+    <div class="text-start">
+        <a href="{{ route('students.index') }}" class="btn btn-secondary">بازگشت</a>
+    </div>
 </div>
 @endsection
