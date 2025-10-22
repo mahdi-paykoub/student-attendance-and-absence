@@ -39,7 +39,7 @@
                     <th>عکس</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
-                    <th>موبایل</th>
+                    <th>شماره صندلی</th>
                     <th>تاریخ عضویت</th>
                     <th>محصول؟</th>
                     <th>عملیات</th>
@@ -62,7 +62,11 @@
 
                     <td>{{ $student->first_name }}</td>
                     <td>{{ $student->last_name }}</td>
-                    <td>{{ $student->mobile_student }}</td>
+                    <td>
+                        @if($student->seat_number)
+                        {{$student->seat_number}}
+                        @endif
+                    </td>
                     <td class="fs14 text-end" dir="ltr">{{ \Morilog\Jalali\Jalalian::fromDateTime($student->created_at)->format('Y/m/d H:i') }}</td>
                     <td>
                         @if($student->products->count() > 0)
@@ -77,7 +81,7 @@
 
                         <a href="{{ route('student-products.assign', $student->id) }}" class="btn btn-success bg-admin-green btn-sm">تخصیص</a>
                         <a href="{{ route('students.details', $student->id) }}" class="btn btn-success bg-admin-green btn-sm">
-                            مالی
+                            مشاهده مالی
                         </a>
 
                         <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline"

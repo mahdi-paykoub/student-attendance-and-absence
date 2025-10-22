@@ -14,9 +14,10 @@ use App\Http\Controllers\{
     ExamController,
     PaymentCardController,
     SettingsController,
-    StudentProductController
+    StudentProductController,
+    SeatNumberController,
+    ProductController
 };
-use App\Http\Controllers\ProductController;
 
 
 
@@ -108,3 +109,7 @@ Route::get('/checks/{check}/image', [CheckController::class, 'showImage'])
 
 Route::get('settings/exam-product', [SettingsController::class, 'editExamProduct'])->name('settings.editExamProduct');
 Route::put('settings/exam-product', [SettingsController::class, 'updateExamProduct'])->name('settings.updateExamProduct');
+
+
+Route::get('/seat-numbers', [SeatNumberController::class, 'index'])->name('seats.index');
+Route::post('/seat-numbers/generate', [SeatNumberController::class, 'generate'])->name('seats.generate');

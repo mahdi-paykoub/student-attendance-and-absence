@@ -7,6 +7,7 @@ use App\Models\Major;
 use App\Models\PaymentCard;
 use App\Models\Product;
 use App\Models\ProductStudent;
+use App\Models\Setting;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
@@ -189,7 +190,7 @@ class StudentProductController extends Controller
         }
 
         // --- بررسی محصول اجباری و بازسازی شماره صندلی ---
-        $mandatoryExamId = setting('mandatory_exam_product_id'); // خواندن ID محصول اجباری از تنظیمات
+        $mandatoryExamId = Setting::where('key', 'mandatory_exam_product_id')->value('value');
         $assignedMandatory = in_array($mandatoryExamId, $request->products ?? []);
 
         if ($assignedMandatory) {
@@ -204,14 +205,20 @@ class StudentProductController extends Controller
 
                     foreach ($majors as $major) {
                         $students = Student::where('gender', $gender)
-                            ->where('base_id', $base->id)
+                            ->where('grade_id', $base->id)
                             ->where('major_id', $major->id)
                             ->orderBy('id')
                             ->get();
 
                         foreach ($students as $s) {
-                            $s->seat_number = $seatNumber++;
-                            $s->save();
+                            $hasMandatory = ProductStudent::where('student_id', $s->id)
+                                ->where('product_id', $mandatoryExamId)
+                                ->exists();
+
+                            if ($hasMandatory) {
+                                $s->seat_number = $seatNumber++;
+                                $s->save();
+                            }
                         }
                     }
                 }

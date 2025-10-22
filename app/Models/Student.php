@@ -28,7 +28,8 @@ class Student extends Model
         'phone',
         'mobile_father',
         'mobile_mother',
-        'notes'
+        'notes',
+        'seat_number'
     ];
 
     public function grade()
@@ -56,7 +57,7 @@ class Student extends Model
         return $this->belongsTo(Advisor::class);
     }
 
-   
+
 
     public function productStudents()
     {
