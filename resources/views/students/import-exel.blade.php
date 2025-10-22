@@ -13,10 +13,29 @@
             <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="d-flex align-items-center justify-content-between">
-                    <input class="form-control" type="file" name="file" accept=".xlsx,.xls" required>
+                    <input class="form-control w-75" type="file" name="file" accept=".xlsx,.xls" required>
                     <button class="btn btn-success bg-admin-green me-3" type="submit">آپلود اکسل</button>
                 </div>
             </form>
+
+
+
+            <form action="{{ route('students.photos.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <label class="mt-4"> ZIP تصاویر :</label>
+
+                <div class="d-flex align-items-center justify-content-between mt-1">
+                    <input type="file" class="form-control w-75" name="photos_zip" accept=".zip" required>
+                    <button type="submit" class="btn btn-primary mt-2 btn btn-success bg-admin-green">آپلود تصاویر</button>
+                </div>
+            </form>
+
+            @if(session('success'))
+            <div class="alert alert-success mt-3">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+            <div class="alert alert-danger mt-3">{{ session('error') }}</div>
+            @endif
 
 
         </div>

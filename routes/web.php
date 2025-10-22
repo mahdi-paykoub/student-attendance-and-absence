@@ -117,3 +117,4 @@ Route::post('/seat-numbers/generate', [SeatNumberController::class, 'generate'])
 
 Route::post('/students-import', [StudentController::class, 'import'])->name('students.import');
 Route::get('/students-import-date', [StudentController::class, 'showImport'])->name('show.students.import');
+Route::post('/students-import-image/photos/upload', [StudentController::class, 'uploadImagesZip'])->name('students.photos.upload');

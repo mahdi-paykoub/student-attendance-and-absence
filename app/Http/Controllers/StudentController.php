@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Rules\ValidNationalCode;
 use App\Imports\StudentsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use ZipArchive;
 
 
 class StudentController extends Controller
@@ -59,23 +60,23 @@ class StudentController extends Controller
         $validated = $request->validate([
             'first_name'      => 'required|string|max:255',
             'last_name'       => 'required|string|max:255',
-            'father_name'     => 'required|string|max:255',
+            'father_name'     => 'nullable|string|max:255',
             'national_code'   => ['required', 'digits:10', 'unique:students,national_code', new ValidNationalCode],
-            'mobile_student'  => 'required|string|max:15',
-            'grade_id'        => 'required|exists:grades,id',
-            'major_id'        => 'required|exists:majors,id',
-            'school_id'       => 'required|exists:schools,id',
-            'province_id'     => 'required|exists:provinces,id',
-            'city_id'         => 'required|exists:cities,id',
-            'photo'           => 'required|image|mimes:jpeg,jpg,png|max:2048',
-            'gender'          => 'required|in:male,female',
-            'consultant_id'   => 'required',
-            'referrer_id'     => 'required',
-            'address'         => 'required|string|max:500',
-            'mobile_mother'   => 'required|string|max:15',
-            'mobile_father'   => 'required|string|max:15',
+            'mobile_student'  => 'nullable|string|max:15',
+            'grade_id'        => 'nullable|exists:grades,id',
+            'major_id'        => 'nullable|exists:majors,id',
+            'school_id'       => 'nullable|exists:schools,id',
+            'province_id'     => 'nullable|exists:provinces,id',
+            'city_id'         => 'nullable|exists:cities,id',
+            'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'gender'          => 'nullable|in:male,female',
+            'consultant_id'   => 'nullable',
+            'referrer_id'     => 'nullable',
+            'address'         => 'nullable|string|max:500',
+            'mobile_mother'   => 'nullable|string|max:15',
+            'mobile_father'   => 'nullable|string|max:15',
             'notes'           => 'nullable|string|max:1000',
-            'phone'           => 'required|string|max:20',
+            'phone'           => 'nullable|string|max:20',
 
         ]);
 
@@ -265,5 +266,63 @@ class StudentController extends Controller
     public function showImport()
     {
         return view('students.import-exel');
+    }
+
+
+    public function uploadImagesZip(Request $request)
+    {
+        $request->validate([
+            'photos_zip' => 'required|file|mimes:zip|max:10240', // حداکثر 10MB
+        ]);
+
+        $zipFile = $request->file('photos_zip');
+        $zipName = time() . '_' . uniqid() . '.zip';
+        $zipPath = $zipFile->storeAs('temp', $zipName);
+
+        $zip = new ZipArchive;
+        $res = $zip->open(storage_path('app/' . $zipPath));
+
+        if ($res === TRUE) {
+            $uploadedFiles = [];
+
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                $fileinfo = pathinfo($filename);
+
+                // 🔹 اگر فایل پسوند ندارد یا دایرکتوری است، رد شود
+                if (!isset($fileinfo['extension'])) {
+                    continue;
+                }
+
+                // 🔹 فقط پسوندهای تصویری معتبر
+                $extension = strtolower($fileinfo['extension']);
+                if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    continue;
+                }
+
+                // 🔹 استخراج محتوا
+                $content = $zip->getFromIndex($i);
+                if ($content === false) {
+                    continue;
+                }
+
+                // 🔹 استفاده از نام اصلی فایل بدون تغییر
+                $safeName = $fileinfo['basename']; // نام اصلی فایل
+
+                // 🔹 ذخیره در storage/private/students
+                Storage::disk('private')->put('students/' . $safeName, $content);
+
+                $uploadedFiles[] = 'students/' . $safeName;
+            }
+
+            $zip->close();
+
+            // حذف فایل ZIP موقت
+            Storage::delete($zipPath);
+
+            return back()->with('success', count($uploadedFiles) . ' تصویر با موفقیت آپلود شد.');
+        } else {
+            return back()->with('error', 'باز کردن فایل ZIP موفقیت‌آمیز نبود.');
+        }
     }
 }
