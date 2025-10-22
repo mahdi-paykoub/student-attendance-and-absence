@@ -141,8 +141,13 @@
                                 </li>
 
 
+
                             </ul>
                         </div>
+                    </li>
+
+                    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
                     </li>
 
                 </ul>
