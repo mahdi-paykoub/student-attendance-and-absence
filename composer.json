@@ -10,7 +10,9 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "laravel/ui": "^4.6",
         "maatwebsite/excel": "^3.1",
+        "mews/captcha": "^3.4",
         "morilog/jalali": "3.*"
     },
     "require-dev": {

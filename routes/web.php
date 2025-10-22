@@ -18,9 +18,8 @@ use App\Http\Controllers\{
     SeatNumberController,
     ProductController
 };
-
-
-
+use Illuminate\Support\Facades\Auth;
+use Mews\Captcha\Facades\Captcha;
 
 // صفحه اصلی → می‌تونه لیست دانش‌آموزان باشه
 Route::get('/', [StudentController::class, 'index'])->name('home');
@@ -118,3 +117,14 @@ Route::post('/seat-numbers/generate', [SeatNumberController::class, 'generate'])
 Route::post('/students-import', [StudentController::class, 'import'])->name('students.import');
 Route::get('/students-import-date', [StudentController::class, 'showImport'])->name('show.students.import');
 Route::post('/students-import-image/photos/upload', [StudentController::class, 'uploadImagesZip'])->name('students.photos.upload');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
+
+Route::get('/reload-captcha', function () {
+    return captcha_img();
+});
