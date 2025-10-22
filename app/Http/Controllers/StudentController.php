@@ -33,7 +33,7 @@ class StudentController extends Controller
             ->when($filter === 'without', function ($query) {
                 $query->whereDoesntHave('products');
             })
-            ->paginate(10);
+            ->get();
 
         return view('students.index', compact('students', 'filter'));
     }

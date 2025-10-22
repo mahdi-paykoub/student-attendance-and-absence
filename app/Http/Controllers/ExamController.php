@@ -11,7 +11,7 @@ class ExamController extends Controller
     // لیست آزمون‌ها
     public function index()
     {
-        $exams = Exam::latest()->paginate(10);
+        $exams = Exam::latest()->get();
         return view('exams.index', compact('exams'));
     }
 

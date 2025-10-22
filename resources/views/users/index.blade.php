@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="">
-    <h3 class="mb-4">لیست کاربران</h3>
+    <h3 class="mb-4 fw-bold fs18">لیست کاربران</h3>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>

@@ -139,6 +139,11 @@
                                         آزمون الزامی
                                     </a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('seats.index.*') ? 'active' : '' }}">
+                                    <a href="{{ route('seats.index') }}" class="nav-link">
+                                         تخصیص شماره صندلی
+                                    </a>
+                                </li>
 
 
 

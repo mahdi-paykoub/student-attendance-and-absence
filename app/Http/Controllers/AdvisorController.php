@@ -9,7 +9,7 @@ class AdvisorController extends Controller
 {
     public function index()
     {
-        $advisors = Advisor::latest()->paginate(20);
+        $advisors = Advisor::latest()->get();
         return view('partials.advisors.index', compact('advisors'));
     }
 
