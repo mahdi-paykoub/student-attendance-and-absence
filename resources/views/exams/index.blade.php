@@ -3,7 +3,7 @@
 @section('title', 'لیست آزمون‌ها')
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0 fw-bold">لیست آزمون‌ها</h4>
@@ -37,7 +37,6 @@
                         <a href="{{ route('exams.attendance', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
                             دانش‌آموزان حاظر
                         </a>
-                        <a href="{{ route('exams.edit', $exam) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
                         <form action="{{ route('exams.destroy', $exam) }}" method="POST" class="d-inline"
                             onsubmit="return confirm('آیا از حذف این آزمون مطمئن هستید؟')">
                             @csrf

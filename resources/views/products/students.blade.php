@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <h4 class="mb-4 fw-bold fs18">دانش‌آموزانی که محصول <span class="text-success">{{$product->title}}</span>  را دارند:</h4>
 
     @if($students->isEmpty())

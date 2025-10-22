@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="">
     <h3 class="mb-4 fw-bold fs18">تنظیمات محصول الزامی برای آزمون حضوری</h3>
 
     <div class="table-wrap">

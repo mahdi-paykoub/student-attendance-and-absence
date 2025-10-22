@@ -3,7 +3,7 @@
 @section('title', 'افزودن محصول جدید')
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-admin-green text-white">
             افزودن محصول جدید

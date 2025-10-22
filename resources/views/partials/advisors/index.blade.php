@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','لیست مشاوران')
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold fs18">لیست مشاوران</h4>
         <a href="{{ route('advisors.create') }}" class="btn btn-success bg-admin-green">+ افزودن مشاور</a>

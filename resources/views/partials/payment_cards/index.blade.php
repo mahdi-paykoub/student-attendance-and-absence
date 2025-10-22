@@ -3,7 +3,7 @@
 @section('title', ' مدیریت کارت ها')
 
 @section('content')
-<div class="container">
+<div class="">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fs18 fw-bold">مدیریت کارت های پرداختی</h4>
         <a href="{{ route('payment-cards.create') }}" class="btn btn-success bg-admin-green">افزودن کارت (پوز) جدید</a>

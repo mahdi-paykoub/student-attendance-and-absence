@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','افزودن مشاور')
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <h4>افزودن مشاور جدید</h4>
 
     <form action="{{ route('advisors.update', $advisor) }}" method="POST">

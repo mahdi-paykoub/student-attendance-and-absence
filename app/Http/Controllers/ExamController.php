@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advisor;
 use App\Models\Exam;
 use Illuminate\Http\Request;
 
@@ -17,20 +18,31 @@ class ExamController extends Controller
     // فرم ایجاد آزمون
     public function create()
     {
-        return view('exams.create');
+        $advisors = Advisor::all(); // همه مراقبین
+        return view('exams.create', compact('advisors'));
     }
 
-    // ذخیره آزمون جدید
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'domain' => 'required|string|max:255',
+            'domain_manager' => 'required|string|max:255',
+            'exam_datetime' => 'required|date',
+            'supervisors' => 'required|array|min:1',
         ]);
 
-        Exam::create($request->all());
+        $exam = Exam::create([
+            'name' => $request->name,
+            'domain' => $request->domain,
+            'domain_manager' => $request->domain_manager,
+            'exam_datetime' => $request->exam_datetime,
+        ]);
 
-        return redirect()->route('exams.index')->with('success', 'آزمون با موفقیت ثبت شد.');
+        $exam->supervisors()->attach($request->supervisors);
+        return redirect()->route('exams.index')->with('success', 'آزمون با موفقیت اضافه شد.');
     }
+
 
     // نمایش جزئیات آزمون
     public function show(Exam $exam)
@@ -72,4 +84,6 @@ class ExamController extends Controller
 
         return view('exams.attendance', compact('exam', 'attendances'));
     }
+
+   
 }

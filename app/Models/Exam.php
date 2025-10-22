@@ -11,12 +11,17 @@ class Exam extends Model
 
     protected $fillable = [
         'name',
-
+        'domain',
+        'domain_manager',
+        'exam_datetime',
     ];
-    
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
-    
+    public function supervisors()
+    {
+        return $this->belongsToMany(Advisor::class, 'advisor_exam');
+    }
 }

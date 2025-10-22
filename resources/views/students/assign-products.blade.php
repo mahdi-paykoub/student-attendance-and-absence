@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/data-picker.css')}}">
 @endsection
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
 
     <h4 class="mb-4 fw-bold fs18">تخصیص محصول به: <span class="text-success">{{ $student->first_name }} {{ $student->last_name }}</span></h4>
 

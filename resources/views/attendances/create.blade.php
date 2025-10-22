@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="">
     <h3 class="fw-bold fs18">ثبت حضور برای آزمون: {{ $exam->name }}</h3>
 
     @if(session('success'))
@@ -131,7 +131,9 @@
                 const data = await res.json();
 
                 if (data && data.success) {
-                    // پر کردن فیلدها
+                    // data.success true یعنی دانش‌آموز پیدا شد و محصول الزامی هم داره
+                    const s = data.student;
+
                     firstNameEl.value = s.first_name ?? '';
                     lastNameEl.value = s.last_name ?? '';
                     gradeEl.value = s.grade ?? '';
@@ -151,17 +153,20 @@
                         studentPhoto.style.display = 'none';
                         studentPhoto.src = '';
                     }
+
                 } else {
-                    // اینجا alert اضافه شد
+                    // دانش‌آموز پیدا نشده یا محصول الزامی ندارد
+                    clearStudentFields();
                     const errorMsg = data && data.message ? data.message : 'دانش‌آموز یافت نشد';
                     alert('❌ ' + errorMsg);
-                    clearStudentFields();
                 }
 
             } catch (err) {
                 clearStudentFields();
+                console.error(err);
             }
         }
+
 
         // -----------------------------
         // debounce برای blur

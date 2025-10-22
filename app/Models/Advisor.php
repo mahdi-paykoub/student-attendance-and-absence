@@ -16,4 +16,8 @@ class Advisor extends Model
     {
         return $this->hasMany(Student::class);
     }
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class, 'advisor_exam');
+    }
 }

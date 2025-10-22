@@ -3,7 +3,7 @@
 @section('title', 'ویرایش اطلاعات دانش‌آموز')
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-admin-green text-white">
             <h5 class="mb-0">ویرایش اطلاعات دانش‌آموز</h5>

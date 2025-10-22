@@ -3,7 +3,7 @@
 @section('title', 'محصولات')
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <div class="d-flex justify-content-between mb-3">
         <h4 class="fw-bold fs18">لیست محصولات</h4>
         <a href="{{ route('products.create') }}" class="btn btn-success bg-admin-green">افزودن محصول جدید</a>

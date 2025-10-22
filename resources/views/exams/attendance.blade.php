@@ -3,7 +3,7 @@
 @section('title', "حضور و غیاب - {$exam->name}")
 
 @section('content')
-<div class="container mt-4">
+<div class=" mt-4">
     <h3 class="fw-bold fs18">دانش‌آموزان حاضر در آزمون: <span class="text-success">{{ $exam->name }}</span></h3>
 
     <div class="table-wrap mt-4">

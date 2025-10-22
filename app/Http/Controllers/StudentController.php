@@ -11,6 +11,7 @@ use App\Models\Province;
 use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\ValidNationalCode;
 
 class StudentController extends Controller
 {
@@ -56,7 +57,7 @@ class StudentController extends Controller
             'first_name'      => 'required|string|max:255',
             'last_name'       => 'required|string|max:255',
             'father_name'     => 'required|string|max:255',
-            'national_code'   => 'required|digits:10|unique:students,national_code',
+            'national_code'   => ['required', 'digits:10', 'unique:students,national_code', new ValidNationalCode],
             'mobile_student'  => 'required|string|max:15',
             'grade_id'        => 'required|exists:grades,id',
             'major_id'        => 'required|exists:majors,id',
@@ -245,6 +246,4 @@ class StudentController extends Controller
             'credit'
         ));
     }
-
-   
 }

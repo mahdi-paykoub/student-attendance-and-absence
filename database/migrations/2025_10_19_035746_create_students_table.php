@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('mobile_father')->nullable();
             $table->string('mobile_mother')->nullable();
             $table->text('notes')->nullable();
+            $table->unsignedInteger('seat_number')->nullable();
             $table->timestamps();
         });
     }
