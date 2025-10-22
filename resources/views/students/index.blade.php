@@ -100,10 +100,7 @@
             </tbody>
         </table>
     </div>
-    {{-- صفحه‌بندی --}}
-    <div class="mt-3">
-        {{ $students->links('pagination::bootstrap-5') }}
-    </div>
+  
 
 </div>
 @endsection

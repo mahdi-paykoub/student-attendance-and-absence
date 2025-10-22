@@ -44,6 +44,5 @@
             </tbody>
         </table>
     </div>
-    {{ $advisors->links('pagination::bootstrap-5') }}
 </div>
 @endsection

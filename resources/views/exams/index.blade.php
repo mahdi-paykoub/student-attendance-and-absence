@@ -54,9 +54,7 @@
         </table>
     </div>
 
-    <div class="mt-3">
-        {{ $exams->links('pagination::bootstrap-5') }}
-    </div>
+    
 
 </div>
 @endsection
