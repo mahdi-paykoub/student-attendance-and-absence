@@ -12,6 +12,9 @@ use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Rules\ValidNationalCode;
+use App\Imports\StudentsImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class StudentController extends Controller
 {
@@ -245,5 +248,22 @@ class StudentController extends Controller
             'debt',
             'credit'
         ));
+    }
+
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        Excel::import(new StudentsImport, $request->file('file'));
+
+        return back()->with('success', 'اطلاعات با موفقیت وارد شد.');
+    }
+
+    public function showImport()
+    {
+        return view('students.import-exel');
     }
 }

@@ -113,3 +113,7 @@ Route::put('settings/exam-product', [SettingsController::class, 'updateExamProdu
 
 Route::get('/seat-numbers', [SeatNumberController::class, 'index'])->name('seats.index');
 Route::post('/seat-numbers/generate', [SeatNumberController::class, 'generate'])->name('seats.generate');
+
+
+Route::post('/students-import', [StudentController::class, 'import'])->name('students.import');
+Route::get('/students-import-date', [StudentController::class, 'showImport'])->name('show.students.import');

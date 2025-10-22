@@ -41,6 +41,9 @@
                                 <li class="nav-item {{ request()->routeIs('students.create') ? 'active' : '' }}">
                                     <a href="{{ route('students.create') }}" class="nav-link">افزودن دانش‌آموز</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('show.students.import') ? 'active' : '' }}">
+                                    <a href="{{ route('show.students.import') }}" class="nav-link">افزودن با exel</a>
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -137,7 +140,7 @@
                                     </a>
                                 </li>
 
-                                
+
                             </ul>
                         </div>
                     </li>
