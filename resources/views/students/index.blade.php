@@ -21,7 +21,7 @@
     @endif
 
     {{-- جدول --}}
-    <div class="table-wrap">
+    <div class="table-wrap table-responsive-lg">
         <div class="text-start mb-4">
             {{-- فیلتر دانش‌آموزان --}}
             <form method="GET" action="{{ route('students.index') }}" class="mb-3 d-flex align-items-center">
@@ -77,18 +77,18 @@
                     </td>
 
                     <td>
-                        <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green">ویرایش</a>
+                        <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-lg-0 ">ویرایش</a>
 
-                        <a href="{{ route('student-products.assign', $student->id) }}" class="btn btn-success bg-admin-green btn-sm">تخصیص</a>
-                        <a href="{{ route('students.details', $student->id) }}" class="btn btn-success bg-admin-green btn-sm">
+                        <a href="{{ route('student-products.assign', $student->id) }}" class="btn btn-success bg-admin-green btn-sm mt-1 mt-lg-0 ">تخصیص</a>
+                        <a href="{{ route('students.details', $student->id) }}" class="btn btn-success bg-admin-green btn-sm mt-1 mt-lg-0 ">
                             مشاهده مالی
                         </a>
 
-                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline"
+                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline mt-1 mt-lg-0 "
                             onsubmit="return confirm('آیا از حذف این دانش‌آموز مطمئن هستید؟')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-secondary">حذف</button>
+                            <button type="submit" class="btn btn-sm btn-secondary mt-1 mt-lg-0">حذف</button>
                         </form>
                     </td>
                 </tr>

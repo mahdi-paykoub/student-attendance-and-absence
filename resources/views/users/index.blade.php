@@ -9,7 +9,7 @@
     @endif
 
 
-    <div class="table-wrap">
+    <div class="table-wrap table-responsive-lg">
         <table class="table table-striped">
             <thead class="table-light">
                 <tr>

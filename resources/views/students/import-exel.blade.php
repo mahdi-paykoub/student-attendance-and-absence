@@ -12,9 +12,9 @@
 
             <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="d-flex align-items-center justify-content-between">
+                <div class="d-md-flex align-items-center justify-content-between">
                     <input class="form-control w-75" type="file" name="file" accept=".xlsx,.xls" required>
-                    <button class="btn btn-success bg-admin-green me-3" type="submit">آپلود اکسل</button>
+                    <button class="btn btn-success bg-admin-green mt-2 mt-md-0" type="submit">آپلود اکسل</button>
                 </div>
             </form>
 
@@ -24,9 +24,9 @@
                 @csrf
                 <label class="mt-4"> ZIP تصاویر :</label>
 
-                <div class="d-flex align-items-center justify-content-between mt-1">
+                <div class="d-md-flex align-items-center justify-content-between mt-1">
                     <input type="file" class="form-control w-75" name="photos_zip" accept=".zip" required>
-                    <button type="submit" class="btn btn-primary mt-2 btn btn-success bg-admin-green">آپلود تصاویر</button>
+                    <button type="submit" class="btn btn-primary btn btn-success bg-admin-green mt-2 mt-md-0">آپلود تصاویر</button>
                 </div>
             </form>
 

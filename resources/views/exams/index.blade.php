@@ -16,7 +16,7 @@
 
 
 
-    <div class="table-wrap">
+    <div class="table-wrap table-responsive-lg">
         <table class="table">
             <thead class="table-light">
                 <tr>
@@ -31,17 +31,17 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $exam->name }}</td>
                     <td>
-                        <a href="{{ route('attendances.create', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
+                        <a href="{{ route('attendances.create', $exam) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             حضور و غیاب
                         </a>
-                        <a href="{{ route('exams.attendance', $exam) }}" class="btn btn-sm btn-success bg-admin-green">
+                        <a href="{{ route('exams.attendance', $exam) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             دانش‌آموزان حاظر
                         </a>
                         <form action="{{ route('exams.destroy', $exam) }}" method="POST" class="d-inline"
                             onsubmit="return confirm('آیا از حذف این آزمون مطمئن هستید؟')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-secondary">حذف</button>
+                            <button type="submit" class="btn btn-sm btn-secondary mt-1 mt-md-0">حذف</button>
                         </form>
                     </td>
                 </tr>

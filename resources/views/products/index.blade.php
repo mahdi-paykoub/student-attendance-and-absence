@@ -13,7 +13,7 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="table-wrap">
+    <div class="table-wrap table-responsive">
         <table class="table">
             <thead class="table-light">
                 <tr>
@@ -32,14 +32,14 @@
                     <td>{{ number_format($product->price) }}</td>
                     <td>{{ $product->tax_percent }}%</td>
                     <td>
-                        <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green">
+                        <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             دانش‌آموزان
                         </a>
 
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('آیا مطمئن هستید؟');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-secondary">حذف</button>
+                            <button type="submit" class="btn btn-sm btn-secondary   mt-1 mt-md-0">حذف</button>
                         </form>
                     </td>
                 </tr>
