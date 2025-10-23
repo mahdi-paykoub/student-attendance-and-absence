@@ -53,7 +53,7 @@
 
             {{-- امضا --}}
             <div class="row">
-                <div class="col-6">
+                <div class="col-12 col-lg-6">
                     <div class="mt-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
@@ -63,7 +63,9 @@
                                 <button type="button" id="clear-signature" class="btn btn-sm btn-outline-danger">پاک کردن امضا</button>
                             </div>
                         </div>
-                        <canvas id="signature-pad" width="500" height="250" class="border rounded bg-white"></canvas>
+                        <div>
+                            <canvas id="signature-pad" width="330" height="250" class="border rounded bg-white"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

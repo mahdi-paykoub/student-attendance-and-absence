@@ -97,6 +97,10 @@ li.active a:hover {
 }
 
 
+.offcanvas a {
+    color: black !important;
+}
+
 
 
 
@@ -105,7 +109,9 @@ li.active a:hover {
 @media (min-width: 576px) {}
 
 /* md و بالاتر */
-@media (min-width: 768px) {}
+@media (min-width: 768px) {
+  
+}
 
 /* lg و بالاتر */
 @media (min-width: 992px) {}
