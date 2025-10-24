@@ -23,14 +23,16 @@ return new class extends Migration
             $table->foreignId('grade_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('major_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('school_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('province_id')->nullable()->constrained()->nullOnDelete();
+
+            $table->string('province')->nullable();
+            $table->string('city')->nullable();
+        
             $table->foreignId('consultant_id')->nullable()
                 ->constrained('advisors')
                 ->nullOnDelete();
             $table->foreignId('referrer_id')->nullable()
                 ->constrained('advisors')
                 ->nullOnDelete();
-            $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile_father')->nullable();

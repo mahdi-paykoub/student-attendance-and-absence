@@ -136,12 +136,7 @@
                                 <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
                                     <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
                                 </li>
-                                <li class="nav-item {{ request()->routeIs('provinces.*') ? 'active' : '' }}">
-                                    <a href="{{ route('provinces.index') }}" class="nav-link">استان‌ها</a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('cities.*') ? 'active' : '' }}">
-                                    <a href="{{ route('cities.index') }}" class="nav-link">شهرستان‌ها</a>
-                                </li>
+                              
                                 <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
                                     <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
                                 </li>
@@ -300,12 +295,7 @@
                             <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
                                 <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
                             </li>
-                            <li class="nav-item {{ request()->routeIs('provinces.*') ? 'active' : '' }}">
-                                <a href="{{ route('provinces.index') }}" class="nav-link">استان‌ها</a>
-                            </li>
-                            <li class="nav-item {{ request()->routeIs('cities.*') ? 'active' : '' }}">
-                                <a href="{{ route('cities.index') }}" class="nav-link">شهرستان‌ها</a>
-                            </li>
+                           
                             <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
                                 <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
                             </li>
@@ -338,7 +328,7 @@
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
-                    <a href="{{ route('logout') }}"
+                    <a href="{{ route('logout') }}" class="nav-link"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         خروج
                     </a>

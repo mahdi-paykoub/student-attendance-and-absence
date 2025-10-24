@@ -136,28 +136,15 @@
                 {{-- استان و شهر --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="province_id" class="form-label">استان</label>
-                        <select name="province_id" id="province_id" class="form-select">
-                            <option value="">انتخاب کنید</option>
-                            @foreach($provinces as $province)
-                            <option value="{{ $province->id }}" {{ old('province_id', $student->province_id) == $province->id ? 'selected' : '' }}>
-                                {{ $province->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('province_id') <small class="text-danger">{{ $message }}</small> @enderror
+                        <label class="form-label">نام</label>
+                        <input type="text" name="province" class="form-control" value="{{ old('province', $student->province) }}" required>
+                        @error('province') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="city_id" class="form-label">شهرستان</label>
-                        <select name="city_id" id="city_id" class="form-select">
-                            @if($student->city)
-                            <option value="{{ $student->city_id }}" selected>{{ $student->city->name }}</option>
-                            @else
-                            <option value="">ابتدا استان را انتخاب کنید</option>
-                            @endif
-                        </select>
-                        @error('city_id') <small class="text-danger">{{ $message }}</small> @enderror
+                        <label class="form-label">نام</label>
+                        <input type="text" name="city" class="form-control" value="{{ old('city', $student->city) }}" required>
+                        @error('city') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
                 </div>
 

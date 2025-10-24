@@ -7,8 +7,6 @@ use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\School;
-use App\Models\Province;
-use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Rules\ValidNationalCode;
@@ -26,7 +24,7 @@ class StudentController extends Controller
     {
         $filter = $request->get('filter'); // all | with | without
 
-        $students = Student::with(['grade', 'major', 'school', 'province', 'city', 'products'])
+        $students = Student::with(['grade', 'major', 'school' , 'products'])
             ->when($filter === 'with', function ($query) {
                 $query->whereHas('products');
             })
@@ -47,9 +45,8 @@ class StudentController extends Controller
         $grades = Grade::all();
         $majors = Major::all();
         $schools = School::all();
-        $provinces = Province::all();
 
-        return view('students.create', compact('grades', 'majors', 'schools', 'provinces', 'advisors'));
+        return view('students.create', compact('grades', 'majors', 'schools', 'advisors'));
     }
 
     /**
@@ -66,8 +63,8 @@ class StudentController extends Controller
             'grade_id'        => 'nullable|exists:grades,id',
             'major_id'        => 'nullable|exists:majors,id',
             'school_id'       => 'nullable|exists:schools,id',
-            'province_id'     => 'nullable|exists:provinces,id',
-            'city_id'         => 'nullable|exists:cities,id',
+            'province'     => 'nullable|string',
+            'city'         => 'nullable|string',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'gender'          => 'nullable|in:male,female',
             'consultant_id'   => 'nullable',
@@ -118,8 +115,6 @@ class StudentController extends Controller
         $grades     = Grade::all();
         $majors     = Major::all();
         $schools    = School::all();
-        $provinces  = Province::all();
-        $cities     = City::where('province_id', $student->province_id)->get();
         $advisors = Advisor::all();
 
         // 🔹 ساخت مسیر تصویر (در صورت وجود)
@@ -134,8 +129,7 @@ class StudentController extends Controller
             'grades',
             'majors',
             'schools',
-            'provinces',
-            'cities',
+            
             'photoUrl',
             'advisors'
         ));
@@ -155,8 +149,8 @@ class StudentController extends Controller
             'grade_id'        => 'required|exists:grades,id',
             'major_id'        => 'nullable|exists:majors,id',
             'school_id'       => 'nullable|exists:schools,id',
-            'province_id'     => 'nullable|exists:provinces,id',
-            'city_id'         => 'nullable|exists:cities,id',
+            'province'     => 'nullable|string',
+            'city'         => 'nullable|string',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'gender'          => 'nullable|in:male,female',
 

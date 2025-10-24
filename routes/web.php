@@ -9,8 +9,6 @@ use App\Http\Controllers\{
     GradeController,
     MajorController,
     SchoolController,
-    ProvinceController,
-    CityController,
     ExamController,
     PaymentCardController,
     SettingsController,
@@ -46,17 +44,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::resource('grades', GradeController::class)->except(['show']);
     Route::resource('majors', MajorController::class)->except(['show']);
     Route::resource('schools', SchoolController::class)->except(['show']);
-    Route::resource('provinces', ProvinceController::class)->except(['show']);
-    Route::resource('cities', CityController::class)->except(['show']);
     Route::resource('advisors', AdvisorController::class);
     Route::resource('payment-cards', PaymentCardController::class)->except(['show', 'edit', 'update']);
-
-    // ---------------------
-    // 🌍ajax for city
-    // ---------------------
-    Route::get('/cities/{province}', [CityController::class, 'getByProvince'])->name('cities.byProvince');
-
-
 
 
 

@@ -136,23 +136,20 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="province_id" class="form-label">استان</label>
-                        <select name="province_id" id="province_id" class="form-select">
-                            <option value="">انتخاب کنید</option>
-                            @foreach($provinces as $province)
-                            <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
-                            @endforeach
+                        <select id="province" name="province" class="form-select">
+                            <option value="">انتخاب استان</option>
                         </select>
-                        @error('province_id')
+                        @error('province')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="city_id" class="form-label">شهرستان</label>
-                        <select name="city_id" id="city_id" class="form-select">
+                        <label for="city" class="form-label">شهرستان</label>
+                        <select name="city" id="city" class="form-select">
                             <option value="">ابتدا استان را انتخاب کنید</option>
                         </select>
-                        @error('city_id')
+                        @error('city')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
@@ -236,34 +233,74 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var provinceSelect = document.getElementById('province_id');
-        var citySelect = document.getElementById('city_id');
+document.addEventListener('DOMContentLoaded', function() {
+    let provinces = [];
+    let cities = [];
 
-        provinceSelect.addEventListener('change', function() {
-            var provinceId = this.value;
-            citySelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
+    const provinceSelect = document.getElementById('province');
+    const citySelect = document.getElementById('city');
 
-            if (provinceId) {
-                fetch('/cities/' + provinceId)
-                    .then(response => response.json())
-                    .then(data => {
-                        citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
-                        data.forEach(function(city) {
-                            var option = document.createElement('option');
-                            option.value = city.id;
-                            option.textContent = city.name;
-                            citySelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        citySelect.innerHTML = '<option value="">خطا در دریافت داده‌ها</option>';
-                    });
-            } else {
-                citySelect.innerHTML = '<option value="">ابتدا استان را انتخاب کنید</option>';
-            }
+    // لود استان‌ها
+    fetch('/assets/js/provinces.json')
+        .then(response => response.json())
+        .then(data => {
+            provinces = data;
+            provinces.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.name; // ✅ مقدار برابر با نام استان
+                option.textContent = province.name;
+                option.dataset.id = province.id; // در صورت نیاز برای فیلتر شهرها
+                provinceSelect.appendChild(option);
+            });
+        })
+        .catch(() => {
+            provinceSelect.innerHTML = '<option>خطا در بارگذاری استان‌ها</option>';
         });
+
+    // لود شهرها
+    fetch('/assets/js/cities.json')
+        .then(response => response.json())
+        .then(data => {
+            cities = data;
+        })
+        .catch(() => {
+            citySelect.innerHTML = '<option>خطا در بارگذاری شهرها</option>';
+        });
+
+    // تغییر استان
+    provinceSelect.addEventListener('change', function() {
+        const selectedProvinceName = this.value;
+        const selectedProvince = provinces.find(p => p.name === selectedProvinceName);
+        citySelect.innerHTML = ''; // پاک کردن لیست قبلی
+
+        if (selectedProvince) {
+            const filteredCities = cities.filter(city => city.province_id == selectedProvince.id);
+
+            if (filteredCities.length > 0) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'انتخاب کنید';
+                citySelect.appendChild(defaultOption);
+
+                filteredCities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.name; // ✅ مقدار برابر با نام شهر
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'هیچ شهری یافت نشد';
+                citySelect.appendChild(option);
+            }
+        } else {
+            const option = document.createElement('option');
+            option.textContent = 'ابتدا استان را انتخاب کنید';
+            citySelect.appendChild(option);
+        }
     });
+});
 </script>
+
+
 @endsection
