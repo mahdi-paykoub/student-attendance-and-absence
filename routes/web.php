@@ -129,6 +129,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     Route::post('users/{user}/make-admin', [UserController::class, 'makeAdmin'])->name('users.makeAdmin');
+
+
+   
 });
 
 

@@ -6,7 +6,7 @@
 <div class=" mt-4">
     <h3 class="fw-bold fs18">دانش‌آموزان حاضر در آزمون: <span class="text-success">{{ $exam->name }}</span></h3>
 
-    <div class="table-wrap mt-4">
+    <div class="table-wrap mt-4 table-responsive-lg">
         <table class="table table-striped">
             <thead class="table-light">
                 <tr>
@@ -17,6 +17,9 @@
                     <th>پایه</th>
                     <th>رشته</th>
                     <th>وضعیت حضور</th>
+                    <th>امضا</th>
+
+
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +37,13 @@
                         @else
                         <span class="badge bg-danger">غایب</span>
                         @endif
+                    </td>
+                    <td>
+
+                        <a href="{{ route('signatures.show', $attendance->id) }}" target="_blank" class="btn btn-sm btn-success bg-admin-green">
+                            مشاهده امضا
+                        </a>
+
                     </td>
                 </tr>
                 @empty

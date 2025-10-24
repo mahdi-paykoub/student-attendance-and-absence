@@ -105,13 +105,10 @@ li.active a:hover {
 
 
 
-
 @media (min-width: 576px) {}
 
 /* md و بالاتر */
-@media (min-width: 768px) {
-  
-}
+@media (min-width: 768px) {}
 
 /* lg و بالاتر */
 @media (min-width: 992px) {}

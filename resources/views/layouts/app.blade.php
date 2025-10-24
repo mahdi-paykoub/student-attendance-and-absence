@@ -169,6 +169,16 @@
                         <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
                     </li>
 
+                    <li class="nav-item">
+                        <a href="{{ route('logout') }}" class="nav-link"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            خروج
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </li>
+
                 </ul>
             </div>
 
@@ -323,6 +333,16 @@
                     <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
                 </li>
 
+
+                <li class="nav-item">
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                    <a href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        خروج
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
