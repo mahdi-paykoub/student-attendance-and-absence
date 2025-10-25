@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Rules\ValidNationalCode;
 use App\Imports\StudentsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Morilog\Jalali\Jalalian;
 use ZipArchive;
 
 
@@ -24,7 +25,7 @@ class StudentController extends Controller
     {
         $filter = $request->get('filter'); // all | with | without
 
-        $students = Student::with(['grade', 'major', 'school' , 'products'])
+        $students = Student::with(['grade', 'major', 'school', 'products'])
             ->when($filter === 'with', function ($query) {
                 $query->whereHas('products');
             })
@@ -129,7 +130,7 @@ class StudentController extends Controller
             'grades',
             'majors',
             'schools',
-            
+
             'photoUrl',
             'advisors'
         ));
@@ -318,5 +319,32 @@ class StudentController extends Controller
         } else {
             return back()->with('error', 'باز کردن فایل ZIP موفقیت‌آمیز نبود.');
         }
+    }
+
+    public function updateDate(Request $request, Student $student)
+    {
+        $request->validate([
+            'custom_date' => 'nullable|string',
+        ]);
+
+        $customDate = $request->custom_date;
+
+        if ($customDate) {
+            try {
+                $customDate = str_replace('-', '/', $customDate);
+                $jalali = Jalalian::fromFormat('Y/m/d', $customDate);
+                $gregorian = $jalali->toCarbon(); 
+            } catch (\Exception $e) {
+                return back()->with('error', 'فرمت تاریخ وارد شده صحیح نیست.');
+            }
+        } else {
+            $gregorian = null;
+        }
+
+        $student->update([
+            'custom_date' => $gregorian,
+        ]);
+
+        return redirect()->route('students.index')->with('success', 'تاریخ با موفقیت به‌روزرسانی شد.');
     }
 }

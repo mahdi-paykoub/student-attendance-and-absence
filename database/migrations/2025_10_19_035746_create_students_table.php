@@ -26,13 +26,14 @@ return new class extends Migration
 
             $table->string('province')->nullable();
             $table->string('city')->nullable();
-        
+
             $table->foreignId('consultant_id')->nullable()
                 ->constrained('advisors')
                 ->nullOnDelete();
             $table->foreignId('referrer_id')->nullable()
                 ->constrained('advisors')
                 ->nullOnDelete();
+            $table->date('custom_date')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile_father')->nullable();

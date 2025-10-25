@@ -120,7 +120,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('users/{user}/make-admin', [UserController::class, 'makeAdmin'])->name('users.makeAdmin');
 
 
-   
+
+    Route::put('/students/{student}/update-date', [StudentController::class, 'updateDate'])
+        ->name('students.updateDate');
 });
 
 

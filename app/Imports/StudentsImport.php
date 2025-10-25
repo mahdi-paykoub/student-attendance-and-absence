@@ -33,8 +33,6 @@ class StudentsImport implements ToModel, WithHeadingRow
         $grade_id = Grade::where('name', $row['grade_id'] ?? null)->value('id');
         $major_id = Major::where('name', $row['major_id'] ?? null)->value('id');
         $school_id = School::where('name', $row['school_id'] ?? null)->value('id');
-        $province_id = Province::where('name', $row['province_id'] ?? null)->value('id');
-        $city_id = City::where('name', $row['city_id'] ?? null)->value('id');
 
         // 🟩 3. مشاور و معرف از مدل Advisor (هر دو با name)
         $consultant_id = Advisor::where('name', $row['consultant_id'] ?? null)->value('id');
@@ -52,10 +50,10 @@ class StudentsImport implements ToModel, WithHeadingRow
             'grade_id'        => $grade_id,
             'major_id'        => $major_id,
             'school_id'       => $school_id,
-            'province_id'     => $province_id,
+            'province'        => $row['province'] ?? null,
             'consultant_id'   => $consultant_id,
             'referrer_id'     => $referrer_id,
-            'city_id'         => $city_id,
+            'city'            => $row['city'] ?? null,
             'address'         => $row['address'] ?? null,
             'phone'           => $row['phone'] ?? null,
             'mobile_father'   => $row['mobile_father'] ?? null,

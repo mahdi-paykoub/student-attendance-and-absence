@@ -29,7 +29,8 @@ class Student extends Model
         'mobile_father',
         'mobile_mother',
         'notes',
-        'seat_number'
+        'seat_number',
+        'custom_date',
     ];
 
     public function grade()
