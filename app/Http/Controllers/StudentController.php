@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Rules\ValidNationalCode;
 use App\Imports\StudentsImport;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Morilog\Jalali\Jalalian;
 use ZipArchive;
@@ -75,10 +76,22 @@ class StudentController extends Controller
             'mobile_father'   => 'nullable|string|max:15',
             'notes'           => 'nullable|string|max:1000',
             'phone'           => 'nullable|string|max:20',
-
+            'birthday'           => 'nullable|string',
         ]);
 
-        // 🔹 ذخیره عکس در مسیر private/students با نام امن
+        if (!empty($validated['birthday'])) {
+            try {
+                $birthdayParts = preg_split('/[-\/]/', $validated['birthday']);
+                if (count($birthdayParts) === 3) {
+                    $validated['birthday'] = Jalalian::fromFormat('Y/m/d', $validated['birthday'])
+                        ->toCarbon()
+                        ->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                $validated['birthday'] = null;
+            }
+        }
+
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -124,17 +137,29 @@ class StudentController extends Controller
             $filename = basename($student->photo); // فقط نام فایل بدون مسیر
             $photoUrl = route('students.photo', $filename);
         }
+        // 🔹 تبدیل تاریخ تولد به شمسی
+        $birthdayShamsi = null;
+        if ($student->birthday) {
+            try {
+                // اگر رشته است، اول Carbon بسازیم
+                $carbonBirthday = Carbon::parse($student->birthday);
+                $birthdayShamsi = Jalalian::fromCarbon($carbonBirthday)->format('Y/m/d');
+            } catch (\Exception $e) {
+                $birthdayShamsi = null;
+            }
+        }
 
         return view('students.edit', compact(
             'student',
             'grades',
             'majors',
             'schools',
-
+            'birthdayShamsi',
             'photoUrl',
             'advisors'
         ));
     }
+
 
 
 
@@ -150,25 +175,36 @@ class StudentController extends Controller
             'grade_id'        => 'required|exists:grades,id',
             'major_id'        => 'nullable|exists:majors,id',
             'school_id'       => 'nullable|exists:schools,id',
-            'province'     => 'nullable|string',
-            'city'         => 'nullable|string',
+            'province_id'     => 'nullable|exists:provinces,id',
+            'city_id'         => 'nullable|exists:cities,id',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'gender'          => 'nullable|in:male,female',
-
-            'consultant_name' => 'nullable|string|max:255',
-            'referrer_name'   => 'nullable|string|max:255',
+            'advisor_id'      => 'nullable|exists:advisors,id',
+            'referrer_id'     => 'nullable|exists:advisors,id',
             'address'         => 'nullable|string|max:500',
             'mobile_mother'   => 'nullable|string|max:15',
             'mobile_father'   => 'nullable|string|max:15',
             'notes'           => 'nullable|string|max:1000',
-            'phone'           => 'nullable|string|max:20',
+            'home_phone'      => 'nullable|string|max:20',
+            'birthday'        => 'nullable|string',
         ]);
 
+        // 🔹 تبدیل تاریخ تولد از شمسی به میلادی
+        if (!empty($validated['birthday'])) {
+            try {
+                $validated['birthday'] = Jalalian::fromFormat('Y/m/d', $validated['birthday'])
+                    ->toCarbon()
+                    ->format('Y-m-d');
+            } catch (\Exception $e) {
+                $validated['birthday'] = null;
+            }
+        }
+
+        // 🔹 مدیریت عکس
         if ($request->hasFile('photo')) {
             if ($student->photo && Storage::disk('private')->exists($student->photo)) {
                 Storage::disk('private')->delete($student->photo);
             }
-
             $file = $request->file('photo');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('students', $filename, 'private');
@@ -181,6 +217,7 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', 'اطلاعات دانش‌آموز با موفقیت ویرایش شد.');
     }
+
 
 
     public function destroy(Student $student)
@@ -333,7 +370,7 @@ class StudentController extends Controller
             try {
                 $customDate = str_replace('-', '/', $customDate);
                 $jalali = Jalalian::fromFormat('Y/m/d', $customDate);
-                $gregorian = $jalali->toCarbon(); 
+                $gregorian = $jalali->toCarbon();
             } catch (\Exception $e) {
                 return back()->with('error', 'فرمت تاریخ وارد شده صحیح نیست.');
             }

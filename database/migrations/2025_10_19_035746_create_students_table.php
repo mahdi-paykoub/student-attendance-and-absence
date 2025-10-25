@@ -34,6 +34,7 @@ return new class extends Migration
                 ->constrained('advisors')
                 ->nullOnDelete();
             $table->date('custom_date')->nullable();
+            $table->date('birthday')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile_father')->nullable();

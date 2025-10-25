@@ -133,20 +133,7 @@
                     </div>
                 </div>
 
-                {{-- استان و شهر --}}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">نام</label>
-                        <input type="text" name="province" class="form-control" value="{{ old('province', $student->province) }}" required>
-                        @error('province') <small class="text-danger">{{ $message }}</small> @enderror
-                    </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">نام</label>
-                        <input type="text" name="city" class="form-control" value="{{ old('city', $student->city) }}" required>
-                        @error('city') <small class="text-danger">{{ $message }}</small> @enderror
-                    </div>
-                </div>
 
                 {{-- بقیه فیلدها --}}
                 <div class="row">
@@ -176,25 +163,43 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">شماره ثابت</label>
-                        <input type="text" name="home_phone" class="form-control" value="{{ old('home_phone', $student->home_phone) }}">
+                        <input type="text" name="phone" class="form-control" value="{{ old('phone', $student->phone) }}">
                         @error('home_phone') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">تاریخ تولد</label>
+                        <input type="text" name="birthday" class="form-control" value="{{ old('birthday', $birthdayShamsi) }}">
+                        @error('birthday') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">شماره موبایل پدر</label>
                         <input type="text" name="mobile_father" class="form-control" value="{{ old('mobile_father', $student->mobile_father) }}">
                         @error('father_mobile') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">شماره موبایل مادر</label>
                         <input type="text" name="mobile_mother" class="form-control" value="{{ old('mobile_mother', $student->mobile_mother) }}">
                         @error('mother_mobile') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
                 </div>
+                {{-- استان و شهر --}}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">نام</label>
+                        <input type="text" name="province" class="form-control" value="{{ old('province', $student->province) }}" required>
+                        @error('province') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">نام</label>
+                        <input type="text" name="city" class="form-control" value="{{ old('city', $student->city) }}" required>
+                        @error('city') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label">آدرس</label>
                     <textarea name="address" class="form-control" rows="2">{{ old('address', $student->address) }}</textarea>
