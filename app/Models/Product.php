@@ -12,9 +12,11 @@ class Product extends Model
         'title',
         'price',
         'tax_percent',
+        'grade_id',
+        'major_id',
     ];
 
-    
+
 
     public function productStudents()
     {
@@ -26,5 +28,15 @@ class Product extends Model
         return $this->belongsToMany(Student::class, 'product_student')
             ->withPivot('payment_type')
             ->withTimestamps();
+    }
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
+    }
+
+    public function major()
+    {
+        return $this->belongsTo(Major::class);
     }
 }

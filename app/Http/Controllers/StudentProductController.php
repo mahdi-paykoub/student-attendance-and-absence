@@ -18,16 +18,18 @@ class StudentProductController extends Controller
 {
     public function assignForm(Student $student)
     {
-        // گرفتن تمام محصولات موجود
-        $products = Product::all();
+        // فقط محصولاتی که پایه و رشته‌شون با دانش‌آموز یکیه
+        $products = Product::where('grade_id', $student->grade_id)
+            ->where('major_id', $student->major_id)
+            ->get();
 
-        // گرفتن کارت‌های پرداخت برای سلکت‌باکس
+        // کارت‌های پرداخت
         $paymentCards = PaymentCard::all();
 
         return view('students.assign-products', [
             'student' => $student,
-            'grade' => $student->grade()->first()->name,
-            'major' => $student->major()->first()->name,
+            'grade' => $student->grade->name,
+            'major' => $student->major->name,
             'products' => $products,
             'paymentCards' => $paymentCards,
         ]);

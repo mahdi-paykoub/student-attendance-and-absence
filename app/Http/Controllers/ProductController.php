@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grade;
+use App\Models\Major;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,9 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('products.create');
+        $grades = Grade::all();
+        $majors = Major::all();
+        return view('products.create', compact('grades', 'majors'));
     }
 
     public function store(Request $request)
@@ -24,11 +28,13 @@ class ProductController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'tax_percent' => 'required|numeric|min:0|max:100',
+            'grade_id' => 'required|exists:grades,id',
+            'major_id' => 'required|exists:majors,id',
         ]);
 
-        Product::create($validated);
+        \App\Models\Product::create($validated);
 
-        return redirect()->route('products.index')->with('success', 'محصول با موفقیت ثبت شد.');
+        return redirect()->route('products.index')->with('success', 'محصول با موفقیت اضافه شد.');
     }
 
     public function edit(Product $product)

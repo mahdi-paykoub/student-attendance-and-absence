@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->decimal('price', 12, 2);
             $table->decimal('tax_percent', 5, 2)->default(0);
+            $table->foreignId('grade_id')->constrained()->onDelete('cascade');
+            $table->foreignId('major_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
