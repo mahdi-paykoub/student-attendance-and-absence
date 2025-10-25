@@ -24,7 +24,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <div class="table-wrap table-responsive-lg">
+    <div class="table-wrap table-responsive-xl students-list-table">
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>
@@ -48,7 +48,7 @@
                     <td>
                         @if($student->photo)
                         <img src="{{ route('students.photo', basename($student->photo)) }}"
-                            alt="photo" width="50" height="50" class="rounded-circle">
+                            alt="photo" width="40" height="40" class="rounded-circle">
                         @else
                         <img src="{{ asset('images/no-photo.png') }}" width="50" height="50" class="rounded-circle">
                         @endif

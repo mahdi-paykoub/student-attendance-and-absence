@@ -101,11 +101,14 @@ li.active a:hover {
     color: black !important;
 }
 
-jdp-container{
+jdp-container {
     z-index: 1000000000 !important;
 }
 
-
+.students-list-table th,
+.students-list-table td {
+    font-size: 14px;
+}
 
 @media (min-width: 576px) {}
 

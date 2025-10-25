@@ -51,8 +51,19 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // اگر محصول به دانش‌آموزی اختصاص داده شده باشد
+        if ($product->students()->exists()) {
+            return redirect()
+                ->route('products.index')
+                ->with('error', 'این محصول به دانش‌آموز(ان) اختصاص داده شده است و قابل حذف نیست.');
+        }
+
+        // در غیر این صورت حذف انجام می‌شود
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'محصول حذف شد.');
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'محصول با موفقیت حذف شد.');
     }
 
     public function students(Product $product)
