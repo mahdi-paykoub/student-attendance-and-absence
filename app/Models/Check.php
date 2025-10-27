@@ -10,8 +10,9 @@ class Check extends Model
     use HasFactory;
     protected $fillable = ['student_product_id', 'date', 'amount', 'serial', 'sayad_code', 'owner_name', 'owner_national_code', 'owner_phone', 'check_image'];
 
-    public function productStudent()
+
+    public function student()
     {
-        return $this->belongsTo(ProductStudent::class);
+        return $this->belongsTo(Student::class);
     }
 }

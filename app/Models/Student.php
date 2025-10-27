@@ -64,4 +64,14 @@ class Student extends Model
             ->withPivot('payment_type')
             ->withTimestamps();
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function checks()
+    {
+        return $this->hasMany(Check::class);
+    }
 }

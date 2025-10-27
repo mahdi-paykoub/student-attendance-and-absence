@@ -57,8 +57,8 @@
                     <td>{{ $student->first_name }}</td>
                     <td>{{ $student->last_name }}</td>
                     <td>{{ $student->father_name }}</td>
-                    <td>{{ $student->grade->name }}</td>
-                    <td>{{ $student->major->name }}</td>
+                    <td>{{ optional($student->grade)->name }}</td>
+                    <td>{{ optional($student->major)->name }}</td>
                     <td>{{ $student->seat_number }}</td>
                     <td>
                         @if($student->custom_date)

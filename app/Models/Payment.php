@@ -11,13 +11,13 @@ class Payment extends Model
     protected $fillable = ['student_product_id', 'date', 'time', 'amount', 'voucher_number', 'payment_card_id', 'receipt_image'];
 
 
-    public function productStudent()
-    {
-        return $this->belongsTo(ProductStudent::class);
-    }
-
     public function paymentCard()
     {
         return $this->belongsTo(PaymentCard::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
     }
 }
