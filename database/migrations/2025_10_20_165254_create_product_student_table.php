@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->enum('payment_type', ['cash', 'installment', 'scholarship']); 
+            // $table->enum('payment_type', ['cash', 'installment', 'scholarship']); 
             $table->timestamps();
         });
     }

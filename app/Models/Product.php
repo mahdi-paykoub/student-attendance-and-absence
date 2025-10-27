@@ -23,11 +23,10 @@ class Product extends Model
         return $this->hasMany(ProductStudent::class);
     }
 
+  
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'product_student')
-            ->withPivot('payment_type')
-            ->withTimestamps();
+        return $this->belongsToMany(Student::class, 'product_student')->withPivot('id');
     }
 
     public function grade()

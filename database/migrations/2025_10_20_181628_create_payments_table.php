@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-            $table->date('date');
-            $table->time('time');
+            $table->dateTime('date');
             $table->decimal('amount', 12, 2);
             $table->string('voucher_number')->nullable();
             $table->foreignId('payment_card_id')->nullable()->constrained()->cascadeOnDelete();

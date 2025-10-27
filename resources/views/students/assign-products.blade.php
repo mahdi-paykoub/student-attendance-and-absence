@@ -23,330 +23,219 @@
         </div>
 
 
-        <form method="POST" action="{{ route('student-products.storeAssign', $student->id) }}" enctype="multipart/form-data">
+        <h3>تخصیص محصولات به {{ $student->name }}</h3>
+
+        <form action="{{ route('student-products.storeAssign.product', $student->id) }}" method="POST">
             @csrf
+            @method('PUT')
 
             <div class="row">
-                {{-- لیست محصولات --}}
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">انتخاب محصولات</div>
-                        <div class="card-body">
-                            <div class="row">
-                                @foreach($products as $product)
-                                @php
-                                $finalPrice = $product->price + ($product->price * ($product->tax_percent / 100));
-                                $assigned = $assignedProducts->firstWhere('product_id', $product->id);
-                                @endphp
+                @foreach($products as $product)
+                @php
+                $assigned = $assignedProducts->contains($product->id);
+                $finalPrice = $product->price + ($product->price * $product->tax_percent / 100);
+                @endphp
 
-                                <div class="col-md-6 mb-2">
-                                    <div class="form-check border p-2 rounded {{ $assigned ? 'bg-light' : '' }}">
-                                        <input type="checkbox"
-                                            class="form-check-input product-checkbox"
-                                            id="product_{{ $product->id }}"
-                                            name="products[]"
-                                            value="{{ $product->id }}"
-                                            data-name="{{ $product->name }}"
-                                            data-price="{{ $finalPrice }}"
-                                            {{ $assigned ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="product_{{ $product->id }}">
-                                            {{ $product->title }}
-                                            <small class="text-muted d-block">قیمت نهایی: {{ number_format($finalPrice) }} تومان</small>
-                                        </label>
-
-                                        @if($assigned)
-                                        <div class="mt-2 ms-3 text-success fw-bold">تخصیص داده شده</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                @endforeach
-
-                            </div>
-                        </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-check border p-2 rounded {{ $assigned ? 'bg-light' : '' }}">
+                        <input type="checkbox" id="id-{{$product->id}}"
+                            name="products[]"
+                            value="{{ $product->id }}"
+                            class="product-checkbox form-check-input"
+                            data-price="{{ $product->price }}"
+                            data-tax="{{ $product->tax_percent }}"
+                            {{ $assigned ? 'checked' : '' }}>
+                        <label class="form-check-label" for="id-{{$product->id}}">
+                            {{ $product->title }} - {{ $finalPrice }} تومان
+                            <!-- (مالیات: {{ $product->tax_percent }}%) -->
+                        </label>
                     </div>
                 </div>
-
-                {{-- محصولات انتخاب‌شده --}}
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">محصولات انتخاب‌شده</div>
-                        <div class="card-body">
-                            <ul id="selectedProducts" class="list-group mb-3"></ul>
-                            <h6 class="text-end">جمع کل: <span id="totalPrice">0</span> تومان</h6>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
-            {{-- روش پرداخت --}}
-            <div class="card mt-4">
-                <div class="card-header">روش پرداخت</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <select name="payment_type" id="payment_type" class="form-control">
-                            <option value="cash">نقدی</option>
-                            <option value="installment">اقساط</option>
-                            <option value="scholarship">بورسیه</option>
-                        </select>
-                    </div>
-                    <div id="payment-fields"></div>
-                </div>
-            </div>
+            <h4>هزینه نهایی: <span id="totalPrice">0</span> تومان</h4>
 
-            <button type="submit" class="btn btn-success bg-admin-green w-100 mt-3">ثبت تخصیص</button>
+            <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
         </form>
+
+
+
+
+
+
+
+        <br><br><br><br><br><br>
+        <div class="mb-3">
+            <label for="payment_type" class="form-label">نوع پرداخت</label>
+            <select id="payment_type" class="form-select">
+                <option value="">انتخاب کنید</option>
+                <option value="cash">نقدی</option>
+                <option value="installment">اقساطی</option>
+                <option value="scholarship">بورسیه</option>
+            </select>
+        </div>
+
+        <div class="mb-3" id="payment_buttons"></div>
+
+        <div id="payments_container"></div>
+        <div id="checks_container"></div>
+
+
+
+
+      <form action="{{ route('student-products.storePayments', $student->id) }}" method="POST" enctype="multipart/form-data">
+    @csrf
+
+    <h4>پرداخت‌ها</h4>
+
+    <div id="payments_container">
+        @foreach($existingPayments as $payment)
+        <div class="payment-item border p-3 mb-2 position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 remove-btn"></button>
+
+            <input type="hidden" name="payments[{{ $loop->index }}][id]" value="{{ $payment->id }}">
+
+            <div class="mb-2">
+                <label>تاریخ</label>
+                <input type="date" name="payments[{{ $loop->index }}][date]" class="form-control" value="{{ $payment->date->format('Y-m-d') }}" required>
+            </div>
+            <div class="mb-2">
+                <label>مبلغ</label>
+                <input type="number" name="payments[{{ $loop->index }}][amount]" class="form-control" value="{{ $payment->amount }}" required>
+            </div>
+            <div class="mb-2">
+                <label>شماره فیش</label>
+                <input type="text" name="payments[{{ $loop->index }}][ref]" class="form-control" value="{{ $payment->ref }}">
+            </div>
+            <div class="mb-2">
+                <label>پوز</label>
+                <select name="payments[{{ $loop->index }}][card_id]" class="form-select">
+                    @foreach($paymentCards as $card)
+                        <option value="{{ $card->id }}" {{ $payment->card_id == $card->id ? 'selected' : '' }}>{{ $card->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="mb-2">
+                <label>تصویر پرداخت</label>
+                <input type="file" name="payments[{{ $loop->index }}][image]" class="form-control">
+                @if($payment->image)
+                    <small>تصویر قبلی: {{ basename($payment->image) }}</small>
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <div id="checks_container">
+        @foreach($existingChecks as $check)
+        <div class="check-item border p-3 mb-2 position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 remove-btn"></button>
+
+            <input type="hidden" name="checks[{{ $loop->index }}][id]" value="{{ $check->id }}">
+
+            <div class="mb-2"><label>تاریخ</label><input type="date" name="checks[{{ $loop->index }}][date]" class="form-control" value="{{ $check->date->format('Y-m-d') }}" required></div>
+            <div class="mb-2"><label>مبلغ</label><input type="number" name="checks[{{ $loop->index }}][amount]" class="form-control" value="{{ $check->amount }}" required></div>
+            <div class="mb-2"><label>سریال چک</label><input type="text" name="checks[{{ $loop->index }}][serial]" class="form-control" value="{{ $check->serial }}"></div>
+            <div class="mb-2"><label>کد صیاد</label><input type="text" name="checks[{{ $loop->index }}][code]" class="form-control" value="{{ $check->code }}"></div>
+            <div class="mb-2"><label>نام صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_name]" class="form-control" value="{{ $check->owner_name }}"></div>
+            <div class="mb-2"><label>کد ملی صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_national]" class="form-control" value="{{ $check->owner_national }}"></div>
+            <div class="mb-2"><label>موبایل صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_phone]" class="form-control" value="{{ $check->owner_phone }}"></div>
+            <div class="mb-2"><label>تصویر چک</label><input type="file" name="checks[{{ $loop->index }}][image]" class="form-control">
+                @if($check->image)
+                    <small>تصویر قبلی: {{ basename($check->image) }}</small>
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">ذخیره تغییرات</button>
+</form>
+
+
     </div>
 </div>
 @endsection
 
 @section('scripts')
 <script src="{{asset('assets/js/data-picker.js')}}"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        jalaliDatepicker.startWatch({
-            time: "true",
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const totalPriceEl = document.getElementById('totalPrice');
 
-        });
-
-        const checkboxes = document.querySelectorAll('.product-checkbox');
-        const selectedList = document.getElementById('selectedProducts');
-        const totalPriceEl = document.getElementById('totalPrice');
+    function calculateTotal() {
         let total = 0;
-
         checkboxes.forEach(chk => {
-            chk.addEventListener('change', () => {
-                const price = parseFloat(chk.dataset.price);
-                const name = chk.dataset.name;
-
-                if (chk.checked) {
-                    const li = document.createElement('li');
-                    li.classList.add('list-group-item');
-                    li.setAttribute('data-id', chk.value);
-                    li.textContent = `${name} — ${price.toLocaleString()} تومان`;
-                    selectedList.appendChild(li);
-                    total += price;
-                } else {
-                    const li = selectedList.querySelector(`[data-id="${chk.value}"]`);
-                    if (li) li.remove();
-                    total -= price;
-                }
-
-                totalPriceEl.textContent = total.toLocaleString();
-            });
-        });
-
-        const paymentType = document.getElementById('payment_type');
-        const paymentFields = document.getElementById('payment-fields');
-        const paymentCards = @json($paymentCards);
-        const existingData = @json($assignedProducts);
-        const existingProducts = @json($assignedProducts);
-
-        function deleteButtonHTML() {
-            return `
-            <button type="button" class="btn delete-item p-2" title="حذف" style="background:none;border:none;cursor:pointer;">
-                <svg stroke="currentColor" fill="red" stroke-width="0" viewBox="0 0 24 24" height="1.3em" width="1.3em" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="none" d="M0 0h24v24H0V0z"></path>
-                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5-1-1h-5l-1 1H5v2h14V4z"></path>
-                </svg>
-            </button>`;
-        }
-
-        function createCashFields() {
-            paymentFields.innerHTML = `
-            <h6 class="fw-bold mt-3">پرداخت نقدی</h6>
-            <button type="button" id="add-cash" class="btn btn-success bg-admin-green btn-sm mb-3 mt-3">افزودن پرداخت</button>
-            <div id="cash-container"></div>
-        `;
-
-            document.getElementById('add-cash').addEventListener('click', () => {
-                const html = `
-                <div class="row mb-2 border p-2 rounded align-items-end cash-item">
-                    <div class="col-4 mt-3">
-                        <input type="text" data-jdp class="form-control" name="cash_date[]" placeholder="تاریخ" required>
-                    </div>
-                    
-                    <div class="col-4 mt-3">
-                        <input type="number" name="cash_amount[]" class="form-control" placeholder="مبلغ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="cash_voucher[]" class="form-control" placeholder="شماره فیش">
-                    </div>
-                    <div class="col-4 mt-3">
-                        <select name="cash_card[]" class="form-control">
-                            ${paymentCards.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="col-4 mt-3 d-flex align-items-center gap-2">
-                        <input type="file" name="cash_image[]" class="form-control">
-                        ${deleteButtonHTML()}
-                    </div>
-                </div>`;
-                document.getElementById('cash-container').insertAdjacentHTML('beforeend', html);
-            });
-        }
-
-        function createInstallmentFields() {
-            paymentFields.innerHTML = `
-            <h6 class="fw-bold mt-3">پرداخت اقساط</h6>
-            <button type="button" id="add-prepayment" class="btn btn-sm bg-admin-green btn-success mb-3 mt-3">افزودن پیش پرداخت</button>
-            <button type="button" id="add-check" class="btn btn-sm bg-admin-green btn-success mb-3 mt-3">افزودن چک</button>
-            <div id="prepayment-container"></div>
-            <div id="check-container"></div>
-        `;
-
-            // پیش پرداخت
-            document.getElementById('add-prepayment').addEventListener('click', () => {
-                const html = `
-                <div class="row mb-2 border p-2 rounded align-items-end prepayment-item">
-                    <div class="col-4 mt-3">
-                        <input type="text" data-jdp name="pre_date[]" placeholder="تاریخ" class="form-control" required>
-                    </div>
-                   
-                    <div class="col-4 mt-3">
-                        <input type="number" name="pre_amount[]" class="form-control" placeholder="مبلغ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="pre_voucher[]" class="form-control" placeholder="شماره فیش">
-                    </div>
-                    <div class="col-4 mt-3">
-                        <select name="pre_card[]" class="form-control">
-                            ${paymentCards.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="col-4 mt-3 d-flex align-items-center gap-2">
-                        <input type="file" name="pre_image[]" class="form-control">
-                        ${deleteButtonHTML()}
-                    </div>
-                </div>`;
-                document.getElementById('prepayment-container').insertAdjacentHTML('beforeend', html);
-            });
-
-            // چک
-            document.getElementById('add-check').addEventListener('click', () => {
-                const html = `
-                <div class="row mb-2 border p-2 rounded align-items-end check-item">
-                    <div class="col-4 mt-3">
-                        <input type="text" data-jdp name="check_date[]" placeholder="تاریخ" class="form-control" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="number" name="check_amount[]" class="form-control" placeholder="مبلغ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_serial[]" class="form-control" placeholder="سریال چک" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_sayad[]" class="form-control" placeholder="کد صیاد" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_owner[]" class="form-control" placeholder="نام صاحب چک" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_national[]" class="form-control" placeholder="کد ملی صاحب چک" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_phone[]" class="form-control" placeholder="موبایل صاحب چک" required>
-                    </div>
-                    <div class="col-4 mt-3 d-flex align-items-center gap-2">
-                        <input type="file" name="check_image[]" class="form-control">
-                        ${deleteButtonHTML()}
-                    </div>
-                </div>`;
-                document.getElementById('check-container').insertAdjacentHTML('beforeend', html);
-            });
-        }
-
-
-
-
-
-        // ✅ حذف بلاک
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.delete-item')) {
-                e.target.closest('.row').remove();
+            if (chk.checked) {
+                let price = parseFloat(chk.dataset.price);
+                let tax = parseFloat(chk.dataset.tax);
+                total += price + (price * tax / 100);
             }
         });
+        totalPriceEl.textContent = total.toLocaleString();
+    }
 
-        function createFields() {
-            if (paymentType.value === 'cash') createCashFields();
-            else if (paymentType.value === 'installment') createInstallmentFields();
-            else paymentFields.innerHTML = '';
+    checkboxes.forEach(chk => chk.addEventListener('change', calculateTotal));
+    calculateTotal(); // وقتی صفحه لود شد هم محاسبه شود
+</script>
+
+
+<script>
+    const paymentTypeSelect = document.getElementById('payment_type');
+    const paymentButtons = document.getElementById('payment_buttons');
+    const paymentsContainer = document.getElementById('payments_container');
+    const checksContainer = document.getElementById('checks_container');
+
+    paymentTypeSelect.addEventListener('change', function() {
+        paymentButtons.innerHTML = '';
+        paymentsContainer.innerHTML = '';
+        checksContainer.innerHTML = '';
+
+        if (this.value === 'cash') {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-success mb-2';
+            btn.textContent = 'افزودن پرداخت';
+            btn.addEventListener('click', addPayment);
+            paymentButtons.appendChild(btn);
         }
-
-        function fillExistingData() {
-            if (!existingProducts.length) return;
-
-            existingProducts.forEach(prod => {
-                // تیک محصولات
-                const checkbox = document.querySelector(`#product_${prod.product_id}`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                    const li = document.createElement('li');
-                    li.classList.add('list-group-item');
-                    li.setAttribute('data-id', prod.product_id);
-                    li.textContent = `${prod.product.title} — ${parseFloat(checkbox.dataset.price).toLocaleString()} تومان`;
-                    document.getElementById('selectedProducts').appendChild(li);
-                }
-
-                // پرداخت‌های نقدی
-                prod.payments.forEach(p => {
-                    createCashFields(); // مطمئن شو بخش نقدی ایجاد شده
-                    const container = document.getElementById('cash-container');
-                    const html = `
-                <div class="row mb-2 border p-2 rounded align-items-end cash-item">
-                    <div class="col-4 mt-3">
-                        <input type="text" data-jdp name="cash_date[]" value="${p.date_shamsi}" class="form-control" placeholder="تاریخ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="number" name="cash_amount[]" value="${p.amount}" class="form-control" placeholder="مبلغ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="cash_voucher[]" value="${p.voucher_number ?? ''}" class="form-control" placeholder="شماره فیش">
-                    </div>
-                    <div class="col-4 mt-3">
-                        <select name="cash_card[]" class="form-control">
-                            ${paymentCards.map(c=>`<option value="${c.id}" ${c.id==p.payment_card_id ? 'selected' : ''}>${c.name}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="col-4 mt-3 d-flex align-items-center gap-2">
-                        <input type="file" name="cash_image[]" class="form-control">
-                        <button type="button" class="btn delete-item p-2" title="حذف" style="background:none;border:none;cursor:pointer;">×</button>
-                    </div>
-                </div>`;
-                    container.insertAdjacentHTML('beforeend', html);
-                });
-
-                // چک‌ها مشابه
-                prod.checks.forEach(c => {
-                    createInstallmentFields(); // مطمئن شو بخش اقساط ایجاد شده
-                    const container = document.getElementById('check-container');
-                    const html = `
-                <div class="row mb-2 border p-2 rounded align-items-end check-item">
-                    <div class="col-4 mt-3">
-                        <input type="text" data-jdp name="check_date[]" value="${c.date_shamsi}" class="form-control" placeholder="تاریخ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="number" name="check_amount[]" value="${c.amount}" class="form-control" placeholder="مبلغ" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_serial[]" value="${c.serial}" class="form-control" placeholder="سریال چک" required>
-                    </div>
-                    <div class="col-4 mt-3">
-                        <input type="text" name="check_owner[]" value="${c.owner_name}" class="form-control" placeholder="نام صاحب چک" required>
-                    </div>
-                    <div class="col-4 mt-3 d-flex align-items-center gap-2">
-                        <input type="file" name="check_image[]" class="form-control">
-                        <button type="button" class="btn delete-item p-2" title="حذف" style="background:none;border:none;cursor:pointer;">×</button>
-                    </div>
-                </div>`;
-                    container.insertAdjacentHTML('beforeend', html);
-                });
-            });
+        if (this.value === 'installment') {
+            const btn1 = document.createElement('button');
+            btn1.type = 'button';
+            btn1.className = 'btn btn-primary me-2';
+            btn1.textContent = 'افزودن پیشپرداخت';
+            btn1.addEventListener('click', addPayment);
+            const btn2 = document.createElement('button');
+            btn2.type = 'button';
+            btn2.className = 'btn btn-warning';
+            btn2.textContent = 'افزودن چک';
+            btn2.addEventListener('click', addCheck);
+            paymentButtons.appendChild(btn1);
+            paymentButtons.appendChild(btn2);
         }
-
-
-        paymentType.addEventListener('change', createFields);
-        createFields();
-        fillExistingData();
     });
+
+    function addPayment() {
+        const template = document.getElementById('payment_template');
+        const clone = template.content.cloneNode(true);
+        clone.querySelector('.remove-btn').addEventListener('click', function() {
+            this.parentElement.remove();
+        });
+        paymentsContainer.appendChild(clone);
+    }
+
+    function addCheck() {
+        const template = document.getElementById('check_template');
+        const clone = template.content.cloneNode(true);
+        clone.querySelector('.remove-btn').addEventListener('click', function() {
+            this.parentElement.remove();
+        });
+        checksContainer.appendChild(clone);
+    }
+
+    // ✅ اگر دیتای قبلی داشتیم، میتونیم اینجا با JS اضافه کنیم
+    // existingPayments و existingChecks از Controller فرستاده میشن
 </script>
 @endsection

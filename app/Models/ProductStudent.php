@@ -12,7 +12,6 @@ class ProductStudent extends Model
     protected $fillable = [
         'student_id',
         'product_id',
-        'payment_type',
     ];
 
     public function payments()

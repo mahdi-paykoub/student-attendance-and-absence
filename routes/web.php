@@ -82,7 +82,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     Route::prefix('student-products')->name('student-products.')->group(function () {
         Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
-        Route::post('/assign/{student}', [StudentProductController::class, 'storeAssign'])->name('storeAssign');
+        Route::put('/assign/{student}', [StudentProductController::class, 'updateAssignedProducts'])->name('storeAssign.product');
+        Route::post('/assign/{student}/payments', [StudentProductController::class, 'storePayments'])->name('storePayments');
     });
 
     // Route::get('/private/{path}', [PrivateFileController::class, 'show'])->where('path', '.*')->name('private.file');
