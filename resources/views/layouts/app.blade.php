@@ -136,7 +136,7 @@
                                 <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
                                     <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
                                 </li>
-                              
+
                                 <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
                                     <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
                                 </li>
@@ -295,7 +295,7 @@
                             <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
                                 <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
                             </li>
-                           
+
                             <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
                                 <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
                             </li>
@@ -346,6 +346,73 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.price-input').forEach(input => {
+                // وقتی فرم ارسال میشه، کاماها حذف بشن تا عدد خام به بک‌اند بره
+                input.form?.addEventListener('submit', function() {
+                    input.value = input.value.replace(/,/g, '');
+                });
+
+                input.addEventListener('input', function(e) {
+                    let cursorPos = e.target.selectionStart;
+                    let value = e.target.value.replace(/,/g, '').replace(/\D/g, '');
+
+                    if (value === '') {
+                        e.target.value = '';
+                        return;
+                    }
+
+                    // طول قبلی و جدید برای مدیریت کرسر
+                    const prevLength = e.target.value.length;
+                    e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    const newLength = e.target.value.length;
+
+                    // حفظ موقعیت کرسر
+                    e.target.selectionEnd = cursorPos + (newLength - prevLength);
+                });
+
+                // موقع لود اولیه اگر عددی هست، فرمتش کن
+                if (input.value) {
+                    input.value = input.value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+            });
+        });
+
+
+        function initPriceInputs(inputs) {
+            inputs.forEach(input => {
+                // حذف کاما قبل از ارسال فرم
+                input.form?.addEventListener('submit', function() {
+                    input.value = input.value.replace(/,/g, '');
+                });
+
+                input.addEventListener('input', function(e) {
+                    let cursorPos = e.target.selectionStart;
+                    let value = e.target.value.replace(/,/g, '').replace(/\D/g, '');
+                    if (value === '') {
+                        e.target.value = '';
+                        return;
+                    }
+                    const prevLength = e.target.value.length;
+                    e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    const newLength = e.target.value.length;
+                    e.target.selectionEnd = cursorPos + (newLength - prevLength);
+                });
+
+                if (input.value) {
+                    input.value = input.value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+            });
+        }
+
+        // 🔹 فراخوانی اولیه برای فیلدهایی که از قبل در صفحه بودن
+        document.addEventListener('DOMContentLoaded', function() {
+            initPriceInputs(document.querySelectorAll('.price-input'));
+        });
+    </script>
+
+
     @yield('scripts')
 </body>
 

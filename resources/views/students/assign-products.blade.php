@@ -46,7 +46,7 @@
                             data-tax="{{ $product->tax_percent }}"
                             {{ $assigned ? 'checked' : '' }}>
                         <label class="form-check-label" for="id-{{$product->id}}">
-                            {{ $product->title }} - {{ $finalPrice }} تومان
+                            {{ $product->title }} - {{ number_format($finalPrice) }} تومان
                             <!-- (مالیات: {{ $product->tax_percent }}%) -->
                         </label>
                     </div>
@@ -129,8 +129,11 @@
                 @foreach($cashPayments as $payment)
                 <tr>
                     <td>نقدی</td>
-                    <td>{{ \Morilog\Jalali\Jalalian::fromCarbon($payment->date)->format('Y/m/d H:i') }}</td>
-                    <td>{{ $payment->amount }}</td>
+                    <td>
+                        {{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($payment->date))->format('Y/m/d H:i') }}
+
+                    </td>
+                    <td>{{number_format($payment->amount) }}</td>
                     <td>{{ $payment->voucher_number }}</td>
                     <td>
                         @if($payment->receipt_image)
@@ -153,7 +156,7 @@
                         {{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($pre->date))->format('Y/m/d H:i') }}
                     </td>
 
-                    <td>{{ $pre->amount }}</td>
+                    <td>{{ number_format($pre->amount) }}</td>
                     <td>{{ $pre->voucher_number }}</td>
                     <td>
                         @if($pre->receipt_image)
@@ -175,7 +178,7 @@
 
 
                     <td>{{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($check->date))->format('Y/m/d H:i') }}</td>
-                    <td>{{ $check->amount }}</td>
+                    <td>{{ number_format($check->amount) }}</td>
                     <td>{{ $check->serial }}</td>
                     <td>
                         @if($check->check_image)
@@ -271,113 +274,128 @@
             return wrapper;
         }
 
-        // افزودن پرداخت نقدی
         addCashPaymentBtn.addEventListener('click', e => {
             e.preventDefault();
             const html = `
-            <div class="row g-3 align-items-center mt-2">
-                <div class="col-md-2">
-                    <label>تاریخ:</label>
-                    <input type="text" name="cash_date[]" data-jdp class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>مبلغ:</label>
-                    <input type="number" name="cash_amount[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>شماره فیش:</label>
-                    <input type="text" name="cash_receipt[]" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label>نوع کارت:</label>
-                    <select name="cash_card_id[]" class="form-select">
-                        <option value="">انتخاب کارت...</option>
-                        ${cardOptions}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label>تصویر پرداخت:</label>
-                    <input type="file" name="cash_image[]" class="form-control" accept="image/*" required>
-                </div>
+        <div class="row g-3 align-items-center mt-2">
+            <div class="col-md-2">
+                <label>تاریخ:</label>
+                <input type="text" name="cash_date[]" data-jdp class="form-control" required>
             </div>
-        `;
-            cashPaymentsContainer.appendChild(createRow(html));
+            <div class="col-md-2">
+                <label>مبلغ:</label>
+                <input type="text" name="cash_amount[]" class="form-control price-input" required>
+            </div>
+            <div class="col-md-2">
+                <label>شماره فیش:</label>
+                <input type="text" name="cash_receipt[]" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label>نوع کارت:</label>
+                <select name="cash_card_id[]" class="form-select">
+                    <option value="">انتخاب کارت...</option>
+                    ${cardOptions}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>تصویر پرداخت:</label>
+                <input type="file" name="cash_image[]" class="form-control" accept="image/*" required>
+            </div>
+        </div>
+    `;
+
+            const newRow = createRow(html);
+            cashPaymentsContainer.appendChild(newRow);
+
+            // ✅ این خط رو اضافه کن تا price-input جدید هم فرمت سه‌رقمی بگیره
+            initPriceInputs(newRow.querySelectorAll('.price-input'));
         });
+
 
         // افزودن پیش‌پرداخت
         addPrepaymentBtn.addEventListener('click', e => {
             e.preventDefault();
             const html = `
-            <div class="row g-3 align-items-center mt-2">
-                <div class="col-md-2">
-                    <label>تاریخ:</label>
-                    <input type="text" name="pre_date[]" data-jdp class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>مبلغ:</label>
-                    <input type="number" name="pre_amount[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>شماره فیش:</label>
-                    <input type="text" name="pre_receipt[]" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label>نوع کارت:</label>
-                    <select name="pre_card_id[]" class="form-select">
-                        <option value="">انتخاب کارت...</option>
-                        ${cardOptions}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label>تصویر پرداخت:</label>
-                    <input type="file" name="pre_image[]" class="form-control" accept="image/*" required>
-                </div>
+        <div class="row g-3 align-items-center mt-2">
+            <div class="col-md-2">
+                <label>تاریخ:</label>
+                <input type="text" name="pre_date[]" data-jdp class="form-control" required>
             </div>
-        `;
-            installmentContainer.appendChild(createRow(html));
+            <div class="col-md-2">
+                <label>مبلغ:</label>
+                <input type="text" name="pre_amount[]" class="form-control price-input" required>
+            </div>
+            <div class="col-md-2">
+                <label>شماره فیش:</label>
+                <input type="text" name="pre_receipt[]" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label>نوع کارت:</label>
+                <select name="pre_card_id[]" class="form-select">
+                    <option value="">انتخاب کارت...</option>
+                    ${cardOptions}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>تصویر پرداخت:</label>
+                <input type="file" name="pre_image[]" class="form-control" accept="image/*" required>
+            </div>
+        </div>
+    `;
+            const newRow = createRow(html);
+            installmentContainer.appendChild(newRow);
+
+            // فعال کردن سه‌رقمی شدن مبلغ جدید
+            initPriceInputs(newRow.querySelectorAll('.price-input'));
         });
+
 
         // افزودن چک
         addCheckBtn.addEventListener('click', e => {
             e.preventDefault();
             const html = `
-            <div class="row g-3 align-items-center mt-2">
-                <div class="col-md-2">
-                    <label>تاریخ چک:</label>
-                    <input type="text" name="check_date[]" data-jdp class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>مبلغ:</label>
-                    <input type="number" name="check_amount[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>سریال چک:</label>
-                    <input type="text" name="check_serial[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>کد صیاد:</label>
-                    <input type="text" name="check_sayad[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>نام صاحب چک:</label>
-                    <input type="text" name="check_owner_name[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>کد ملی صاحب چک:</label>
-                    <input type="text" name="check_owner_national[]" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label>موبایل صاحب چک:</label>
-                    <input type="text" name="check_owner_phone[]" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label>تصویر چک:</label>
-                    <input type="file" name="check_image[]" class="form-control" accept="image/*">
-                </div>
+        <div class="row g-3 align-items-center mt-2">
+            <div class="col-md-2">
+                <label>تاریخ چک:</label>
+                <input type="text" name="check_date[]" data-jdp class="form-control" required>
             </div>
-        `;
-            installmentContainer.appendChild(createRow(html));
+            <div class="col-md-2">
+                <label>مبلغ:</label>
+                <input type="text" name="check_amount[]" class="form-control price-input" required>
+            </div>
+            <div class="col-md-2">
+                <label>سریال چک:</label>
+                <input type="text" name="check_serial[]" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <label>کد صیاد:</label>
+                <input type="text" name="check_sayad[]" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <label>نام صاحب چک:</label>
+                <input type="text" name="check_owner_name[]" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <label>کد ملی صاحب چک:</label>
+                <input type="text" name="check_owner_national[]" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <label>موبایل صاحب چک:</label>
+                <input type="text" name="check_owner_phone[]" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label>تصویر چک:</label>
+                <input type="file" name="check_image[]" class="form-control" accept="image/*">
+            </div>
+        </div>
+    `;
+            const newRow = createRow(html);
+            installmentContainer.appendChild(newRow);
+
+            // فعال کردن سه‌رقمی شدن مبلغ چک جدید
+            initPriceInputs(newRow.querySelectorAll('.price-input'));
         });
+
 
         // حذف هر ردیف با delegation
         document.addEventListener('click', e => {

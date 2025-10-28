@@ -24,12 +24,12 @@
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">عنوان محصول</label>
-                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
+                    <input type="text" name="title" class="form-control " value="{{ old('title') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">قیمت</label>
-                    <input type="number" name="price" class="form-control" value="{{ old('price') }}" step="0.01" required>
+                    <input type="text" name="price" class="form-control price-input" value="{{ old('price') }}" step="0.01" required>
                 </div>
 
                 <div class="mb-3">

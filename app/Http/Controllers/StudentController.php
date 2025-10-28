@@ -234,49 +234,35 @@ class StudentController extends Controller
 
     public function details(Student $student)
     {
-        $student->load([
-            'productStudents.product',
-            'productStudents.payments',
-            'productStudents.checks',
-        ]);
+        // جمع کل پرداخت‌های نقدی
+        $totalPayments = $student->payments()
+            ->where('payment_type', 'cash')
+            ->sum('amount');
 
-        // مجموع مبلغ محصولات (با مالیات)
-        $totalProducts = $student->productStudents->sum(function ($ps) {
-            if (!$ps->product) return 0;
+        // جمع کل پیش‌پرداخت‌ها (از نوع installment)
+        $totalPrepayments = $student->payments()
+            ->where('payment_type', 'installment')
+            ->sum('amount');
 
-            $price = $ps->product->price;
-            $taxPercent = $ps->product->tax_percent ?? 0;
+        // جمع کل چک‌ها
+        $totalChecks = $student->checks()->sum('amount');
 
-            // اضافه کردن مالیات به قیمت
-            $finalPrice = $price + ($price * ($taxPercent / 100));
+        // مجموع پرداختی
+        $totalPaid = $totalPayments + $totalPrepayments + $totalChecks;
 
-            return $finalPrice;
-        });
+        // جمع مبلغ محصولات
+        $totalProducts = $student->products()->sum('price');
 
-        // مجموع پرداخت‌های نقدی
-        $totalPayments = $student->productStudents->sum(function ($ps) {
-            return $ps->payments->sum('amount');
-        });
-
-        // مجموع چک‌ها
-        $totalChecks = $student->productStudents->sum(function ($ps) {
-            return $ps->checks->sum('amount');
-        });
-
-        // مجموع پرداختی کل (پرداخت نقدی + چک‌ها)
-        $totalPaid = $totalPayments + $totalChecks;
-
-        // بدهکاری (اگر پرداختی کمتر از محصولات بود)
-        $debt = max(0, $totalProducts - $totalPaid);
-
-        // بستانکاری (اگر پرداختی بیشتر از محصولات بود)
-        $credit = max(0, $totalPaid - $totalProducts);
+        // محاسبه بدهی یا بستانکاری
+        $debt = max($totalProducts - $totalPaid, 0);
+        $credit = max($totalPaid - $totalProducts, 0);
 
         return view('students.details', compact(
             'student',
-            'totalProducts',
             'totalPayments',
+            'totalPrepayments',
             'totalChecks',
+            'totalProducts',
             'totalPaid',
             'debt',
             'credit'
