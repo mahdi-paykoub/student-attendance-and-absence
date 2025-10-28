@@ -61,11 +61,21 @@
                     <td>{{ optional($student->major)->name }}</td>
                     <td>{{ $student->seat_number }}</td>
                     <td>
-                        @if($student->custom_date)
-                        {{ \Morilog\Jalali\Jalalian::fromDateTime($student->custom_date)->format('Y/m/d') }}
-                        @else
-                        <span class="text-muted">-</span>
-                        @endif
+                        <form id="updateDateForm" method="POST" action="{{route('students.updateDate' , $student->id)}}" class="d-flex align-items-center">
+                            @csrf
+                            @method('PUT')
+
+                            <input style="width: 80px; height: 35px;font-size: 13px;" data-jdp type="text" name="custom_date" id="modal_custom_date" value=" @if($student->custom_date){{ \Morilog\Jalali\Jalalian::fromDateTime($student->custom_date)->format('Y/m/d') }}@endif"
+                                class="form-control"
+                                data-jdp>
+                            <button type="submit" class="btn btn-sm btn-success bg-admin-green">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="none" d="M0 0h24v24H0z"></path>
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 5.63l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 0 0 0-1.41z"></path>
+                                </svg>
+                            </button>
+                        </form>
+
                     </td>
                     <td dir="ltr">{{ \Morilog\Jalali\Jalalian::fromDateTime($student->created_at)->format('Y/m/d H:i') }}</td>
                     <td>
@@ -80,20 +90,14 @@
                         <div class="d-flex align-items-center">
                             <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-success bg-admin-green mt-1 me-1">ویرایش</a>
                             <a href="{{ route('student-products.assign', $student->id) }}" class="btn btn-success bg-admin-green btn-sm mt-1 me-1">تخصیص</a>
+
+                        </div>
+                        <div>
                             <a href="{{ route('students.details', $student->id) }}" class="btn btn-success bg-admin-green btn-sm mt-1 me-1">مالی</a>
 
-                            {{-- دکمه تاریخ --}}
-                            <button type="button"
-                                class="btn btn-success bg-admin-green btn-sm mt-1  me-1"
-                                data-bs-toggle="modal"
-                                data-bs-target="#updateDateModal"
-                                data-id="{{ $student->id }}"
-                                data-date="{{ $student->custom_date ? \Morilog\Jalali\Jalalian::fromDateTime($student->custom_date)->format('Y/m/d') : '' }}">
-                                تاریخ
-                            </button>
 
                             {{-- حذف --}}
-                            <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline me-1"
+                            <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline "
                                 onsubmit="return confirm('آیا از حذف این دانش‌آموز مطمئن هستید؟')">
                                 @csrf
                                 @method('DELETE')
@@ -112,54 +116,12 @@
     </div>
 </div>
 
-{{-- 🔵 مودال مشترک برای تمام دانش‌آموزان --}}
-<div class="modal fade" id="updateDateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="updateDateForm" method="POST" action="">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title fs15">ثبت تاریخ</h5>
-                    <button type="button" class="btn-close me-auto ms-0" data-bs-dismiss="modal" aria-label="بستن"></button>
-                </div>
-                <div class="modal-body position-relative">
-                    <label class="form-label">تاریخ شمسی:</label>
-                    <input type="text" name="custom_date" id="modal_custom_date"
-                        class="form-control"
-                        data-jdp>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
-                    <button type="submit" class="btn btn-success bg-admin-green">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('scripts')
 <script src="{{asset('assets/js/data-picker.js')}}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('updateDateModal');
-        const form = document.getElementById('updateDateForm');
-        const inputDate = document.getElementById('modal_custom_date');
-
-        modal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const studentId = button.getAttribute('data-id');
-            const currentDate = button.getAttribute('data-date') || '';
-
-            // مقداردهی فیلد تاریخ
-            inputDate.value = currentDate;
-
-            // تنظیم آدرس اکشن فرم
-            form.action = `/students/${studentId}/update-date`;
-        });
-    });
     jalaliDatepicker.startWatch();
 </script>
+
 @endsection
