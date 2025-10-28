@@ -61,97 +61,116 @@
 
 
 
+        <h4>افزودن پرداخت برای {{ $student->name }}</h4>
 
+        <form action="{{ route('student-products.storePayments', $student->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-
-
-        <br><br><br><br><br><br>
-        <div class="mb-3">
-            <label for="payment_type" class="form-label">نوع پرداخت</label>
-            <select id="payment_type" class="form-select">
-                <option value="">انتخاب کنید</option>
-                <option value="cash">نقدی</option>
-                <option value="installment">اقساطی</option>
-                <option value="scholarship">بورسیه</option>
-            </select>
-        </div>
-
-        <div class="mb-3" id="payment_buttons"></div>
-
-        <div id="payments_container"></div>
-        <div id="checks_container"></div>
-
-
-
-
-      <form action="{{ route('student-products.storePayments', $student->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-
-    <h4>پرداخت‌ها</h4>
-
-    <div id="payments_container">
-        @foreach($existingPayments as $payment)
-        <div class="payment-item border p-3 mb-2 position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 remove-btn"></button>
-
-            <input type="hidden" name="payments[{{ $loop->index }}][id]" value="{{ $payment->id }}">
-
-            <div class="mb-2">
-                <label>تاریخ</label>
-                <input type="date" name="payments[{{ $loop->index }}][date]" class="form-control" value="{{ $payment->date->format('Y-m-d') }}" required>
-            </div>
-            <div class="mb-2">
-                <label>مبلغ</label>
-                <input type="number" name="payments[{{ $loop->index }}][amount]" class="form-control" value="{{ $payment->amount }}" required>
-            </div>
-            <div class="mb-2">
-                <label>شماره فیش</label>
-                <input type="text" name="payments[{{ $loop->index }}][ref]" class="form-control" value="{{ $payment->ref }}">
-            </div>
-            <div class="mb-2">
-                <label>پوز</label>
-                <select name="payments[{{ $loop->index }}][card_id]" class="form-select">
-                    @foreach($paymentCards as $card)
-                        <option value="{{ $card->id }}" {{ $payment->card_id == $card->id ? 'selected' : '' }}>{{ $card->title }}</option>
-                    @endforeach
+            {{-- نوع پرداخت --}}
+            <div class="mb-3">
+                <label class="form-label">نوع پرداخت:</label>
+                <select id="paymentType" name="payment_type" class="form-select w-50" required>
+                    <option value="">انتخاب کنید...</option>
+                    <option value="installment">اقساطی</option>
+                    <option value="cash">نقدی</option>
+                    <option value="scholarship">بورسیه</option>
                 </select>
             </div>
-            <div class="mb-2">
-                <label>تصویر پرداخت</label>
-                <input type="file" name="payments[{{ $loop->index }}][image]" class="form-control">
-                @if($payment->image)
-                    <small>تصویر قبلی: {{ basename($payment->image) }}</small>
-                @endif
+
+            {{-- دکمه‌های پرداخت نقدی --}}
+            <div id="cashBtnContainer" class="mb-3 d-none">
+                <button id="addCashPaymentBtn" type="button" class="btn btn-primary">
+                    افزودن پرداخت نقدی
+                </button>
             </div>
-        </div>
-        @endforeach
-    </div>
 
-    <div id="checks_container">
-        @foreach($existingChecks as $check)
-        <div class="check-item border p-3 mb-2 position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 remove-btn"></button>
-
-            <input type="hidden" name="checks[{{ $loop->index }}][id]" value="{{ $check->id }}">
-
-            <div class="mb-2"><label>تاریخ</label><input type="date" name="checks[{{ $loop->index }}][date]" class="form-control" value="{{ $check->date->format('Y-m-d') }}" required></div>
-            <div class="mb-2"><label>مبلغ</label><input type="number" name="checks[{{ $loop->index }}][amount]" class="form-control" value="{{ $check->amount }}" required></div>
-            <div class="mb-2"><label>سریال چک</label><input type="text" name="checks[{{ $loop->index }}][serial]" class="form-control" value="{{ $check->serial }}"></div>
-            <div class="mb-2"><label>کد صیاد</label><input type="text" name="checks[{{ $loop->index }}][code]" class="form-control" value="{{ $check->code }}"></div>
-            <div class="mb-2"><label>نام صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_name]" class="form-control" value="{{ $check->owner_name }}"></div>
-            <div class="mb-2"><label>کد ملی صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_national]" class="form-control" value="{{ $check->owner_national }}"></div>
-            <div class="mb-2"><label>موبایل صاحب چک</label><input type="text" name="checks[{{ $loop->index }}][owner_phone]" class="form-control" value="{{ $check->owner_phone }}"></div>
-            <div class="mb-2"><label>تصویر چک</label><input type="file" name="checks[{{ $loop->index }}][image]" class="form-control">
-                @if($check->image)
-                    <small>تصویر قبلی: {{ basename($check->image) }}</small>
-                @endif
+            {{-- دکمه‌های اقساطی --}}
+            <div id="installmentBtnContainer" class="mb-3 d-none">
+                <button id="addPrepaymentBtn" type="button" class="btn btn-success me-2">
+                    افزودن پیش‌پرداخت
+                </button>
+                <button id="addCheckBtn" type="button" class="btn btn-info">
+                    افزودن چک
+                </button>
             </div>
-        </div>
-        @endforeach
-    </div>
 
-    <button type="submit" class="btn btn-success mt-3">ذخیره تغییرات</button>
-</form>
+            {{-- بخش‌ها --}}
+            <div id="cashPaymentsContainer"></div>
+            <div id="installmentContainer"></div>
+
+            {{-- دکمه ذخیره --}}
+            <button type="submit" class="btn btn-success mt-3">ذخیره پرداخت‌ها</button>
+        </form>
+
+        <br> <br><br>
+        <h4>پرداخت‌ها</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>نوع</th>
+                    <th>تاریخ و ساعت</th>
+                    <th>مبلغ</th>
+                    <th>شماره فیش / سریال</th>
+                    <th>تصویر</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- پرداخت نقدی --}}
+                @foreach($cashPayments as $payment)
+                <tr>
+                    <td>نقدی</td>
+                    <td>{{ $payment->date }}</td>
+                    <td>{{ $payment->amount }}</td>
+                    <td>{{ $payment->voucher_number }}</td>
+                    <td>
+                        @if($payment->receipt_image)
+                        <a href="{{ asset('storage/'.$payment->receipt_image) }}" target="_blank">مشاهده تصویر</a>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-payment" data-id="{{ $payment->id }}" data-type="payment">حذف</button>
+                    </td>
+                </tr>
+                @endforeach
+
+                {{-- پیش‌پرداخت --}}
+                @foreach($prepayments as $pre)
+                <tr>
+                    <td>پیش‌پرداخت</td>
+                    <td>{{ $pre->date }}</td>
+                    <td>{{ $pre->amount }}</td>
+                    <td>{{ $pre->voucher_number }}</td>
+                    <td>
+                        @if($pre->receipt_image)
+                        <a href="{{ asset('storage/'.$pre->receipt_image) }}" target="_blank">مشاهده تصویر</a>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-payment" data-id="{{ $pre->id }}" data-type="payment">حذف</button>
+                    </td>
+                </tr>
+                @endforeach
+
+                {{-- چک‌ها --}}
+                @foreach($checks as $check)
+                <tr>
+                    <td>چک</td>
+                    <td>{{ $check->date }}</td>
+                    <td>{{ $check->amount }}</td>
+                    <td>{{ $check->serial }}</td>
+                    <td>
+                        @if($check->check_image)
+                        <a href="{{ asset('storage/'.$check->check_image) }}" target="_blank">مشاهده تصویر</a>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-payment" data-id="{{ $check->id }}" data-type="check">حذف</button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
 
 
     </div>
@@ -160,6 +179,7 @@
 
 @section('scripts')
 <script src="{{asset('assets/js/data-picker.js')}}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     const checkboxes = document.querySelectorAll('.product-checkbox');
@@ -182,60 +202,209 @@
 </script>
 
 
+
 <script>
-    const paymentTypeSelect = document.getElementById('payment_type');
-    const paymentButtons = document.getElementById('payment_buttons');
-    const paymentsContainer = document.getElementById('payments_container');
-    const checksContainer = document.getElementById('checks_container');
-
-    paymentTypeSelect.addEventListener('change', function() {
-        paymentButtons.innerHTML = '';
-        paymentsContainer.innerHTML = '';
-        checksContainer.innerHTML = '';
-
-        if (this.value === 'cash') {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-success mb-2';
-            btn.textContent = 'افزودن پرداخت';
-            btn.addEventListener('click', addPayment);
-            paymentButtons.appendChild(btn);
-        }
-        if (this.value === 'installment') {
-            const btn1 = document.createElement('button');
-            btn1.type = 'button';
-            btn1.className = 'btn btn-primary me-2';
-            btn1.textContent = 'افزودن پیشپرداخت';
-            btn1.addEventListener('click', addPayment);
-            const btn2 = document.createElement('button');
-            btn2.type = 'button';
-            btn2.className = 'btn btn-warning';
-            btn2.textContent = 'افزودن چک';
-            btn2.addEventListener('click', addCheck);
-            paymentButtons.appendChild(btn1);
-            paymentButtons.appendChild(btn2);
-        }
+    jalaliDatepicker.startWatch({
+        'time': true
     });
+    document.addEventListener('DOMContentLoaded', () => {
+        const paymentType = document.getElementById('paymentType');
 
-    function addPayment() {
-        const template = document.getElementById('payment_template');
-        const clone = template.content.cloneNode(true);
-        clone.querySelector('.remove-btn').addEventListener('click', function() {
-            this.parentElement.remove();
+        const cashBtnContainer = document.getElementById('cashBtnContainer');
+        const addCashPaymentBtn = document.getElementById('addCashPaymentBtn');
+        const cashPaymentsContainer = document.getElementById('cashPaymentsContainer');
+
+        const installmentBtnContainer = document.getElementById('installmentBtnContainer');
+        const addPrepaymentBtn = document.getElementById('addPrepaymentBtn');
+        const addCheckBtn = document.getElementById('addCheckBtn');
+        const installmentContainer = document.getElementById('installmentContainer');
+
+        // تغییر نوع پرداخت
+        paymentType.addEventListener('change', function() {
+            cashBtnContainer.classList.add('d-none');
+            installmentBtnContainer.classList.add('d-none');
+            cashPaymentsContainer.innerHTML = '';
+            installmentContainer.innerHTML = '';
+
+            if (this.value === 'cash') {
+                cashBtnContainer.classList.remove('d-none');
+            } else if (this.value === 'installment') {
+                installmentBtnContainer.classList.remove('d-none');
+            }
         });
-        paymentsContainer.appendChild(clone);
-    }
 
-    function addCheck() {
-        const template = document.getElementById('check_template');
-        const clone = template.content.cloneNode(true);
-        clone.querySelector('.remove-btn').addEventListener('click', function() {
-            this.parentElement.remove();
+        // آپشن‌های نوع کارت
+        const cardOptions = `
+        @foreach($paymentCards as $card)
+            <option value="{{ $card->id }}">{{ $card->name }}</option>
+        @endforeach
+    `;
+
+        // تابع تولید ردیف پرداخت (با دکمه حذف)
+        function createRow(html) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('payment-row', 'border', 'p-3', 'rounded', 'mb-3', 'bg-light', 'position-relative');
+            wrapper.innerHTML = `
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-payment-btn" aria-label="حذف"></button>
+            ${html}
+        `;
+            return wrapper;
+        }
+
+        // افزودن پرداخت نقدی
+        addCashPaymentBtn.addEventListener('click', e => {
+            e.preventDefault();
+            const html = `
+            <div class="row g-3 align-items-center mt-2">
+                <div class="col-md-2">
+                    <label>تاریخ:</label>
+                    <input type="text" name="cash_date[]" data-jdp class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>مبلغ:</label>
+                    <input type="number" name="cash_amount[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>شماره فیش:</label>
+                    <input type="text" name="cash_receipt[]" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label>نوع کارت:</label>
+                    <select name="cash_card_id[]" class="form-select">
+                        <option value="">انتخاب کارت...</option>
+                        ${cardOptions}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>تصویر پرداخت:</label>
+                    <input type="file" name="cash_image[]" class="form-control" accept="image/*" required>
+                </div>
+            </div>
+        `;
+            cashPaymentsContainer.appendChild(createRow(html));
         });
-        checksContainer.appendChild(clone);
-    }
 
-    // ✅ اگر دیتای قبلی داشتیم، میتونیم اینجا با JS اضافه کنیم
-    // existingPayments و existingChecks از Controller فرستاده میشن
+        // افزودن پیش‌پرداخت
+        addPrepaymentBtn.addEventListener('click', e => {
+            e.preventDefault();
+            const html = `
+            <div class="row g-3 align-items-center mt-2">
+                <div class="col-md-2">
+                    <label>تاریخ:</label>
+                    <input type="text" name="pre_date[]" data-jdp class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>مبلغ:</label>
+                    <input type="number" name="pre_amount[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>شماره فیش:</label>
+                    <input type="text" name="pre_receipt[]" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label>نوع کارت:</label>
+                    <select name="pre_card_id[]" class="form-select">
+                        <option value="">انتخاب کارت...</option>
+                        ${cardOptions}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>تصویر پرداخت:</label>
+                    <input type="file" name="pre_image[]" class="form-control" accept="image/*" required>
+                </div>
+            </div>
+        `;
+            installmentContainer.appendChild(createRow(html));
+        });
+
+        // افزودن چک
+        addCheckBtn.addEventListener('click', e => {
+            e.preventDefault();
+            const html = `
+            <div class="row g-3 align-items-center mt-2">
+                <div class="col-md-2">
+                    <label>تاریخ چک:</label>
+                    <input type="text" name="check_date[]" data-jdp class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>مبلغ:</label>
+                    <input type="number" name="check_amount[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>سریال چک:</label>
+                    <input type="text" name="check_serial[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>کد صیاد:</label>
+                    <input type="text" name="check_sayad[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>نام صاحب چک:</label>
+                    <input type="text" name="check_owner_name[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>کد ملی صاحب چک:</label>
+                    <input type="text" name="check_owner_national[]" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label>موبایل صاحب چک:</label>
+                    <input type="text" name="check_owner_phone[]" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label>تصویر چک:</label>
+                    <input type="file" name="check_image[]" class="form-control" accept="image/*">
+                </div>
+            </div>
+        `;
+            installmentContainer.appendChild(createRow(html));
+        });
+
+        // حذف هر ردیف با delegation
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-payment-btn')) {
+                e.target.closest('.payment-row').remove();
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.delete-payment');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+
+                Swal.fire({
+                    title: 'آیا مطمئن هستید؟',
+                    text: "این عملیات غیرقابل بازگشت است!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'بله حذف کن',
+                    cancelButtonText: 'لغو'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/student-products/delete-payment/${type}/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('حذف شد!', data.message, 'success');
+                                    location.reload(); // یا حذف ردیف از جدول بدون ریلود
+                                }
+                            })
+                    }
+                })
+            });
+        });
+    });
 </script>
 @endsection

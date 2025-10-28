@@ -34,6 +34,24 @@ class StudentProductController extends Controller
         $existingChecks = $student->checks()->get();     // چک‌ها
 
 
+
+
+
+
+
+
+
+        // گرفتن همه پرداخت‌ها
+        $cashPayments = Payment::where('student_id', $student->id)
+            ->where('payment_type', 'cash')
+            ->get();
+
+        $prepayments = Payment::where('student_id', $student->id)
+            ->where('payment_type', 'installment')
+            ->get();
+
+        $checks = Check::where('student_id', $student->id)->get();
+
         return view('students.assign-products', [
             'student' => $student,
             'grade' => $student->grade?->name,
@@ -44,6 +62,11 @@ class StudentProductController extends Controller
             'paymentCards' => $paymentCards,
             'existingPayments' => $existingPayments,
             'existingChecks' => $existingChecks,
+
+            'cashPayments' => $cashPayments,
+            'prepayments' => $prepayments,
+            'checks' => $checks,
+
 
 
         ]);
@@ -65,52 +88,160 @@ class StudentProductController extends Controller
     }
 
 
+
+
     public function storePayments(Request $request, Student $student)
     {
-        $submittedPayments = collect($request->payments ?? []);
-        $submittedChecks = collect($request->checks ?? []);
+        $paymentType = $request->input('payment_type');
 
-        // حذف پرداخت‌هایی که دیگر وجود ندارند
-        $student->payments()->whereNotIn('id', $submittedPayments->pluck('id')->filter())->delete();
-        $student->checks()->whereNotIn('id', $submittedChecks->pluck('id')->filter())->delete();
+        // 🔹 پرداخت‌های نقدی و پیش‌پرداخت‌ها
+        if ($request->has('cash_amount')) {
+            foreach ($request->cash_amount as $index => $amount) {
 
-        // ذخیره پرداخت‌ها
-        foreach ($submittedPayments as $p) {
-            $payment = $student->payments()->updateOrCreate(
-                ['id' => $p['id'] ?? null],
-                [
-                    'date' => $p['date'],
-                    'amount' => $p['amount'],
-                    'ref' => $p['ref'] ?? null,
-                    'card_id' => $p['card_id'] ?? null,
-                ]
-            );
-            if (isset($p['image'])) {
-                $path = $p['image']->store('private/payments');
-                $payment->update(['image' => $path]);
+                $jalaliDateTime = $request->cash_date[$index] ?? '';
+
+                if (empty($jalaliDateTime)) continue;
+
+                // جایگزینی - با / اگر لازم بود
+                $jalaliDateTime = str_replace('-', '/', $jalaliDateTime);
+
+                // تبدیل به Carbon میلادی
+                try {
+                    $gregorianDateTime = Jalalian::fromFormat('Y/m/d H:i:s', $jalaliDateTime)->toCarbon();
+                } catch (\Exception $e1) {
+                    try {
+                        $gregorianDateTime = Jalalian::fromFormat('Y/m/d H:i', $jalaliDateTime)->toCarbon();
+                    } catch (\Exception $e2) {
+                        try {
+                            $gregorianDateTime = Jalalian::fromFormat('Y/m/d', $jalaliDateTime)->toCarbon();
+                        } catch (\Exception $e3) {
+                            $gregorianDateTime = now(); // مقدار پیش‌فرض
+                        }
+                    }
+                }
+
+                $payment = new Payment();
+                $payment->student_id = $student->id;
+                $payment->payment_type = $paymentType;
+                $payment->date = $gregorianDateTime; // فقط یک ستون datetime
+                $payment->amount = $amount;
+                $payment->voucher_number = $request->cash_receipt[$index] ?? null;
+                $payment->payment_card_id = $request->cash_card_id[$index] ?? null;
+
+                // آپلود تصویر
+                if ($request->hasFile('cash_image.' . $index)) {
+                    $file = $request->file('cash_image.' . $index);
+                    $path = $file->store('receipts', 'public');
+                    $payment->receipt_image = $path;
+                }
+
+                $payment->save();
+            }
+        }
+        // 🔹 پیش‌پرداخت‌ها
+        if ($request->has('pre_amount')) {
+            foreach ($request->pre_amount as $index => $amount) {
+
+                $jalaliDateTime_pre = $request->pre_date[$index] ?? '';
+
+                if (empty($jalaliDateTime_pre)) continue;
+
+                $jalaliDateTime_pre = str_replace('-', '/', $jalaliDateTime_pre);
+
+                try {
+                    $gregorianDateTime_pre = Jalalian::fromFormat('Y/m/d H:i:s', $jalaliDateTime_pre)->toCarbon();
+                } catch (\Exception $e1) {
+                    try {
+                        $gregorianDateTime_pre = Jalalian::fromFormat('Y/m/d H:i', $jalaliDateTime_pre)->toCarbon();
+                    } catch (\Exception $e2) {
+                        try {
+                            $gregorianDateTime_pre = Jalalian::fromFormat('Y/m/d', $jalaliDateTime_pre)->toCarbon();
+                        } catch (\Exception $e3) {
+                            $gregorianDateTime_pre = now();
+                        }
+                    }
+                }
+
+                $payment = new Payment();
+                $payment->student_id = $student->id;
+                $payment->payment_type = 'installment'; // چون پیش‌پرداخت
+                $payment->date = $gregorianDateTime_pre;
+                $payment->amount = $amount;
+                $payment->voucher_number = $request->pre_receipt[$index] ?? null;
+                $payment->payment_card_id = $request->pre_card_id[$index] ?? null;
+
+                if ($request->hasFile('pre_image.' . $index)) {
+                    $file = $request->file('pre_image.' . $index);
+                    $path = $file->store('receipts', 'public');
+                    $payment->receipt_image = $path;
+                }
+
+                $payment->save();
             }
         }
 
-        // ذخیره چک‌ها
-        foreach ($submittedChecks as $c) {
-            $check = $student->checks()->updateOrCreate(
-                ['id' => $c['id'] ?? null],
-                [
-                    'date' => $c['date'],
-                    'amount' => $c['amount'],
-                    'serial' => $c['serial'] ?? null,
-                    'code' => $c['code'] ?? null,
-                    'owner_name' => $c['owner_name'] ?? null,
-                    'owner_national' => $c['owner_national'] ?? null,
-                    'owner_phone' => $c['owner_phone'] ?? null,
-                ]
-            );
-            if (isset($c['image'])) {
-                $path = $c['image']->store('private/checks');
-                $check->update(['image' => $path]);
+        // 🔹 چک‌ها
+        if ($request->has('check_amount')) {
+            foreach ($request->check_amount as $index => $amount) {
+
+                $jalaliDateTime_checks = $request->check_date[$index] ?? '';
+
+                if (empty($jalaliDateTime_checks)) continue;
+
+                // جایگزینی - با / اگر لازم بود
+                $jalaliDateTime_checks = str_replace('-', '/', $jalaliDateTime_checks);
+
+                // تبدیل به Carbon میلادی
+                try {
+                    $gregorianDateTime_ck = Jalalian::fromFormat('Y/m/d H:i:s', $jalaliDateTime_checks)->toCarbon();
+                } catch (\Exception $e1) {
+                    try {
+                        $gregorianDateTime_ck = Jalalian::fromFormat('Y/m/d H:i', $jalaliDateTime_checks)->toCarbon();
+                    } catch (\Exception $e2) {
+                        try {
+                            $gregorianDateTime_ck = Jalalian::fromFormat('Y/m/d', $jalaliDateTime_checks)->toCarbon();
+                        } catch (\Exception $e3) {
+                            $gregorianDateTime_ck = now(); // مقدار پیش‌فرض
+                        }
+                    }
+                }
+
+
+
+
+                $check = new Check();
+                $check->student_id = $student->id;
+                $check->date = $gregorianDateTime_ck; // datetime
+                $check->amount = $amount;
+                $check->serial = $request->check_serial[$index];
+                $check->sayad_code = $request->check_sayad[$index];
+                $check->owner_name = $request->check_owner_name[$index];
+                $check->owner_national_code = $request->check_owner_national[$index];
+                $check->owner_phone = $request->check_owner_phone[$index];
+
+                // آپلود تصویر
+                if ($request->hasFile('check_image.' . $index)) {
+                    $file = $request->file('check_image.' . $index);
+                    $path = $file->store('checks', 'public');
+                    $check->check_image = $path;
+                }
+
+                $check->save();
             }
         }
 
-        return redirect()->back()->with('success', 'پرداخت‌ها با موفقیت بروزرسانی شدند.');
+        return back()->with('success', 'پرداخت‌ها با موفقیت ذخیره شدند.');
+    }
+
+
+    public function deletePayment($type, $id)
+    {
+        if ($type == 'payment') {
+            Payment::findOrFail($id)->delete();
+        } elseif ($type == 'check') {
+            Check::findOrFail($id)->delete();
+        }
+
+        return response()->json(['success' => true, 'message' => 'با موفقیت حذف شد']);
     }
 }

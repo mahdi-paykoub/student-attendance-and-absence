@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->enum('payment_type', ['cash', 'installment', 'scholarship'])->nullable();
             $table->dateTime('date');
             $table->decimal('amount', 12, 2);
             $table->string('voucher_number')->nullable();

@@ -84,6 +84,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
         Route::put('/assign/{student}', [StudentProductController::class, 'updateAssignedProducts'])->name('storeAssign.product');
         Route::post('/assign/{student}/payments', [StudentProductController::class, 'storePayments'])->name('storePayments');
+        Route::delete('/delete-payment/{type}/{id}', [StudentProductController::class, 'deletePayment'])
+            ->name('deletePayment');
     });
 
     // Route::get('/private/{path}', [PrivateFileController::class, 'show'])->where('path', '.*')->name('private.file');
