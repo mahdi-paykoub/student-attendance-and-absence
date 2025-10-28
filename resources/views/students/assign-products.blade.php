@@ -125,7 +125,9 @@
                     <td>{{ $payment->voucher_number }}</td>
                     <td>
                         @if($payment->receipt_image)
-                        <a href="{{ asset('storage/'.$payment->receipt_image) }}" target="_blank">مشاهده تصویر</a>
+                        <a href="{{ route('payments.receipt', $payment->id) }}" target="_blank">
+                            مشاهده تصویر
+                        </a>
                         @endif
                     </td>
                     <td>
@@ -142,8 +144,10 @@
                     <td>{{ $pre->amount }}</td>
                     <td>{{ $pre->voucher_number }}</td>
                     <td>
-                        @if($pre->receipt_image)
-                        <a href="{{ asset('storage/'.$pre->receipt_image) }}" target="_blank">مشاهده تصویر</a>
+                        @if($payment->receipt_image)
+                        <a href="{{ route('payments.receipt', $payment->id) }}" target="_blank">
+                            مشاهده تصویر
+                        </a>
                         @endif
                     </td>
                     <td>
@@ -161,7 +165,9 @@
                     <td>{{ $check->serial }}</td>
                     <td>
                         @if($check->check_image)
-                        <a href="{{ asset('storage/'.$check->check_image) }}" target="_blank">مشاهده تصویر</a>
+                        <a href="{{ route('checks.image', $check->id) }}" target="_blank">
+                            مشاهده تصویر
+                        </a>
                         @endif
                     </td>
                     <td>
