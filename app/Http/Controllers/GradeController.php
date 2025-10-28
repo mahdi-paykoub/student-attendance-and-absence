@@ -20,7 +20,7 @@ class GradeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:100']);
+        $request->validate(['name' => 'required|string|max:200']);
         Grade::create(['name' => $request->name]);
         return redirect()->route('grades.index')->with('success', 'پایه جدید افزوده شد.');
     }
@@ -32,9 +32,17 @@ class GradeController extends Controller
 
     public function update(Request $request, Grade $grade)
     {
-        $request->validate(['name' => 'required|string|max:100']);
-        $grade->update(['name' => $request->name]);
-        return redirect()->route('grades.index')->with('success', 'پایه ویرایش شد.');
+        $request->validate([
+            'name' => 'required|string|max:200'
+        ]);
+
+        $grade->update([
+            'name' => $request->name
+        ]);
+
+        return redirect()->route('grades.index')->with('success', 'پایه با موفقیت ویرایش شد.');
+
+      
     }
 
     public function destroy(Grade $grade)
