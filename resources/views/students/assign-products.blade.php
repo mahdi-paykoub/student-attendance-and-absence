@@ -23,9 +23,9 @@
         </div>
 
 
-        <h3>تخصیص محصولات به {{ $student->name }}</h3>
+        <h3 class="fw-bold fs18">تخصیص محصولات : </h3>
 
-        <form action="{{ route('student-products.storeAssign.product', $student->id) }}" method="POST">
+        <form class="border-bottom pb-5" action="{{ route('student-products.storeAssign.product', $student->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -54,42 +54,52 @@
                 @endforeach
             </div>
 
-            <h4>هزینه نهایی: <span id="totalPrice">0</span> تومان</h4>
+            <div class="mt-5 d-flex align-items-center justify-content-between">
+                <div>
+                    <h4 class="fw-bold fs18">هزینه نهایی: <span id="totalPrice">0</span> تومان</h4>
+                </div>
 
-            <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                <button type="submit" class="btn btn-success bg-admin-green">ذخیره تغییرات</button>
+            </div>
         </form>
 
 
 
-        <h4>افزودن پرداخت برای {{ $student->name }}</h4>
+        <h4 class="fw-bold fs18 mt-5">افزودن پرداخت : </h4>
 
-        <form action="{{ route('student-products.storePayments', $student->id) }}" method="POST" enctype="multipart/form-data">
+        <form class="bg-body-secondary mt-4 p-4 rounded" action="{{ route('student-products.storePayments', $student->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             {{-- نوع پرداخت --}}
-            <div class="mb-3">
-                <label class="form-label">نوع پرداخت:</label>
-                <select id="paymentType" name="payment_type" class="form-select w-50" required>
-                    <option value="">انتخاب کنید...</option>
-                    <option value="installment">اقساطی</option>
-                    <option value="cash">نقدی</option>
-                    <option value="scholarship">بورسیه</option>
-                </select>
+            <div class="mb-3 row align-items-center">
+                <div class="col-lg-6">
+                    <label class="form-label">نوع پرداخت:</label>
+                    <select id="paymentType" name="payment_type" class="form-select w-100" required>
+                        <option value="">انتخاب کنید...</option>
+                        <option value="installment">اقساطی</option>
+                        <option value="cash">نقدی</option>
+                        <option value="scholarship">بورسیه</option>
+                    </select>
+                </div>
+                <div class="col-lg-6 text-start">
+                    <button type="submit" class="btn btn-success bg-admin-green mt-3">ذخیره پرداخت‌ها</button>
+                </div>
+
             </div>
 
             {{-- دکمه‌های پرداخت نقدی --}}
             <div id="cashBtnContainer" class="mb-3 d-none">
-                <button id="addCashPaymentBtn" type="button" class="btn btn-primary">
+                <button id="addCashPaymentBtn" type="button" class="btn btn-dark">
                     افزودن پرداخت نقدی
                 </button>
             </div>
 
             {{-- دکمه‌های اقساطی --}}
             <div id="installmentBtnContainer" class="mb-3 d-none">
-                <button id="addPrepaymentBtn" type="button" class="btn btn-success me-2">
+                <button id="addPrepaymentBtn" type="button" class="btn btn-success bg-admin-green me-2">
                     افزودن پیش‌پرداخت
                 </button>
-                <button id="addCheckBtn" type="button" class="btn btn-info">
+                <button id="addCheckBtn" type="button" class="btn btn-dark">
                     افزودن چک
                 </button>
             </div>
@@ -98,14 +108,13 @@
             <div id="cashPaymentsContainer"></div>
             <div id="installmentContainer"></div>
 
-            {{-- دکمه ذخیره --}}
-            <button type="submit" class="btn btn-success mt-3">ذخیره پرداخت‌ها</button>
+
         </form>
 
         <br> <br><br>
-        <h4>پرداخت‌ها</h4>
+        <h4 class="fs18 fw-blod">پرداخت‌ها</h4>
         <table class="table table-bordered">
-            <thead>
+            <thead class="table-success">
                 <tr>
                     <th>نوع</th>
                     <th>تاریخ و ساعت</th>
@@ -120,7 +129,7 @@
                 @foreach($cashPayments as $payment)
                 <tr>
                     <td>نقدی</td>
-                    <td>{{ $payment->date }}</td>
+                    <td>{{ \Morilog\Jalali\Jalalian::fromCarbon($payment->date)->format('Y/m/d H:i') }}</td>
                     <td>{{ $payment->amount }}</td>
                     <td>{{ $payment->voucher_number }}</td>
                     <td>
@@ -140,12 +149,15 @@
                 @foreach($prepayments as $pre)
                 <tr>
                     <td>پیش‌پرداخت</td>
-                    <td>{{ $pre->date }}</td>
+                    <td>
+                        {{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($pre->date))->format('Y/m/d H:i') }}
+                    </td>
+
                     <td>{{ $pre->amount }}</td>
                     <td>{{ $pre->voucher_number }}</td>
                     <td>
-                        @if($payment->receipt_image)
-                        <a href="{{ route('payments.receipt', $payment->id) }}" target="_blank">
+                        @if($pre->receipt_image)
+                        <a href="{{ route('payments.receipt', $pre->id) }}" target="_blank">
                             مشاهده تصویر
                         </a>
                         @endif
@@ -160,7 +172,9 @@
                 @foreach($checks as $check)
                 <tr>
                     <td>چک</td>
-                    <td>{{ $check->date }}</td>
+
+
+                    <td>{{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($check->date))->format('Y/m/d H:i') }}</td>
                     <td>{{ $check->amount }}</td>
                     <td>{{ $check->serial }}</td>
                     <td>

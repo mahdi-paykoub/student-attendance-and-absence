@@ -176,7 +176,7 @@ class StudentProductController extends Controller
                     $file = $request->file('pre_image.' . $index);
                     $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('payments', $filename, 'private');
-                    $payment->pre_image = $path;
+                    $payment->receipt_image = $path;
                 }
 
                 $payment->save();
@@ -223,12 +223,11 @@ class StudentProductController extends Controller
                 $check->owner_phone = $request->check_owner_phone[$index];
 
                 // آپلود تصویر
-
                 if ($request->hasFile('check_image.' . $index)) {
                     $file = $request->file('check_image.' . $index);
                     $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('checks', $filename, 'private');
-                    $payment->check_image = $path;
+                    $check->check_image = $path;
                 }
 
 
