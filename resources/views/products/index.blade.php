@@ -43,6 +43,9 @@
                         <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             دانش‌آموزان
                         </a>
+                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
+                            ویرایش
+                        </a>
 
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('آیا مطمئن هستید؟');">
                             @csrf

@@ -39,7 +39,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $grades = Grade::all();
+        $majors = Major::all();
+
+        return view('products.edit', compact('product', 'grades', 'majors'));
     }
 
     public function update(Request $request, Product $product)
@@ -48,11 +51,13 @@ class ProductController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'tax_percent' => 'required|numeric|min:0|max:100',
+            'grade_id' => 'required|exists:grades,id',
+            'major_id' => 'required|exists:majors,id',
         ]);
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'محصول با موفقیت ویرایش شد.');
+        return redirect()->route('products.index')->with('success', 'محصول با موفقیت به‌روزرسانی شد.');
     }
 
     public function destroy(Product $product)

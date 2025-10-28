@@ -17,7 +17,7 @@
         <table class="table table-striped">
             <thead class="table-light">
                 <tr>
-                    <th>نام کارت</th>
+                    <th>نام حساب</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
