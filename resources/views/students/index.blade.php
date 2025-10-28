@@ -25,6 +25,20 @@
     @endif
 
     <div class="table-wrap table-responsive-xl students-list-table">
+        <div class="row">
+            <div class="col-lg-3">
+                <form method="GET" action="{{ route('students.index') }}" class="">
+                    <div class="d-flex align-items-center mb-4">
+                        <label class="" for="filter">فیلتر</label>
+                        <select class="form-control me-2" name="filter" id="filter" onchange="this.form.submit()">
+                            <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>همه</option>
+                            <option value="with" {{ $filter === 'with' ? 'selected' : '' }}>با محصول</option>
+                            <option value="without" {{ $filter === 'without' ? 'selected' : '' }}>بدون محصول</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>
