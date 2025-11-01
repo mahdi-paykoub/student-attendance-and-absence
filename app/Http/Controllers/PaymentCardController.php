@@ -33,6 +33,11 @@ class PaymentCardController extends Controller
 
     public function destroy(PaymentCard $paymentCard)
     {
+        // بررسی وجود پرداخت مرتبط
+        if ($paymentCard->payments()->exists()) {
+            return back()->with('error', 'این کارت قابل حذف نیست، زیرا پرداخت‌هایی به آن متصل هستند.');
+        }
+
         $paymentCard->delete();
         return back()->with('success', 'کارت حذف شد.');
     }
