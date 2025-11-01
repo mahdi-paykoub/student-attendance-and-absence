@@ -24,7 +24,8 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = $request->get('filter'); // all | with | without
+        $filter = $request->get('filter', 'all'); // all | with | without
+        $search = $request->get('search'); // جستجو بر اساس نام یا کد ملی
 
         $students = Student::with(['grade', 'major', 'school', 'products'])
             ->when($filter === 'with', function ($query) {
@@ -33,10 +34,18 @@ class StudentController extends Controller
             ->when($filter === 'without', function ($query) {
                 $query->whereDoesntHave('products');
             })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('national_code', 'like', "%{$search}%");
+                });
+            })
             ->get();
 
-        return view('students.index', compact('students', 'filter'));
+        return view('students.index', compact('students', 'filter', 'search'));
     }
+
 
     /**
      * فرم ایجاد دانش‌آموز جدید

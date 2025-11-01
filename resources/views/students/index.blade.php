@@ -25,7 +25,7 @@
     @endif
 
     <div class="table-wrap table-responsive-xl students-list-table">
-        <div class="row">
+        <div class="row justify-content-between ">
             <div class="col-lg-3">
                 <form method="GET" action="{{ route('students.index') }}" class="">
                     <div class="d-flex align-items-center mb-4">
@@ -36,6 +36,15 @@
                             <option value="without" {{ $filter === 'without' ? 'selected' : '' }}>بدون محصول</option>
                         </select>
                     </div>
+                </form>
+            </div>
+            {{-- جستجو --}}
+            <div class="col-lg-3 mb-3">
+                <form method="GET" action="{{ route('students.index') }}" class="d-flex">
+                    <input type="hidden" name="filter" value="{{ $filter }}">
+                    <input type="text" name="search" class="form-control me-2" placeholder="   نام یا کد ملی..."
+                        value="{{ $search ?? '' }}">
+                    <button type="submit" class="btn btn-sm btn-success bg-admin-green me-2"> جستجو</button>
                 </form>
             </div>
         </div>
