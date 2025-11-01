@@ -71,6 +71,12 @@ class ExamController extends Controller
     // حذف آزمون
     public function destroy(Exam $exam)
     {
+        if (
+            $exam->attendances()->exists() ||
+            $exam->supervisors()->exists()
+        ) {
+            return back()->with('error', 'این آزمون قابل حذف نیست، زیرا دارای حضور و غیاب یا مشاور ناظر است.');
+        }
         $exam->delete();
         return redirect()->route('exams.index')->with('success', 'آزمون با موفقیت حذف شد.');
     }
@@ -84,6 +90,4 @@ class ExamController extends Controller
 
         return view('exams.attendance', compact('exam', 'attendances'));
     }
-
-   
 }

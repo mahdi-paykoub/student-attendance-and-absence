@@ -14,6 +14,7 @@ use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -75,7 +76,6 @@ class StudentProductController extends Controller
 
 
 
-    // ثبت یا آپدیت محصولات برای دانش‌آموز
     public function updateAssignedProducts(Request $request, Student $student)
     {
         // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
@@ -84,8 +84,42 @@ class StudentProductController extends Controller
         // sync خودش مدیریت میکنه: حذف قبلی، اضافه جدید
         $student->products()->sync($selectedProducts);
 
+        // گرفتن ID محصول اجباری از تنظیمات
+        $mandatoryExamId = Setting::where('key', 'mandatory_exam_product_id')->value('value');
+
+        // اگر محصول اجباری جزو محصولات انتخاب شده باشه، شماره صندلی تولید کن
+        if (in_array($mandatoryExamId, $selectedProducts)) {
+            DB::transaction(function () use ($mandatoryExamId) {
+                $genders = ['male', 'female'];
+                foreach ($genders as $gender) {
+                    $seatNumber = 1;
+                    $grades = Grade::orderBy('id')->get();
+
+                    foreach ($grades as $grade) {
+                        $majors = Major::orderBy('id')->get();
+
+                        foreach ($majors as $major) {
+                            $students = Student::where('gender', $gender)
+                                ->where('grade_id', $grade->id)
+                                ->where('major_id', $major->id)
+                                ->orderBy('id')
+                                ->get();
+
+                            foreach ($students as $s) {
+                                $hasMandatory = $s->products()->where('product_id', $mandatoryExamId)->exists();
+                                if ($hasMandatory) {
+                                    $s->update(['seat_number' => $seatNumber++]);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         return redirect()->back()->with('success', 'محصولات دانش‌آموز با موفقیت بروزرسانی شد.');
     }
+
 
 
 
