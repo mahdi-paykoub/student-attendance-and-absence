@@ -25,7 +25,7 @@ class AdvisorController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        Advisor::create($request->only('name','phone'));
+        Advisor::create($request->only('name', 'phone'));
 
         return redirect()->route('advisors.index')->with('success', 'مشاور با موفقیت اضافه شد.');
     }
@@ -42,13 +42,14 @@ class AdvisorController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $advisor->update($request->only('name','phone'));
+        $advisor->update($request->only('name', 'phone'));
 
         return redirect()->route('advisors.index')->with('success', 'مشاور با موفقیت ویرایش شد.');
     }
 
     public function destroy(Advisor $advisor)
     {
+       
         $advisor->delete();
         return redirect()->route('advisors.index')->with('success', 'مشاور حذف شد.');
     }

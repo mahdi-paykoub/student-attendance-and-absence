@@ -231,6 +231,18 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+
+        // جلوگیری از حذف اگر محصول، پرداخت یا چک دارد
+        if (
+            $student->products()->exists() ||
+            $student->payments()->exists() ||
+            $student->checks()->exists()
+        ) {
+            return back()->with('error', 'این دانش‌آموز قابل حذف نیست، زیرا دارای محصول، پرداخت یا چک می‌باشد.');
+        }
+
+
+
         if ($student->photo && Storage::disk('private')->exists($student->photo)) {
             Storage::disk('private')->delete($student->photo);
         }
