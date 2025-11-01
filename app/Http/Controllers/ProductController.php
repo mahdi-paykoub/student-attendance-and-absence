@@ -85,4 +85,14 @@ class ProductController extends Controller
 
         return view('products.students', compact('product', 'students'));
     }
+    public function toggleStatus(Product $product)
+    {
+        $product->is_active = !$product->is_active; // وضعیت رو برعکس می‌کنه
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $product->is_active,
+        ]);
+    }
 }

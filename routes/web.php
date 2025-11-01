@@ -126,6 +126,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     Route::put('/students/{student}/update-date', [StudentController::class, 'updateDate'])
         ->name('students.updateDate');
+
+
+    Route::post('/products/{product}/toggle', [ProductController::class, 'toggleStatus'])->name('products.toggle');
 });
 
 

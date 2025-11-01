@@ -33,7 +33,7 @@
             </thead>
             <tbody>
                 @forelse($products as $product)
-                <tr>
+                <tr class="{{ !$product->is_active ? 'table-secondary' : '' }}">
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->title }}</td>
                     <td>{{ number_format($product->price) }}</td>
@@ -46,6 +46,11 @@
                         <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             ویرایش
                         </a>
+
+                        <button class="btn btn-sm btn-dark btn-toggle-status mt-1 mt-md-0" data-id="{{ $product->id }}">
+                            {{ $product->is_active ? 'غیرفعال کردن' : 'فعال کردن' }}
+                        </button>
+
 
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('آیا مطمئن هستید؟');">
                             @csrf
@@ -64,4 +69,63 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-toggle-status');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = button.getAttribute('data-id');
+
+                fetch(`/products/${productId}/toggle`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // تغییر متن و کلاس دکمه
+                            if (data.is_active) {
+                                button.textContent = 'غیرفعال کردن';
+                                button.classList.remove('btn-danger');
+                                button.classList.add('btn-success');
+                                button.closest('tr').classList.remove('table-secondary');
+                            } else {
+                                button.textContent = 'فعال کردن';
+                                button.classList.remove('btn-success');
+                                button.classList.add('btn-danger');
+                                button.closest('tr').classList.add('table-secondary');
+                            }
+
+                            // نمایش پیام با SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت!',
+                                text: `محصول اکنون ${data.is_active ? 'فعال' : 'غیرفعال'} است.`,
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا!',
+                            text: 'تغییر وضعیت انجام نشد.'
+                        });
+                    });
+            });
+        });
+    });
+</script>
+
 @endsection

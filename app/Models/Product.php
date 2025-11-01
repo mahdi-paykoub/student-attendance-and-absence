@@ -14,6 +14,7 @@ class Product extends Model
         'tax_percent',
         'grade_id',
         'major_id',
+        'is_active'
     ];
 
 
