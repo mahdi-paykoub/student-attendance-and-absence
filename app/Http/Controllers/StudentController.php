@@ -250,8 +250,11 @@ class StudentController extends Controller
         // مجموع پرداختی
         $totalPaid = $totalPayments + $totalPrepayments + $totalChecks;
 
-        // جمع مبلغ محصولات
-        $totalProducts = $student->products()->sum('price');
+        // جمع مبلغ محصولات با احتساب مالیات
+        $totalProducts = $student->products->sum(function ($product) {
+            $taxAmount = $product->price * ($product->tax_percent / 100);
+            return $product->price + $taxAmount;
+        });
 
         // محاسبه بدهی یا بستانکاری
         $debt = max($totalProducts - $totalPaid, 0);

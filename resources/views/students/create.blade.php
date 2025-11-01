@@ -54,7 +54,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">نام پدر</label>
-                        <input type="text" name="father_name" class="form-control" value="{{ old('father_name') }}" required>
+                        <input type="text" name="father_name" class="form-control" value="{{ old('father_name') }}">
                         @error('father_name')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror

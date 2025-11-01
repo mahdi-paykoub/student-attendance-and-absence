@@ -18,6 +18,7 @@
                     <div class="col-md-4 mt-3"><strong>نام پدر:</strong> {{ $student->father_name }}</div>
                     <div class="col-md-4 mt-3"><strong>پایه:</strong> {{$grade}}</div>
                     <div class="col-md-4 mt-3"><strong>رشته:</strong> {{$major}}</div>
+                    <div class="col-md-4 mt-3"><strong>شماره همراه:</strong> {{$student->mobile_student}}</div>
                 </div>
             </div>
         </div>
@@ -299,7 +300,7 @@
             </div>
             <div class="col-md-3">
                 <label>تصویر پرداخت:</label>
-                <input type="file" name="cash_image[]" class="form-control" accept="image/*" required>
+                <input type="file" name="cash_image[]" class="form-control" accept="image/*" >
             </div>
         </div>
     `;
@@ -338,7 +339,7 @@
             </div>
             <div class="col-md-3">
                 <label>تصویر پرداخت:</label>
-                <input type="file" name="pre_image[]" class="form-control" accept="image/*" required>
+                <input type="file" name="pre_image[]" class="form-control" accept="image/*" >
             </div>
         </div>
     `;
