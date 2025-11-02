@@ -35,24 +35,29 @@
                 @php
                 $assigned = $assignedProducts->contains($product->id);
                 $finalPrice = $product->price + ($product->price * $product->tax_percent / 100);
+                $isInactiveAssigned = !$product->is_active && $assigned;
                 @endphp
 
                 <div class="col-md-6 mb-2">
-                    <div class="form-check border p-2 rounded {{ $assigned ? 'bg-light' : '' }}">
+                    <div class="form-check border p-2 rounded {{ $isInactiveAssigned ? 'bg-secondary text-white' : ($assigned ? 'bg-light' : '') }}">
                         <input type="checkbox" id="id-{{$product->id}}"
                             name="products[]"
                             value="{{ $product->id }}"
                             class="product-checkbox form-check-input"
                             data-price="{{ $product->price }}"
                             data-tax="{{ $product->tax_percent }}"
-                            {{ $assigned ? 'checked' : '' }}>
+                            {{ $assigned ? 'checked' : '' }}
+                            {{ $isInactiveAssigned ? 'disabled' : '' }}>
                         <label class="form-check-label" for="id-{{$product->id}}">
                             {{ $product->title }} - {{ number_format($finalPrice) }} تومان
-                            <!-- (مالیات: {{ $product->tax_percent }}%) -->
+                            @if($isInactiveAssigned)
+                            (غیرفعال)
+                            @endif
                         </label>
                     </div>
                 </div>
                 @endforeach
+
             </div>
 
             <div class="mt-5 d-flex align-items-center justify-content-between">

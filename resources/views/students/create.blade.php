@@ -30,7 +30,7 @@
                 {{-- عکس --}}
                 <div class="mb-3">
                     <label class="form-label">عکس 3x4</label>
-                    <input type="file" name="photo" class="form-control" required>
+                    <input type="file" name="photo" class="form-control" >
                     @error('photo')
                     <small class="text-danger">{{ $message }}</small>
                     @enderror
