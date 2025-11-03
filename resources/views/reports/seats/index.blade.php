@@ -18,9 +18,7 @@
 
 
     <div class="table-wrap table-responsive-xl students-list-table">
-        <form action="{{ route('students.pdf.generate') }}" method="GET" class="mb-3">
-            @csrf
-
+        <form method="GET" class="mb-3">
             <div class="row align-items-center">
                 <div class="mb-3 col-lg-3">
                     <label for="gender">جنسیت</label>
@@ -54,12 +52,22 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="mb-3 col-lg-3 mt-4">
-                    <button type="submit" class="btn btn-success bg-admin-green">چاپ شماره صندلی</button>
+
+                <div class="mb-3 col-lg-3 mt-4 d-flex gap-2">
+                    <!-- دکمه نمایش -->
+                    <button type="submit" formaction="{{ route('seatsNumber.view') }}" class="btn btn-success bg-admin-green">
+                        نمایش
+                    </button>
+
+                    <!-- دکمه PDF -->
+                    <button type="submit" formaction="{{ route('students.pdf.generate') }}" class="btn btn-success bg-admin-green">
+                        چاپ PDF
+                    </button>
                 </div>
             </div>
-
         </form>
+
+       
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>

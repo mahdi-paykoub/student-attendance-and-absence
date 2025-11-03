@@ -11,14 +11,27 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function seatNumberView()
+    public function seatNumberView(Request $request)
     {
         $grades = Grade::all();
         $majors = Major::all();
-        $students = Student::with(['grade', 'major', 'school', 'products'])
+
+        $gender = $request->input('gender');       // male/female یا null
+        $grade_id = $request->input('grade_id');   // عدد یا null
+        $major_id = $request->input('major_id');   // عدد یا null
+        $students = Student::with(['grade', 'major'])
             ->whereNotNull('seat_number')
+            ->when($gender, function ($query, $gender) {
+                $query->where('gender', $gender);
+            })
+            ->when($grade_id, function ($query, $grade_id) {
+                $query->where('grade_id', $grade_id);
+            })
+            ->when($major_id, function ($query, $major_id) {
+                $query->where('major_id', $major_id);
+            })
             ->get();
-        return view('reports.seats.index', compact('students' ,'grades' , 'majors'));
+        return view('reports.seats.index', compact('students', 'grades', 'majors'));
     }
 
     public function generatePdf(Request $request)
