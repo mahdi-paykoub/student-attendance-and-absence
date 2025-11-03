@@ -40,7 +40,7 @@
                 {{-- پایه تحصیلی --}}
                 <div class="mb-3">
                     <label class="form-label">پایه تحصیلی</label>
-                    <select name="grade_id" class="form-select" required>
+                    <select name="grade_id" class="form-select">
                         <option value="">انتخاب پایه...</option>
                         @foreach ($grades as $grade)
                         <option value="{{ $grade->id }}" {{ old('grade_id') == $grade->id ? 'selected' : '' }}>
@@ -53,7 +53,7 @@
                 {{-- رشته تحصیلی --}}
                 <div class="mb-3">
                     <label class="form-label">رشته تحصیلی</label>
-                    <select name="major_id" class="form-select" required>
+                    <select name="major_id" class="form-select">
                         <option value="">انتخاب رشته...</option>
                         @foreach ($majors as $major)
                         <option value="{{ $major->id }}" {{ old('major_id') == $major->id ? 'selected' : '' }}>

@@ -28,8 +28,8 @@ class ProductController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'tax_percent' => 'required|numeric|min:0|max:100',
-            'grade_id' => 'required|exists:grades,id',
-            'major_id' => 'required|exists:majors,id',
+            'grade_id' => 'nullable|exists:grades,id',
+            'major_id' => 'nullable|exists:majors,id',
         ]);
 
         \App\Models\Product::create($validated);
@@ -51,8 +51,8 @@ class ProductController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'tax_percent' => 'required|numeric|min:0|max:100',
-            'grade_id' => 'required|exists:grades,id',
-            'major_id' => 'required|exists:majors,id',
+            'grade_id' => 'nullable|exists:grades,id',
+            'major_id' => 'nullable|exists:majors,id',
         ]);
 
         $product->update($validated);

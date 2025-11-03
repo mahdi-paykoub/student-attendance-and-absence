@@ -41,8 +41,8 @@ class MajorController extends Controller
     public function destroy(Major $major)
     {
         // بررسی اینکه آیا دانش‌آموزی به این رشته متصل است
-        if ($major->students()->exists()) {
-            return back()->with('error', 'این رشته قابل حذف نیست، زیرا دانش‌آموزانی به آن متصل هستند.');
+        if ($major->students()->exists() || $major->products()->exists()) {
+            return back()->with('error', 'این رشته قابل حذف نیست، زیرا دانش‌آموز یا محصولی  به آن متصل هستند.');
         }
         $major->delete();
         return back()->with('success', 'رشته حذف شد.');

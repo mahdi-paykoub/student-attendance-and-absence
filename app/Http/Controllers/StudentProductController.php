@@ -24,17 +24,36 @@ class StudentProductController extends Controller
 
     public function assignForm(Student $student)
     {
-        
-        $products = Product::where('grade_id', $student->grade_id)
-            ->where('major_id', $student->major_id)
+
+
+        $products = Product::where(function ($query) use ($student) {
+            if ($student->grade_id !== null) {
+                $query->where(function ($q) use ($student) {
+                    $q->where('grade_id', $student->grade_id)
+                        ->orWhereNull('grade_id');
+                });
+            }
+            // اگر grade_id دانش آموز null بود، همه رکوردها می‌گیرن
+        })
             ->where(function ($query) use ($student) {
-                // فقط محصولات فعال یا محصولاتی که قبلا به دانش آموز اختصاص داده شده اند
+                if ($student->major_id !== null) {
+                    $query->where(function ($q) use ($student) {
+                        $q->where('major_id', $student->major_id)
+                            ->orWhereNull('major_id');
+                    });
+                }
+            })
+            ->where(function ($query) use ($student) {
                 $query->where('is_active', true)
                     ->orWhereHas('students', function ($q) use ($student) {
                         $q->where('student_id', $student->id);
                     });
             })
             ->get();
+
+
+
+
         $assignedProducts = $student->products;
 
 

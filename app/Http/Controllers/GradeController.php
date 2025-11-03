@@ -46,8 +46,8 @@ class GradeController extends Controller
     public function destroy(Grade $grade)
     {
         // بررسی اینکه آیا دانش‌آموزی به این رشته متصل است
-        if ($grade->students()->exists()) {
-            return back()->with('error', 'این پایه قابل حذف نیست، زیرا دانش‌آموزانی به آن متصل هستند.');
+        if ($grade->students()->exists() || $grade->products()->exists()) {
+            return back()->with('error', 'این پایه قابل حذف نیست، زیرا دانش‌آموز یا محصولی به آن متصل هستند.');
         }
         $grade->delete();
         return back()->with('success', 'پایه حذف شد.');
