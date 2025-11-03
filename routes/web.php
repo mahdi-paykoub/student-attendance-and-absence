@@ -15,6 +15,7 @@ use App\Http\Controllers\{
     StudentProductController,
     SeatNumberController,
     ProductController,
+    ReportController,
     UserController
 };
 use Illuminate\Support\Facades\Auth;
@@ -129,6 +130,12 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     Route::post('/products/{product}/toggle', [ProductController::class, 'toggleStatus'])->name('products.toggle');
+
+
+
+    // reports
+    Route::get('reports/seats', [ReportController::class, 'seatNumberView'])->name('seatsNumber.view');
+    Route::get('/get/students/pdf', [ReportController::class, 'generatePdf'])->name('students.pdf.generate');
 });
 
 

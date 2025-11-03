@@ -14,8 +14,9 @@
 <body class="bg-light">
 
     <div class="container-fluid">
-        <div class="row">
 
+        <div class="row">
+          
             {{-- دکمه همبرگری فقط برای موبایل --}}
             <div class="d-xl-none p-3 border-bottom bg-admin-green text-white">
                 <div class="d-flex align-items-center justify-content-between">
@@ -159,6 +160,30 @@
                             </ul>
                         </div>
                     </li>
+
+                    {{-- منوی گزارشات --}}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#reportsMenu"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('seats.report.*') ? 'true' : 'false' }}"
+                            aria-controls="reportsMenu">
+                            گزارشات
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+
+                        <div class="collapse {{ request()->routeIs('seats.report.*') ? 'show' : '' }}" id="reportsMenu">
+                            <ul class="nav flex-column pe-4">
+                                <li class="nav-item {{ request()->routeIs('seats.report.*') ? 'active' : '' }}">
+                                    <a href="{{route('seatsNumber.view')}}" class="nav-link">
+                                        شماره صندلی
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
 
                     <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
@@ -319,9 +344,34 @@
                     </div>
                 </li>
 
+                {{-- منوی گزارشات --}}
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                        data-bs-toggle="collapse"
+                        href="#reportsMenu"
+                        role="button"
+                        aria-expanded="{{ request()->routeIs('seats.report.*') ? 'true' : 'false' }}"
+                        aria-controls="reportsMenu">
+                        گزارشات
+                        <span class="bi bi-chevron-down"></span>
+                    </a>
+
+                    <div class="collapse {{ request()->routeIs('seats.report.*') ? 'show' : '' }}" id="reportsMenu">
+                        <ul class="nav flex-column pe-4">
+                            <li class="nav-item {{ request()->routeIs('seats.report.*') ? 'active' : '' }}">
+                                <a href="" class="nav-link">
+                                    شماره صندلی
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
                 <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                     <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
                 </li>
+
+
 
 
                 <li class="nav-item">
