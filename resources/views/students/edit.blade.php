@@ -70,7 +70,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">جنسیت</label>
-                        <select name="gender" class="form-select">
+                        <select name="gender" class="form-select" required>
                             <option value="">انتخاب کنید</option>
                             <option value="male" {{ old('gender', $student->gender) == 'male' ? 'selected' : '' }}>پسر</option>
                             <option value="female" {{ old('gender', $student->gender) == 'female' ? 'selected' : '' }}>دختر</option>
@@ -95,7 +95,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">پایه تحصیلی</label>
-                        <select name="grade_id" class="form-select" required>
+                        <select name="grade_id" class="form-select">
                             <option value="">انتخاب کنید...</option>
                             @foreach($grades as $grade)
                             <option value="{{ $grade->id }}" {{ old('grade_id', $student->grade_id) == $grade->id ? 'selected' : '' }}>
@@ -189,17 +189,26 @@
                 {{-- استان و شهر --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">نام</label>
-                        <input type="text" name="province" class="form-control" value="{{ old('province', $student->province) }}" required>
-                        @error('province') <small class="text-danger">{{ $message }}</small> @enderror
+                        <label for="province" class="form-label">استان</label>
+                        <select id="province" name="province" class="form-select">
+                            <option value="">انتخاب استان</option>
+                        </select>
+                        @error('province')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">نام</label>
-                        <input type="text" name="city" class="form-control" value="{{ old('city', $student->city) }}" required>
-                        @error('city') <small class="text-danger">{{ $message }}</small> @enderror
+                        <label for="city" class="form-label">شهرستان</label>
+                        <select name="city" id="city" class="form-select">
+                            <option value="">ابتدا استان را انتخاب کنید</option>
+                        </select>
+                        @error('city')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">آدرس</label>
                     <textarea name="address" class="form-control" rows="2">{{ old('address', $student->address) }}</textarea>
@@ -222,35 +231,89 @@
 @endsection
 
 @section('scripts')
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const provinceSelect = document.getElementById('province_id');
-        const citySelect = document.getElementById('city_id');
+        let provinces = [];
+        let cities = [];
 
-        provinceSelect.addEventListener('change', function() {
-            const provinceId = this.value;
-            citySelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
+        const provinceSelect = document.getElementById('province');
+        const citySelect = document.getElementById('city');
 
-            if (provinceId) {
-                fetch('/cities/' + provinceId)
-                    .then(response => response.json())
-                    .then(data => {
+        // 🟢 مقدارهای قبلی (old یا student)
+        const selectedProvince = "{{ old('province', $student->province ?? '') }}";
+        const selectedCity = "{{ old('city', $student->city ?? '') }}";
+
+        // 🟢 لود استان‌ها
+        fetch('/assets/js/provinces.json')
+            .then(response => response.json())
+            .then(data => {
+                provinces = data;
+
+                provinces.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.name;
+                    option.textContent = province.name;
+                    option.dataset.id = province.id;
+
+                    if (province.name === selectedProvince) {
+                        option.selected = true;
+                    }
+
+                    provinceSelect.appendChild(option);
+                });
+
+                // 🟢 بعد از لود استان‌ها، شهرها رو لود کن
+                return fetch('/assets/js/cities.json');
+            })
+            .then(response => response.json())
+            .then(data => {
+                cities = data;
+
+                // اگر استانی انتخاب شده (از old یا student)
+                if (selectedProvince) {
+                    const province = provinces.find(p => p.name === selectedProvince);
+
+                    if (province) {
+                        const filteredCities = cities.filter(c => c.province_id == province.id);
                         citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
-                        data.forEach(function(city) {
+
+                        filteredCities.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.id;
+                            option.value = city.name;
                             option.textContent = city.name;
+                            if (city.name === selectedCity) {
+                                option.selected = true; // انتخاب شهر قبلی
+                            }
                             citySelect.appendChild(option);
                         });
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        citySelect.innerHTML = '<option value="">خطا در دریافت داده‌ها</option>';
-                    });
+                    }
+                }
+            })
+            .catch(() => {
+                provinceSelect.innerHTML = '<option>خطا در بارگذاری استان‌ها</option>';
+            });
+
+        // 🟢 وقتی استان تغییر کرد، شهرها رو آپدیت کن
+        provinceSelect.addEventListener('change', function() {
+            const selectedProvinceName = this.value;
+            const province = provinces.find(p => p.name === selectedProvinceName);
+            citySelect.innerHTML = '';
+
+            if (province) {
+                const filteredCities = cities.filter(c => c.province_id == province.id);
+                citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
+                filteredCities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.name;
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
             } else {
-                citySelect.innerHTML = '<option value="">ابتدا استان را انتخاب کنید</option>';
+                citySelect.innerHTML = '<option>ابتدا استان را انتخاب کنید</option>';
             }
         });
     });
 </script>
+
 @endsection

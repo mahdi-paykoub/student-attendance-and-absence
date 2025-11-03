@@ -30,7 +30,7 @@
                 {{-- عکس --}}
                 <div class="mb-3">
                     <label class="form-label">عکس 3x4</label>
-                    <input type="file" name="photo" class="form-control" >
+                    <input type="file" name="photo" class="form-control">
                     @error('photo')
                     <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -66,10 +66,10 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">جنسیت</label>
-                        <select name="gender" class="form-select">
+                        <select name="gender" class="form-select" required>
                             <option value="">انتخاب کنید</option>
-                            <option value="male">پسر</option>
-                            <option value="female">دختر</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>پسر</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>دختر</option>
                         </select>
                         @error('gender')
                         <small class="text-danger">{{ $message }}</small>
@@ -96,7 +96,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">پایه تحصیلی</label>
-                        <select name="grade_id" class="form-select" required>
+                        <select name="grade_id" class="form-select">
                             <option value="">انتخاب کنید...</option>
                             @foreach($grades as $grade)
                             <option value="{{ $grade->id }}" {{ old('grade_id') == $grade->id ? 'selected' : '' }}>{{ $grade->name }}</option>
@@ -181,14 +181,14 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">شماره موبایل پدر</label>
-                        <input type="text" name="mobile_father" class="form-control" value="{{ old('father_mobile') }}">
+                        <input type="text" name="mobile_father" class="form-control" value="{{ old('mobile_father') }}">
                         @error('father_mobile')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">شماره موبایل مادر</label>
-                        <input type="text" name="mobile_mother" class="form-control" value="{{ old('mother_mobile') }}">
+                        <input type="text" name="mobile_mother" class="form-control" value="{{ old('mobile_mother') }}">
                         @error('mother_mobile')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -228,7 +228,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">توضیحات</label>
-                    <textarea name="notes" class="form-control" rows="2">{{ old('description') }}</textarea>
+                    <textarea name="notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
                     @error('description')
                     <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -246,12 +246,21 @@
 <script src="{{asset('assets/js/data-picker.js')}}"></script>
 
 <script>
+  
+    jalaliDatepicker.startWatch();
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         let provinces = [];
         let cities = [];
 
         const provinceSelect = document.getElementById('province');
         const citySelect = document.getElementById('city');
+
+        // دریافت old مقدارهای استان و شهر از سمت سرور
+        const oldProvince = "{{ old('province') }}";
+        const oldCity = "{{ old('city') }}";
 
         // لود استان‌ها
         fetch('/assets/js/provinces.json')
@@ -260,27 +269,49 @@
                 provinces = data;
                 provinces.forEach(province => {
                     const option = document.createElement('option');
-                    option.value = province.name; // ✅ مقدار برابر با نام استان
+                    option.value = province.name;
                     option.textContent = province.name;
-                    option.dataset.id = province.id; // در صورت نیاز برای فیلتر شهرها
+                    option.dataset.id = province.id;
+
+                    // ✅ اگر old استان وجود داشت، انتخابش کن
+                    if (province.name === oldProvince) {
+                        option.selected = true;
+                    }
+
                     provinceSelect.appendChild(option);
                 });
+
+                // بعد از لود استان‌ها، شهرها رو هم آماده کن
+                return fetch('/assets/js/cities.json');
+            })
+            .then(response => response.json())
+            .then(data => {
+                cities = data;
+
+                // اگر oldProvince مقدار داشته، شهرهای مربوطه رو نشون بده
+                if (oldProvince) {
+                    const selectedProvince = provinces.find(p => p.name === oldProvince);
+                    if (selectedProvince) {
+                        const filteredCities = cities.filter(c => c.province_id == selectedProvince.id);
+
+                        citySelect.innerHTML = '<option value="">انتخاب کنید</option>';
+                        filteredCities.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.name;
+                            option.textContent = city.name;
+                            if (city.name === oldCity) {
+                                option.selected = true; // ✅ شهر انتخاب‌شده قبلی
+                            }
+                            citySelect.appendChild(option);
+                        });
+                    }
+                }
             })
             .catch(() => {
                 provinceSelect.innerHTML = '<option>خطا در بارگذاری استان‌ها</option>';
             });
 
-        // لود شهرها
-        fetch('/assets/js/cities.json')
-            .then(response => response.json())
-            .then(data => {
-                cities = data;
-            })
-            .catch(() => {
-                citySelect.innerHTML = '<option>خطا در بارگذاری شهرها</option>';
-            });
-
-        // تغییر استان
+        // تغییر استان (آپدیت شهرها)
         provinceSelect.addEventListener('change', function() {
             const selectedProvinceName = this.value;
             const selectedProvince = provinces.find(p => p.name === selectedProvinceName);
@@ -297,23 +328,18 @@
 
                     filteredCities.forEach(city => {
                         const option = document.createElement('option');
-                        option.value = city.name; // ✅ مقدار برابر با نام شهر
+                        option.value = city.name;
                         option.textContent = city.name;
                         citySelect.appendChild(option);
                     });
                 } else {
-                    const option = document.createElement('option');
-                    option.textContent = 'هیچ شهری یافت نشد';
-                    citySelect.appendChild(option);
+                    citySelect.innerHTML = '<option>هیچ شهری یافت نشد</option>';
                 }
             } else {
-                const option = document.createElement('option');
-                option.textContent = 'ابتدا استان را انتخاب کنید';
-                citySelect.appendChild(option);
+                citySelect.innerHTML = '<option>ابتدا استان را انتخاب کنید</option>';
             }
         });
     });
-    jalaliDatepicker.startWatch();
 </script>
 
 
