@@ -28,7 +28,7 @@ class SeatNumberController extends Controller
             $genders = ['male', 'female'];
 
             foreach ($genders as $gender) {
-                $seatNumber = 1;
+                $seatNumber = ($gender === 'female') ? 1000 : 2000;
 
                 $bases = Grade::orderBy('id')->get();
                 foreach ($bases as $base) {

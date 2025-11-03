@@ -100,7 +100,7 @@ class StudentProductController extends Controller
             DB::transaction(function () use ($mandatoryExamId) {
                 $genders = ['male', 'female'];
                 foreach ($genders as $gender) {
-                    $seatNumber = 1;
+                    $seatNumber = ($gender === 'female') ? 1000 : 2000;
                     $grades = Grade::orderBy('id')->get();
 
                     foreach ($grades as $grade) {

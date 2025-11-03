@@ -88,9 +88,8 @@
                             @csrf
                             @method('PUT')
 
-                            <input style="width: 90px; height: 35px;font-size: 13px;" data-jdp type="text" name="custom_date" id="modal_custom_date" value=" @if($student->custom_date){{ \Morilog\Jalali\Jalalian::fromDateTime($student->custom_date)->format('Y/m/d') }}@endif"
-                                class="form-control p-1"
-                                data-jdp>
+                            <input style="width: 90px; height: 35px;font-size: 13px;" type="text" name="custom_date" id="modal_custom_date" value=" @if($student->custom_date){{ \Morilog\Jalali\Jalalian::fromDateTime($student->custom_date)->format('Y/m/d') }}@endif"
+                                class="form-control p-1" @unless($student->custom_date) data-jdp @endunless >
                             <button type="submit" class="btn btn-sm btn-success bg-admin-green">
                                 <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <path fill="none" d="M0 0h24v24H0z"></path>
