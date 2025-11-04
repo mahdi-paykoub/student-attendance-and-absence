@@ -21,7 +21,7 @@
     </div>
 
     <form method="GET" class="mb-3">
-        <div class="row">
+        <div class="row ">
             @php
             $fields = [
             'photo' => 'عکس',
