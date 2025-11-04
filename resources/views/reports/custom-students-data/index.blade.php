@@ -49,20 +49,20 @@
             'created_at' => 'تاریخ ایجاد',
             ];
             @endphp
-           
-                @foreach($fields as $key => $label)
 
-                <div class="col-md-3 border-start mt-3">
-                    <div class="form-check">
-                        <input type="checkbox" name="columns[]" value="{{ $key }}" id="{{ $key }}" class="form-check-input"
-                            {{ in_array($key, request('columns', [])) ? 'checked' : '' }}>
-                        <label for="{{ $key }}" class="form-check-label">{{ $label }}</label>
-                    </div>
+            @foreach($fields as $key => $label)
+
+            <div class="col-md-3 border-start mt-3">
+                <div class="form-check">
+                    <input type="checkbox" name="columns[]" value="{{ $key }}" id="{{ $key }}" class="form-check-input"
+                        {{ in_array($key, request('columns', [])) ? 'checked' : '' }}>
+                    <label for="{{ $key }}" class="form-check-label">{{ $label }}</label>
                 </div>
+            </div>
 
 
-                @endforeach
-           
+            @endforeach
+
         </div>
 
         <button type="submit" formaction="{{ route('student.custom.data.view') }}" class="btn btn-success bg-admin-green mt-4">نمایش گزارش</button>
@@ -92,10 +92,27 @@
                         <td>
                             @if(in_array($col, ['created_at', 'birthday', 'custom_date']) && $student->$col)
                             {{ \Morilog\Jalali\Jalalian::forge($student->$col)->format('Y/m/d - H:i') }}
+
+                            @elseif($col === 'gender')
+                            {{ $student->gender === 'male' ? 'پسر' : ($student->gender === 'female' ? 'دختر' : '-') }}
+
+                            @elseif($col === 'photo')
+                            @php
+                            $photoPath =  ($student->photo == null)
+                            ? asset('download.jpg')
+                            :route('students.photo', ['filename' => basename($student->photo)]) ;
+                            @endphp
+
+                            <img src="{{ $photoPath }}"
+                                alt="عکس دانش‌آموز"
+                                width="60" height="60"
+                                style="object-fit: cover; border-radius: 5px;">
+
                             @else
                             {{ $student->$col }}
                             @endif
                         </td>
+
                         @endforeach
                     </tr>
                     @endforeach
