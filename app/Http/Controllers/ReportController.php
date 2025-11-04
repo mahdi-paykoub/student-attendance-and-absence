@@ -84,29 +84,30 @@ class ReportController extends Controller
     {
         $columns = $request->get('columns', []);
 
-        // اگه هیچ ستونی انتخاب نشده بود، پیش‌فرض مثلاً فقط نام و نام خانوادگی رو نشون بده
         if (empty($columns)) {
             $columns = ['first_name', 'last_name'];
         }
 
-        $students = Student::select($columns)->get();
+        $students = \App\Models\Student::with(['payments', 'checks', 'products'])->get();
 
         return view('reports.custom-students-data.index', compact('students', 'columns'));
     }
 
 
+
     public function generateStudentsCustomFielsPdf(Request $request)
     {
-
         $columns = $request->get('columns', []);
 
-        // اگه هیچ ستونی انتخاب نشده بود، پیش‌فرض مثلاً فقط نام و نام خانوادگی رو نشون بده
+        // اگه هیچ ستونی انتخاب نشده بود
         if (empty($columns)) {
             $columns = ['first_name', 'last_name'];
         }
 
-        $students = Student::select($columns)->get();
+        // برای ستون‌های محاسباتی (مثل وضعیت پرداخت) باید روابط رو هم بارگذاری کنیم
+        $students = Student::with(['payments', 'checks', 'products'])->get();
 
+        // ارسال داده‌ها به ویو PDF
         $pdf = Pdf::loadView('pdf.fieldReport', compact('students', 'columns'));
         return $pdf->stream();
     }
