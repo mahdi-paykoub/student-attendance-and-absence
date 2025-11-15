@@ -110,6 +110,12 @@ jdp-container {
     font-size: 14px;
 }
 
+
+.percantage_input{
+    width: 55px;
+}
+
+
 @media (min-width: 576px) {}
 
 /* md و بالاتر */

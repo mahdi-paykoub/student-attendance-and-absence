@@ -142,7 +142,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // Accounting
-    Route::get('/register/percentage', [AccountingController::class, 'registerPercantageView'])->name('register.percentage.view');
+    Route::get('accounting/register/percentage/view', [AccountingController::class, 'registerPercantageView'])->name('accounting.register.percentage.view');
+    Route::post('accounting/register/centarl/percentage/{student}', [AccountingController::class, 'registerCentralPercantage'])->name('accounting.register.centarl.percentage');
 });
 
 

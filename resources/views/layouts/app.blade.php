@@ -172,7 +172,7 @@
                             گزارشات
                             <span class="bi bi-chevron-down"></span>
                         </a>
-                       
+
                         <div class="collapse {{ request()->routeIs('seats.report.*') ? 'show' : '' }}" id="reportsMenu">
                             <ul class="nav flex-column pe-4">
                                 <li class="nav-item {{ request()->routeIs('seats.report.*') ? 'active' : '' }}">
@@ -182,7 +182,7 @@
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('student.custom.data.*') ? 'active' : '' }}">
                                     <a href="{{route('student.custom.data.view')}}" class="nav-link">
-                                       فیلد گزارش
+                                        فیلد گزارش
                                     </a>
                                 </li>
                             </ul>
@@ -194,6 +194,32 @@
                         <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
                     </li>
 
+
+
+
+                    {{-- منوی حسابداری --}}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#accounting"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('accounting.*') ? 'true' : 'false' }}"
+                            aria-controls="accounting">
+                            حسابداری
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+
+                        <div class="collapse {{ request()->routeIs('accounting.register.percentage.*') ? 'show' : '' }}" id="accounting">
+                            <ul class="nav flex-column  pe-4">
+                                <li class="nav-item {{ request()->routeIs('accounting.register.percentage.view') ? 'active' : '' }}">
+                                    <a href="{{ route('accounting.register.percentage.view') }}" class="nav-link">ثبت درصد</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+                    {{-- منوی خروج --}}
                     <li class="nav-item">
                         <a href="{{ route('logout') }}" class="nav-link"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -203,7 +229,6 @@
                             @csrf
                         </form>
                     </li>
-
                 </ul>
             </div>
 

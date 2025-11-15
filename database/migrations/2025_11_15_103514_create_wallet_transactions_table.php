@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('wallet_id')->constrained()->cascadeOnDelete();
 
             $table->enum('type', ['deposit', 'withdraw', 'adjust']);
-            // adjust برای اصلاح دستی
 
             $table->decimal('amount', 20, 2);
             $table->json('meta')->nullable();
