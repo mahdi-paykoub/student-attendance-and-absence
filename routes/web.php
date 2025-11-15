@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
+    AccountingController,
     AdvisorController,
     AttendanceController,
     CheckController,
@@ -19,7 +20,6 @@ use App\Http\Controllers\{
     UserController
 };
 use Illuminate\Support\Facades\Auth;
-use Mews\Captcha\Facades\Captcha;
 
 
 
@@ -138,6 +138,11 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/get/students/pdf', [ReportController::class, 'generatePdf'])->name('students.pdf.generate');
     Route::get('/get/students/custom-data', [ReportController::class, 'customDataView'])->name('student.custom.data.view');
     Route::get('/get/students/custom-data/pdf', [ReportController::class, 'generateStudentsCustomFielsPdf'])->name('student.custom.data.pdf');
+
+
+
+    // Accounting
+    Route::get('/register/percentage', [AccountingController::class, 'registerPercantageView'])->name('register.percentage.view');
 });
 
 
