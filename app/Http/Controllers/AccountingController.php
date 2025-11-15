@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -11,8 +13,11 @@ class AccountingController extends Controller
 {
     public function registerPercantageView()
     {
-        $students = Student::all();
-        return view('accounting.registerPercantage', compact('students'));
+        $students = Student::with('percentages.account')->get();
+
+        $accounts = Account::all(); // اضافه کردن همه حساب‌ها
+
+        return view('accounting.registerPercantage', compact('students', 'accounts'));
     }
 
 
@@ -31,21 +36,23 @@ class AccountingController extends Controller
 
         $final = $central_share + $totalTax;
 
+        // ===== ثبت یا بروزرسانی درصد در جدول واسط =====
+        $centralAccount = Account::where('type', 'center')->first();
 
-
-
-
-
-
-
-
+        \App\Models\StudentAccountPercentage::updateOrCreate(
+            [
+                'student_id' => $student->id,
+                'account_id' => $centralAccount->id
+            ],
+            [
+                'percentage' => $validated['percatege']
+            ]
+        );
+        // ============================================
 
         // ===== افزودن یا بروزرسانی کیف پول بخش مرکزی =====
-        $centralAccountId = 2; // id بخش مرکزی در جدول accounts
-
-        // پیدا کردن یا ساختن کیف پول بخش مرکزی
         $wallet = Wallet::firstOrCreate(
-            ['account_id' => $centralAccountId],
+            ['account_id' => $centralAccount->id],
             ['balance' => 0]
         );
 
@@ -72,16 +79,81 @@ class AccountingController extends Controller
         $wallet->update(['balance' => $totalCentralBalance]);
         // ======================================
 
-
-
-
-
-
         return response()->json([
             'status' => 'success',
             'final' => $final,
             'central_share' => $central_share,
             'tax_total' => $totalTax
+        ]);
+    }
+
+
+    public function registerAgencyPercentage(Request $request, Student $student)
+    {
+        $validated = $request->validate([
+            'percentage' => 'required|numeric|min:0|max:100'
+        ]);
+
+        $agencyAccount = Account::where('type', 'agency')->first();
+
+        // ===== جمع پرداختی‌های دانش‌آموز =====
+        $totalPayments = Payment::where('student_id', $student->id)->sum('amount');
+
+        // ===== محاسبه جمع کل محصولات + مالیات =====
+        $totalProducts = $student->products->sum('price');
+        $totalTax = $student->products->sum(function ($product) {
+            return $product->price * ($product->tax_percent / 100);
+        });
+
+        $totalDue = ($totalProducts + $totalTax) - $totalPayments;
+
+        // ===== سهم نمایندگی =====
+        $baseShare = $totalProducts * ($validated['percentage'] / 100);
+        $agencyShare = $baseShare - $totalDue;
+
+        // ===== ثبت یا بروزرسانی درصد در جدول واسط =====
+        \App\Models\StudentAccountPercentage::updateOrCreate(
+            [
+                'student_id' => $student->id,
+                'account_id' => $agencyAccount->id
+            ],
+            [
+                'percentage' => $validated['percentage']
+            ]
+        );
+
+        // ===== بروزرسانی کیف پول نمایندگی =====
+        $wallet = Wallet::firstOrCreate(
+            ['account_id' => $agencyAccount->id],
+            ['balance' => 0]
+        );
+
+        // حذف تراکنش قبلی این دانش‌آموز برای نمایندگی
+        WalletTransaction::where('wallet_id', $wallet->id)
+            ->whereJsonContains('meta->description', "Agency contribution of student: {$student->id}")
+            ->delete();
+
+        // ثبت تراکنش جدید
+        WalletTransaction::create([
+            'wallet_id' => $wallet->id,
+            'type' => 'deposit',
+            'amount' => $agencyShare,
+            'meta' => json_encode([
+                'description' => "Agency contribution of student: {$student->id}"
+            ]),
+            'status' => 'success'
+        ]);
+
+        // بروزرسانی موجودی کیف پول
+        $totalBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+        $wallet->update(['balance' => $totalBalance]);
+
+        return response()->json([
+            'status' => 'success',
+            'agency_share' => $agencyShare,
+            'base_share' => $baseShare,
+            'total_due' => $totalDue,
+            'total_payments' => $totalPayments
         ]);
     }
 }

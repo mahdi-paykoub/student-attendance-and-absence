@@ -58,7 +58,7 @@ class Student extends Model
         return $this->hasMany(ProductStudent::class);
     }
 
-  
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'product_student')->withPivot('id');
@@ -71,5 +71,11 @@ class Student extends Model
     public function checks()
     {
         return $this->hasMany(Check::class);
+    }
+
+
+    public function percentages()
+    {
+        return $this->hasMany(StudentAccountPercentage::class);
     }
 }
