@@ -173,16 +173,21 @@
                             <span class="bi bi-chevron-down"></span>
                         </a>
 
-                        <div class="collapse {{ request()->routeIs('seats.report.*') ? 'show' : '' }}" id="reportsMenu">
+                        <div class="collapse {{ request()->routeIs('report.*') ? 'show' : '' }}" id="reportsMenu">
                             <ul class="nav flex-column pe-4">
-                                <li class="nav-item {{ request()->routeIs('seats.report.*') ? 'active' : '' }}">
-                                    <a href="{{route('seatsNumber.view')}}" class="nav-link">
+                                <li class="nav-item {{ request()->routeIs('report.seatsNumber.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.seatsNumber.view')}}" class="nav-link">
                                         شماره صندلی
                                     </a>
                                 </li>
-                                <li class="nav-item {{ request()->routeIs('student.custom.data.*') ? 'active' : '' }}">
-                                    <a href="{{route('student.custom.data.view')}}" class="nav-link">
+                                <li class="nav-item {{ request()->routeIs('report.student.custom.data.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.student.custom.data.view')}}" class="nav-link">
                                         فیلد گزارش
+                                    </a>
+                                </li>
+                                  <li class="nav-item {{ request()->routeIs('report.get.debtor.students.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.get.debtor.students.view')}}" class="nav-link">
+                                       دانش اموزان بدهکار
                                     </a>
                                 </li>
                             </ul>

@@ -55,12 +55,12 @@
 
                 <div class="mb-3 col-lg-3 mt-4 d-flex gap-2">
                     <!-- دکمه نمایش -->
-                    <button type="submit" formaction="{{ route('seatsNumber.view') }}" class="btn btn-success bg-admin-green">
+                    <button type="submit" formaction="{{ route('report.seatsNumber.view') }}" class="btn btn-success bg-admin-green">
                         نمایش
                     </button>
 
                     <!-- دکمه PDF -->
-                    <button type="submit" formaction="{{ route('students.pdf.generate') }}" class="btn btn-success bg-admin-green">
+                    <button type="submit" formaction="{{ route('report.students.pdf.generate') }}" class="btn btn-success bg-admin-green">
                         چاپ PDF
                     </button>
                 </div>

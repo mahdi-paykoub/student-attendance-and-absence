@@ -21,9 +21,6 @@
     </div>
     @endif
 
-
-
-
     <div class="table-wrap pb-5">
         <form action="{{route('accounting.deposits.create')}}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -76,6 +73,7 @@
         <h4 class="fs18 fw-bold">همه واریزی ها</h4>
     </div>
 
+    
     <div class="table-wrap">
         <table class="table table-striped">
             <thead class="table-light">
@@ -122,7 +120,6 @@
             </tbody>
         </table>
     </div>
-
 </div>
 @endsection
 

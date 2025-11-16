@@ -73,10 +73,10 @@
             </div>
         </div>
 
-        <button type="submit" formaction="{{ route('student.custom.data.view') }}"
+        <button type="submit" formaction="{{ route('report.student.custom.data.view') }}"
             class="btn btn-success bg-admin-green mt-4">نمایش گزارش</button>
 
-        <button type="submit" formaction="{{ route('student.custom.data.pdf') }}"
+        <button type="submit" formaction="{{ route('report.student.custom.data.pdf') }}"
             class="btn btn-success bg-admin-green mt-4">خروجی PDF</button>
     </form>
 

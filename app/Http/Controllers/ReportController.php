@@ -111,4 +111,29 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('pdf.fieldReport', compact('students', 'columns'));
         return $pdf->stream();
     }
+
+
+    public function getDebtorStudemtsView()
+    {
+        $debtors = Student::with(['products', 'payments'])
+            ->get()
+            ->filter(function ($student) {
+                return $student->debt > 0;
+            });
+
+        return view('reports.debtor-students.index', compact('debtors'));
+    }
+
+
+    public function getDebtorStudemtsPdf()
+    {
+        $debtors = Student::with(['products', 'payments'])
+            ->get()
+            ->filter(function ($student) {
+                return $student->debt > 0;
+            });
+        // ارسال داده‌ها به ویو PDF
+        $pdf = Pdf::loadView('pdf.deptors', compact('debtors'));
+        return $pdf->stream();
+    }
 }

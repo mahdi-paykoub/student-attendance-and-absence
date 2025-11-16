@@ -134,10 +134,17 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // reports
-    Route::get('reports/seats', [ReportController::class, 'seatNumberView'])->name('seatsNumber.view');
-    Route::get('/get/students/pdf', [ReportController::class, 'generatePdf'])->name('students.pdf.generate');
-    Route::get('/get/students/custom-data', [ReportController::class, 'customDataView'])->name('student.custom.data.view');
-    Route::get('/get/students/custom-data/pdf', [ReportController::class, 'generateStudentsCustomFielsPdf'])->name('student.custom.data.pdf');
+    Route::get('reports/seats', [ReportController::class, 'seatNumberView'])->name('report.seatsNumber.view');
+    Route::get('reports/get/students/pdf', [ReportController::class, 'generatePdf'])->name('report.students.pdf.generate');
+    Route::get('reports/get/students/custom-data', [ReportController::class, 'customDataView'])->name('report.student.custom.data.view');
+    Route::get('reports/get/students/custom-data/pdf', [ReportController::class, 'generateStudentsCustomFielsPdf'])->name('report.student.custom.data.pdf');
+
+    Route::get('reports/get/debtor/students/view', [ReportController::class, 'getDebtorStudemtsView'])->name('report.get.debtor.students.view');
+    Route::get('reports/get/debtor/students/pdf', [ReportController::class, 'getDebtorStudemtsPdf'])->name('report.get.debtor.students.pdf');
+
+
+
+
 
 
 

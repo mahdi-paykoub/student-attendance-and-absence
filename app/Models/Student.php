@@ -78,4 +78,23 @@ class Student extends Model
     {
         return $this->hasMany(StudentAccountPercentage::class);
     }
+
+
+
+    public function getTotalProductCostAttribute()
+    {
+        return $this->products->sum(function ($product) {
+            return $product->price + ($product->price * $product->tax_percent / 100);
+        });
+    }
+
+    public function getTotalPaymentsAttribute()
+    {
+        return $this->payments->sum('amount');
+    }
+
+    public function getDebtAttribute()
+    {
+        return $this->total_product_cost - $this->total_payments;
+    }
 }
