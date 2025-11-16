@@ -17,6 +17,7 @@ use App\Http\Controllers\{
     SeatNumberController,
     ProductController,
     ReportController,
+    SmsTemplateController,
     UserController
 };
 use Illuminate\Support\Facades\Auth;
@@ -175,6 +176,20 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('accounting/deposits/view', [AccountingController::class, 'deposistView'])->name('accounting.deposits.view');
     Route::post('accounting/deposits/create', [AccountingController::class, 'deposistCreate'])->name('accounting.deposits.create');
     Route::get('accounting/get/deposits/image/{filename}', [AccountingController::class, 'getImageDeposits'])->name('get.image.deposits');
+
+
+
+
+
+
+
+
+
+
+
+    // sms panel
+    Route::get('sms/createor/view', [SmsTemplateController::class, 'smsCreateorView'])->name('sms.createor.view');
+    Route::post('sms/store/sms-template', [SmsTemplateController::class, 'storeSmsTemplate'])->name('sms.store.sms.template');
 });
 
 

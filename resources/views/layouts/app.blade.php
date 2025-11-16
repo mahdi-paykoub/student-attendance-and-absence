@@ -199,7 +199,7 @@
 
                                 <li class="nav-item {{ request()->routeIs('report.get.checks.view') ? 'active' : '' }}">
                                     <a href="{{route('report.get.checks.view')}}" class="nav-link">
-                                         چک ها
+                                        چک ها
                                     </a>
                                 </li>
 
@@ -242,6 +242,33 @@
                                 <li class="nav-item {{ request()->routeIs('accounting.deposits.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.deposits.view') }}" class="nav-link">واریزی ها</a>
                                 </li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    {{-- منوی پیامکی --}}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#smsMenu"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('sms.*') ? 'true' : 'false' }}"
+                            aria-controls="smsMenu">
+                               منو پیامک
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+
+                        <div class="collapse {{ request()->routeIs('sms.*') ? 'show' : '' }}" id="smsMenu">
+                            <ul class="nav flex-column pe-4">
+                                <li class="nav-item {{ request()->routeIs('sms.Createor.view') ? 'active' : '' }}">
+                                    <a href="{{route('sms.createor.view')}}" class="nav-link">
+                                        ساخت پیامک
+                                    </a>
+                                </li>
+
+
 
                             </ul>
                         </div>
