@@ -217,6 +217,9 @@
                                 <li class="nav-item {{ request()->routeIs('accounting.partners.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.partners.view') }}" class="nav-link">شرکا</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('accounting.costs.view') ? 'active' : '' }}">
+                                    <a href="{{ route('accounting.costs.view') }}" class="nav-link">هزینه ها</a>
+                                </li>
 
                             </ul>
                         </div>

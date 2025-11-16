@@ -276,4 +276,9 @@ class AccountingController extends Controller
 
         return redirect()->back()->with('success', 'شریک‌ها با موفقیت ثبت شدند.');
     }
+
+
+    public function costsView() {
+         return view('accounting.costs');
+    }
 }

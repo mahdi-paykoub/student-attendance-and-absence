@@ -151,6 +151,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('accounting/partners/create', [AccountingController::class, 'createPartners'])->name('accounting.partners.create');
 
 
+    //costs
+    Route::get('accounting/costs/view', [AccountingController::class, 'costsView'])->name('accounting.costs.view');
+
 });
 
 
