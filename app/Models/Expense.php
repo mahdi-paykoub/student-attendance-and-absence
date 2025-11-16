@@ -13,6 +13,6 @@ class Expense extends Model
         'title',
         'receipt_image',
         'expense_datetime',
+        'amount',
     ];
-
 }

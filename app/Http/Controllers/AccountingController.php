@@ -293,6 +293,7 @@ class AccountingController extends Controller
             'title' => 'required|string|max:255',
             'receipt_image' => 'nullable|image|max:2048',
             'expense_date' => 'required|string',
+            'amount' => 'required|string',
         ]);
 
         // تبدیل تاریخ و ساعت شمسی به میلادی
@@ -313,28 +314,64 @@ class AccountingController extends Controller
 
         // ======================================
         // کسر از کیف پول نمایندگی
-        // $agecyAccount = Account::where('type', 'agecy')->first();
-        // $wallet = Wallet::firstOrCreate(
-        //     ['account_id' => $agecyAccount->id],
-        //     ['balance' => 0]
-        // );
+        DB::transaction(function () use ($expense) {
 
-        // // ثبت تراکنش جدید برای دانش‌آموز
-        // WalletTransaction::create([
-        //     'wallet_id' => $wallet->id,
-        //     'type' => 'deposit',
-        //     'amount' => $expense,
-        //     'meta' => json_encode([
-        //         'description' => "Central contribution of the student: {$student->id}"
-        //     ]),
-        //     'status' => 'success'
-        // ]);
+            // 1. گرفتن حساب نمایندگی
+            $agencyAccount = Account::where('type', 'agency')->first();
 
-        // // محاسبه موجودی کل بخش مرکزی بر اساس همه تراکنش‌ها
-        // $totalCentralBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+            // 2. گرفتن یا ایجاد کیف پول
+            $wallet = Wallet::firstOrCreate(
+                ['account_id' => $agencyAccount->id],
+                ['balance' => 0]
+            );
 
-        // // آپدیت موجودی کیف پول
-        // $wallet->update(['balance' => $totalCentralBalance]);
+            // 3. ثبت تراکنش کاهش موجودی
+            WalletTransaction::create([
+                'wallet_id' => $wallet->id,
+                'type' => 'withdraw',
+                'amount' => - ($expense->amount),
+                'meta' => json_encode([
+                    'description' => "Deduction due to expense recording"
+                ]),
+                'status' => 'success'
+            ]);
+
+            // 4. محاسبه موجودی کیف پول: جمع تراکنش‌ها با در نظر گرفتن نوع تراکنش
+            $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+
+            // 5. آپدیت موجودی کیف پول
+            $wallet->balance = $newBalance;
+            $wallet->save();
+
+            // partners
+            // ======================================
+            $totalAmount = $wallet->balance;
+            $partners = Account::where('type', 'person')
+                ->orderBy('id')
+                ->limit(3)
+                ->get();
+            foreach ($partners as $partner) {
+                if ($partner->percentage) {
+                    // 3) محاسبه سهم شریک
+                    $partnerShare = $totalAmount * ($partner->percentage / 100);
+                    // 4) گرفتن کیف پول شریک
+                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                    if (!$partnerWallet) {
+                        $partnerWallet = Wallet::create([
+                            'account_id' => $partner->id,
+                            'balance' => 0
+                        ]);
+                    }
+
+                    // 5) بروزرسانی مبلغ کیف پول شریک
+                    $partnerWallet->update([
+                        'balance' => $partnerShare
+                    ]);
+                }
+            }
+            // ======================================
+        });
         // ======================================
 
 

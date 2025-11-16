@@ -34,6 +34,10 @@
                     <input type="text" name="title" class="form-control" required>
                 </div>
                 <div class="col-md-6 mt-3">
+                    <label class="form-label"> مقدار هزینه</label>
+                    <input type="number" name="amount" class="form-control" required>
+                </div>
+                <div class="col-md-6 mt-3">
                     <label class="form-label">نوع هزینه</label>
                     <select name="type" class="form-control" required>
                         <option value="">انتخاب کنید</option>
@@ -51,7 +55,8 @@
                     <label class="form-label">تاریخ و ساعت هزینه</label>
                     <input type="text" name="expense_date" class="form-control" required data-jdp>
                 </div>
-                <div class="col-12 text-start mt-4">
+
+                <div class="col-md-6 text-start mt-auto">
                     <button class="btn btn-success bg-admin-green">ثبت هزینه</button>
                 </div>
             </div>
@@ -71,6 +76,7 @@
                 <tr>
                     <th>نوع هزینه</th>
                     <th>عنوان</th>
+                    <th>مقدار هزینه</th>
                     <th>تاریخ و ساعت</th>
                     <th>تصویر فیش</th>
                 </tr>
@@ -85,6 +91,7 @@
                         @endif
                     </td>
                     <td>{{ $expense->title }}</td>
+                    <td>{{number_format( $expense->amount) }}</td>
                     <td>
                         {{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($expense->expense_datetime))->format('Y/m/d H:i:s') }}
                     </td>
