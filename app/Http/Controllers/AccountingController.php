@@ -147,8 +147,40 @@ class AccountingController extends Controller
 
         // بروزرسانی موجودی کیف پول
         $totalBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
-        $wallet->update(['balance' => $totalBalance]);
+        $wallet->balance = $totalBalance;
+        $wallet->save();
 
+
+
+
+        // partners
+        // ======================================
+        $totalAmount = $wallet->balance;
+        $partners = Account::where('type', 'person')
+            ->orderBy('id')
+            ->limit(3)
+            ->get();
+        foreach ($partners as $partner) {
+            if ($partner->percentage) {
+                // 3) محاسبه سهم شریک
+                $partnerShare = $totalAmount * ($partner->percentage / 100);
+                // 4) گرفتن کیف پول شریک
+                $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                if (!$partnerWallet) {
+                    $partnerWallet = Wallet::create([
+                        'account_id' => $partner->id,
+                        'balance' => 0
+                    ]);
+                }
+
+                // 5) بروزرسانی مبلغ کیف پول شریک
+                $partnerWallet->update([
+                    'balance' => $partnerShare
+                ]);
+            }
+        }
+        // ======================================
         return response()->json([
             'status' => 'success',
             'agency_share' => $agencyShare,
@@ -168,7 +200,7 @@ class AccountingController extends Controller
         $wallet = Wallet::whereHas('account', function ($q) {
             $q->where('type', 'agency');
         })->first();
- 
+
 
         return view('accounting.partners', compact('partners', 'wallet'));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Check;
 use App\Models\Grade;
 use App\Models\Major;
@@ -104,53 +105,6 @@ class StudentProductController extends Controller
     }
 
 
-
-
-    // public function updateAssignedProducts(Request $request, Student $student)
-    // {
-    //     // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
-    //     $selectedProducts = $request->input('products', []);
-
-    //     // sync خودش مدیریت میکنه: حذف قبلی، اضافه جدید
-    //     $student->products()->sync($selectedProducts);
-
-    //     // گرفتن ID محصول اجباری از تنظیمات
-    //     $mandatoryExamId = Setting::where('key', 'mandatory_exam_product_id')->value('value');
-
-    //     // اگر محصول اجباری جزو محصولات انتخاب شده باشه، شماره صندلی تولید کن
-    //     if (in_array($mandatoryExamId, $selectedProducts)) {
-    //         DB::transaction(function () use ($mandatoryExamId) {
-    //             $genders = ['male', 'female'];
-    //             foreach ($genders as $gender) {
-    //                 $seatNumber = ($gender === 'female') ? 1000 : 2000;
-    //                 $grades = Grade::orderBy('id')->get();
-
-    //                 foreach ($grades as $grade) {
-    //                     $majors = Major::orderBy('id')->get();
-
-    //                     foreach ($majors as $major) {
-    //                         $students = Student::where('gender', $gender)
-    //                             ->where('grade_id', $grade->id)
-    //                             ->where('major_id', $major->id)
-    //                             ->orderBy('id')
-    //                             ->get();
-
-    //                         foreach ($students as $s) {
-    //                             $hasMandatory = $s->products()->where('product_id', $mandatoryExamId)->exists();
-    //                             if ($hasMandatory) {
-    //                                 $s->update(['seat_number' => $seatNumber++]);
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         });
-    //     }
-
-    //     return redirect()->back()->with('success', 'محصولات دانش‌آموز با موفقیت بروزرسانی شد.');
-    // }
-
-
     public function updateAssignedProducts(Request $request, Student $student)
     {
         // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
@@ -241,7 +195,36 @@ class StudentProductController extends Controller
             ]);
 
             $totalBalance = \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
-            $wallet->update(['balance' => $totalBalance]);
+            $wallet->balance = $totalBalance;
+            $wallet->save();
+            // partners
+            // ======================================
+            $totalAmount = $wallet->balance;
+            $partners = Account::where('type', 'person')
+                ->orderBy('id')
+                ->limit(3)
+                ->get();
+            foreach ($partners as $partner) {
+                if ($partner->percentage) {
+                    // 3) محاسبه سهم شریک
+                    $partnerShare = $totalAmount * ($partner->percentage / 100);
+                    // 4) گرفتن کیف پول شریک
+                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                    if (!$partnerWallet) {
+                        $partnerWallet = Wallet::create([
+                            'account_id' => $partner->id,
+                            'balance' => 0
+                        ]);
+                    }
+
+                    // 5) بروزرسانی مبلغ کیف پول شریک
+                    $partnerWallet->update([
+                        'balance' => $partnerShare
+                    ]);
+                }
+            }
+            // ======================================
         }
         // ============================================================
 
@@ -375,7 +358,39 @@ class StudentProductController extends Controller
 
                     // بروزرسانی موجودی کیف پول
                     $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
-                    $wallet->update(['balance' => $newBalance]);
+                    $wallet->balance = $newBalance;
+                    $wallet->save();
+
+                    // partners
+                    // ======================================
+                    $totalAmount = $wallet->balance;
+                    $partners = Account::where('type', 'person')
+                        ->orderBy('id')
+                        ->limit(3)
+                        ->get();
+                    foreach ($partners as $partner) {
+                        if ($partner->percentage) {
+                            // 3) محاسبه سهم شریک
+                            $partnerShare = $totalAmount * ($partner->percentage / 100);
+                            // 4) گرفتن کیف پول شریک
+                            $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                            // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                            if (!$partnerWallet) {
+                                $partnerWallet = Wallet::create([
+                                    'account_id' => $partner->id,
+                                    'balance' => 0
+                                ]);
+                            }
+
+                            // 5) بروزرسانی مبلغ کیف پول شریک
+                            $partnerWallet->update([
+                                'balance' => $partnerShare
+                            ]);
+                        }
+                    }
+                    // ======================================
+
+
                 }
             }
         }
@@ -456,7 +471,37 @@ class StudentProductController extends Controller
 
                     // بروزرسانی موجودی کیف پول
                     $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
-                    $wallet->update(['balance' => $newBalance]);
+                    $wallet->balance = $newBalance;
+                    $wallet->save();
+
+                    // partners
+                    // ======================================
+                    $totalAmount = $wallet->balance;
+                    $partners = Account::where('type', 'person')
+                        ->orderBy('id')
+                        ->limit(3)
+                        ->get();
+                    foreach ($partners as $partner) {
+                        if ($partner->percentage) {
+                            // 3) محاسبه سهم شریک
+                            $partnerShare = $totalAmount * ($partner->percentage / 100);
+                            // 4) گرفتن کیف پول شریک
+                            $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                            // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                            if (!$partnerWallet) {
+                                $partnerWallet = Wallet::create([
+                                    'account_id' => $partner->id,
+                                    'balance' => 0
+                                ]);
+                            }
+
+                            // 5) بروزرسانی مبلغ کیف پول شریک
+                            $partnerWallet->update([
+                                'balance' => $partnerShare
+                            ]);
+                        }
+                    }
+                    // ======================================
                 }
             }
         }
@@ -566,7 +611,37 @@ class StudentProductController extends Controller
 
                 $newBalance = $deposits - $withdraws;
 
-                $wallet->update(['balance' => $newBalance]);
+                $wallet->balance = $newBalance;
+                $wallet->save();
+
+                // partners
+                // ======================================
+                $totalAmount = $wallet->balance;
+                $partners = Account::where('type', 'person')
+                    ->orderBy('id')
+                    ->limit(3)
+                    ->get();
+                foreach ($partners as $partner) {
+                    if ($partner->percentage) {
+                        // 3) محاسبه سهم شریک
+                        $partnerShare = $totalAmount * ($partner->percentage / 100);
+                        // 4) گرفتن کیف پول شریک
+                        $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                        // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                        if (!$partnerWallet) {
+                            $partnerWallet = Wallet::create([
+                                'account_id' => $partner->id,
+                                'balance' => 0
+                            ]);
+                        }
+
+                        // 5) بروزرسانی مبلغ کیف پول شریک
+                        $partnerWallet->update([
+                            'balance' => $partnerShare
+                        ]);
+                    }
+                }
+                // ======================================
             }
 
             // در آخر حذف پرداخت
