@@ -11,6 +11,9 @@ use App\Models\Product;
 use App\Models\ProductStudent;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\StudentAccountPercentage;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
@@ -103,6 +106,51 @@ class StudentProductController extends Controller
 
 
 
+    // public function updateAssignedProducts(Request $request, Student $student)
+    // {
+    //     // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
+    //     $selectedProducts = $request->input('products', []);
+
+    //     // sync خودش مدیریت میکنه: حذف قبلی، اضافه جدید
+    //     $student->products()->sync($selectedProducts);
+
+    //     // گرفتن ID محصول اجباری از تنظیمات
+    //     $mandatoryExamId = Setting::where('key', 'mandatory_exam_product_id')->value('value');
+
+    //     // اگر محصول اجباری جزو محصولات انتخاب شده باشه، شماره صندلی تولید کن
+    //     if (in_array($mandatoryExamId, $selectedProducts)) {
+    //         DB::transaction(function () use ($mandatoryExamId) {
+    //             $genders = ['male', 'female'];
+    //             foreach ($genders as $gender) {
+    //                 $seatNumber = ($gender === 'female') ? 1000 : 2000;
+    //                 $grades = Grade::orderBy('id')->get();
+
+    //                 foreach ($grades as $grade) {
+    //                     $majors = Major::orderBy('id')->get();
+
+    //                     foreach ($majors as $major) {
+    //                         $students = Student::where('gender', $gender)
+    //                             ->where('grade_id', $grade->id)
+    //                             ->where('major_id', $major->id)
+    //                             ->orderBy('id')
+    //                             ->get();
+
+    //                         foreach ($students as $s) {
+    //                             $hasMandatory = $s->products()->where('product_id', $mandatoryExamId)->exists();
+    //                             if ($hasMandatory) {
+    //                                 $s->update(['seat_number' => $seatNumber++]);
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         });
+    //     }
+
+    //     return redirect()->back()->with('success', 'محصولات دانش‌آموز با موفقیت بروزرسانی شد.');
+    // }
+
+
     public function updateAssignedProducts(Request $request, Student $student)
     {
         // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
@@ -110,6 +158,92 @@ class StudentProductController extends Controller
 
         // sync خودش مدیریت میکنه: حذف قبلی، اضافه جدید
         $student->products()->sync($selectedProducts);
+
+        // ================= بروزرسانی سهم مرکزی =================
+        $centralAccount = \App\Models\Account::where('type', 'center')->first();
+        $centralPercentage = \App\Models\StudentAccountPercentage::where('student_id', $student->id)
+            ->where('account_id', $centralAccount->id)
+            ->first();
+
+        if ($centralPercentage) {
+            $percent = $centralPercentage->percentage;
+
+            $totalPrice = $student->products->sum('price');
+            $central_share = $totalPrice * ($percent / 100);
+
+            $totalTax = $student->products->sum(function ($product) {
+                return $product->price * ($product->tax_percent / 100);
+            });
+
+            $final = $central_share + $totalTax;
+
+            $wallet = \App\Models\Wallet::firstOrCreate(
+                ['account_id' => $centralAccount->id],
+                ['balance' => 0]
+            );
+
+            \App\Models\WalletTransaction::where('wallet_id', $wallet->id)
+                ->whereJsonContains('meta->description', "Central contribution of the student: {$student->id}")
+                ->delete();
+
+            \App\Models\WalletTransaction::create([
+                'wallet_id' => $wallet->id,
+                'type' => 'deposit',
+                'amount' => $final,
+                'meta' => json_encode([
+                    'description' => "Central contribution of the student: {$student->id}"
+                ]),
+                'status' => 'success'
+            ]);
+
+            $totalCentralBalance = \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+            $wallet->update(['balance' => $totalCentralBalance]);
+        }
+        // ========================================================
+
+        // ================= بروزرسانی سهم نمایندگی =================
+        $agencyAccount = \App\Models\Account::where('type', 'agency')->first();
+        $agencyPercentage = \App\Models\StudentAccountPercentage::where('student_id', $student->id)
+            ->where('account_id', $agencyAccount->id)
+            ->first();
+
+        if ($agencyPercentage) {
+            $percent = $agencyPercentage->percentage;
+
+            $totalProducts = $student->products->sum('price');
+            $totalTax = $student->products->sum(function ($product) {
+                return $product->price * ($product->tax_percent / 100);
+            });
+            $totalPayments = $student->payments()->sum('amount');
+
+            $totalDue = ($totalProducts + $totalTax) - $totalPayments;
+
+            $baseShare = $totalProducts * ($percent / 100);
+            $agencyShare = $baseShare - $totalDue;
+
+            $wallet = \App\Models\Wallet::firstOrCreate(
+                ['account_id' => $agencyAccount->id],
+                ['balance' => 0]
+            );
+
+            \App\Models\WalletTransaction::where('wallet_id', $wallet->id)
+                ->whereJsonContains('meta->description', "Agency contribution of student: {$student->id}")
+                ->delete();
+
+            \App\Models\WalletTransaction::create([
+                'wallet_id' => $wallet->id,
+                'type' => 'deposit',
+                'amount' => $agencyShare,
+                'meta' => json_encode([
+                    'description' => "Agency contribution of student: {$student->id}"
+                ]),
+                'status' => 'success'
+            ]);
+
+            $totalBalance = \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+            $wallet->update(['balance' => $totalBalance]);
+        }
+        // ============================================================
 
         // گرفتن ID محصول اجباری از تنظیمات
         $mandatoryExamId = Setting::where('key', 'mandatory_exam_product_id')->value('value');
@@ -151,12 +285,17 @@ class StudentProductController extends Controller
 
 
 
+
+
     public function storePayments(Request $request, Student $student)
     {
         $paymentType = $request->input('payment_type');
 
         // 🔹 پرداخت‌های نقدی و پیش‌پرداخت‌ها
         if ($request->has('cash_amount')) {
+
+
+
             foreach ($request->cash_amount as $index => $amount) {
 
                 $jalaliDateTime = $request->cash_date[$index] ?? '';
@@ -199,6 +338,45 @@ class StudentProductController extends Controller
                 }
 
                 $payment->save();
+
+                // === شارژ کیف پول نمایندگی فقط اگر درصد نمایندگی تعیین شده باشد ===
+                $agencyPercentage = StudentAccountPercentage::where('student_id', $student->id)
+                    ->whereHas('account', function ($q) {
+                        $q->where('type', 'agency');
+                    })
+                    ->first();
+
+                if ($agencyPercentage) {
+
+                    $percent = $agencyPercentage->percentage;
+
+                    // گرفتن طرف حساب نمایندگی
+                    $agencyAccount = $agencyPercentage->account;
+
+                    // کیف پول نمایندگی (اگر نبود ایجاد می‌شود)
+                    $wallet = Wallet::firstOrCreate(
+                        ['account_id' => $agencyAccount->id],
+                        ['balance' => 0]
+                    );
+
+                    // سهم نمایندگی از همین پرداخت جدید
+                    $agencyShare = $payment->amount;
+
+                    // ثبت تراکنش در کیف پول
+                    WalletTransaction::create([
+                        'wallet_id' => $wallet->id,
+                        'type' => 'deposit',
+                        'amount' => $agencyShare,
+                        'meta' => json_encode([
+                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}"
+                        ]),
+                        'status' => 'success'
+                    ]);
+
+                    // بروزرسانی موجودی کیف پول
+                    $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+                    $wallet->update(['balance' => $newBalance]);
+                }
             }
         }
         // 🔹 پیش‌پرداخت‌ها
@@ -241,6 +419,45 @@ class StudentProductController extends Controller
                 }
 
                 $payment->save();
+
+                // === شارژ کیف پول نمایندگی فقط اگر درصد نمایندگی تعیین شده باشد ===
+                $agencyPercentage = StudentAccountPercentage::where('student_id', $student->id)
+                    ->whereHas('account', function ($q) {
+                        $q->where('type', 'agency');
+                    })
+                    ->first();
+
+                if ($agencyPercentage) {
+
+                    $percent = $agencyPercentage->percentage;
+
+                    // گرفتن طرف حساب نمایندگی
+                    $agencyAccount = $agencyPercentage->account;
+
+                    // کیف پول نمایندگی (اگر نبود ایجاد می‌شود)
+                    $wallet = Wallet::firstOrCreate(
+                        ['account_id' => $agencyAccount->id],
+                        ['balance' => 0]
+                    );
+
+                    // سهم نمایندگی از همین پرداخت جدید
+                    $agencyShare = $payment->amount;
+
+                    // ثبت تراکنش در کیف پول
+                    WalletTransaction::create([
+                        'wallet_id' => $wallet->id,
+                        'type' => 'deposit',
+                        'amount' => $agencyShare,
+                        'meta' => json_encode([
+                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}"
+                        ]),
+                        'status' => 'success'
+                    ]);
+
+                    // بروزرسانی موجودی کیف پول
+                    $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+                    $wallet->update(['balance' => $newBalance]);
+                }
             }
         }
 
@@ -303,7 +520,57 @@ class StudentProductController extends Controller
     public function deletePayment($type, $id)
     {
         if ($type == 'payment') {
-            Payment::findOrFail($id)->delete();
+            $payment = Payment::findOrFail($id);
+
+            // گرفتن student
+            $student = $payment->student;
+
+            // گرفتن درصد نمایندگی
+            $agencyPercentage = StudentAccountPercentage::where('student_id', $student->id)
+                ->whereHas('account', function ($q) {
+                    $q->where('type', 'agency');
+                })
+                ->first();
+
+            if ($agencyPercentage) {
+
+                $agencyAccount = $agencyPercentage->account;
+
+                // گرفتن کیف پول نمایندگی
+                $wallet = Wallet::firstOrCreate(
+                    ['account_id' => $agencyAccount->id],
+                    ['balance' => 0]
+                );
+
+                // سهم نمایندگی همان مبلغ پرداخت است (طبق کد شما)
+                $agencyShare = $payment->amount;
+
+                // ثبت تراکنش برداشت هنگام حذف پرداخت
+                WalletTransaction::create([
+                    'wallet_id' => $wallet->id,
+                    'type' => 'withdraw',
+                    'amount' => $agencyShare,
+                    'meta' => json_encode([
+                        'description' => "Revert agency share due to payment deletion. Payment ID: {$payment->id}"
+                    ]),
+                    'status' => 'success'
+                ]);
+
+                $deposits = WalletTransaction::where('wallet_id', $wallet->id)
+                    ->where('type', 'deposit')
+                    ->sum('amount');
+
+                $withdraws = WalletTransaction::where('wallet_id', $wallet->id)
+                    ->where('type', 'withdraw')
+                    ->sum('amount');
+
+                $newBalance = $deposits - $withdraws;
+
+                $wallet->update(['balance' => $newBalance]);
+            }
+
+            // در آخر حذف پرداخت
+            $payment->delete();
         } elseif ($type == 'check') {
             Check::findOrFail($id)->delete();
         }

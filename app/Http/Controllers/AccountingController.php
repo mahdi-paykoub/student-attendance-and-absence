@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AccountingController extends Controller
 {
@@ -155,5 +156,92 @@ class AccountingController extends Controller
             'total_due' => $totalDue,
             'total_payments' => $totalPayments
         ]);
+    }
+
+
+    public function partnersView()
+    {
+        $partners = Account::where('type', 'person')
+            ->orderBy('id')
+            ->limit(3)
+            ->get();
+        $wallet = Wallet::whereHas('account', function ($q) {
+            $q->where('type', 'agency');
+        })->first();
+ 
+
+        return view('accounting.partners', compact('partners', 'wallet'));
+    }
+    public function createPartners(Request $request)
+    {
+        $validated = $request->validate([
+            'partners' => 'required|array',
+            'partners.*.name' => 'nullable|string',
+            'partners.*.percent' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+
+
+
+
+
+
+
+        foreach ($validated['partners'] as $partner) {
+
+            // اگر هر دو مقدار خالی باشد، رد شو
+            if (empty($partner['name']) && empty($partner['percent'])) {
+                continue;
+            }
+
+
+
+            $account = Account::updateOrCreate(
+                [
+                    'name' => $partner['name'],
+                    'type' => 'person'
+                ],
+                [
+                    'percentage' => $partner['percent']
+                ]
+            );
+
+
+
+
+
+
+
+
+            // 2) گرفتن کل مبلغ از کیف پول مرکزی (type = agency)
+            $centralWallet = Wallet::whereHas('account', function ($q) {
+                $q->where('type', 'agency');
+            })->first();
+
+            $totalAmount = $centralWallet->balance;
+
+            // 3) محاسبه سهم شریک
+            $partnerShare = $totalAmount * ($partner['percent'] / 100);
+
+            // 4) گرفتن کیف پول شریک
+            $partnerWallet = Wallet::where('account_id', $account->id)->first();
+
+            // اگر کیف پول شریک هنوز وجود ندارد → بساز
+            if (!$partnerWallet) {
+                $partnerWallet = Wallet::create([
+                    'account_id' => $account->id,
+                    'balance' => 0
+                ]);
+            }
+
+            // 5) بروزرسانی مبلغ کیف پول شریک
+            $partnerWallet->update([
+                'balance' => $partnerShare
+            ]);
+        }
+
+
+
+        return redirect()->back()->with('success', 'شریک‌ها با موفقیت ثبت شدند.');
     }
 }

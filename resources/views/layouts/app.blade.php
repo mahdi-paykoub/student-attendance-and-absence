@@ -214,6 +214,9 @@
                                 <li class="nav-item {{ request()->routeIs('accounting.register.percentage.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.register.percentage.view') }}" class="nav-link">ثبت درصد</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('accounting.partners.view') ? 'active' : '' }}">
+                                    <a href="{{ route('accounting.partners.view') }}" class="nav-link">شرکا</a>
+                                </li>
 
                             </ul>
                         </div>

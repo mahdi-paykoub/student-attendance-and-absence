@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['agency', 'center', 'person']);
+            $table->decimal('percentage', 5, 2)->nullable(); // 0.00 تا 100.00
+
             $table->timestamps();
         });
     }
