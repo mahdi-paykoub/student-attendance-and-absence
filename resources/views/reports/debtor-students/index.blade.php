@@ -33,16 +33,27 @@
                     <th>جنسیت</th>
                     <th>پایه</th>
                     <th>رشته</th>
+
+                    {{-- ستون‌های جدید --}}
+                    <th>جمع محصولات (با مالیات)</th>
+                    <th>جمع پرداختی‌ها</th>
+                    <th>بدهی</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($debtors as $student)
+                @php
+                // اگر از مدل مقدارها بیاد:
+                $totalProducts = $student->total_product_cost ?? ($student->product_total ?? 0);
+                $totalPayments = $student->total_payments ?? ($student->payment_total ?? 0);
+                $debt = $totalProducts - $totalPayments;
+                @endphp
+
                 <tr>
-
-
                     <td>{{ $student->first_name }}</td>
                     <td>{{ $student->last_name }}</td>
                     <td>{{ $student->national_code }}</td>
+
                     <td>
                         @if($student->gender == 'male')
                         <span>پسر</span>
@@ -50,18 +61,27 @@
                         <span>دختر</span>
                         @endif
                     </td>
+
                     <td>{{ optional($student->grade)->name }}</td>
                     <td>{{ optional($student->major)->name }}</td>
 
+                    {{-- ستون‌های جدید --}}
+                    <td>{{ number_format($totalProducts) }} تومان</td>
+                    <td>{{ number_format($totalPayments) }} تومان</td>
 
+                    <td class="{{ $debt > 0 ? 'text-danger fw-bold' : 'text-success fw-bold' }}">
+                        {{ number_format($debt) }} تومان
+                    </td>
                 </tr>
+
                 @empty
                 <tr>
-                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی ثبت نشده است.</td>
+                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی یافت نشد.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+
     </div>
 </div>
 

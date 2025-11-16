@@ -185,11 +185,18 @@
                                         فیلد گزارش
                                     </a>
                                 </li>
-                                  <li class="nav-item {{ request()->routeIs('report.get.debtor.students.view') ? 'active' : '' }}">
+                                <li class="nav-item {{ request()->routeIs('report.get.debtor.students.view') ? 'active' : '' }}">
                                     <a href="{{route('report.get.debtor.students.view')}}" class="nav-link">
-                                       دانش اموزان بدهکار
+                                        دانش اموزان بدهکار
                                     </a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('report.get.deposits.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.get.deposits.view')}}" class="nav-link">
+                                        واریزی ها  
+                                    </a>
+                                </li>
+
+
                             </ul>
                         </div>
                     </li>

@@ -143,6 +143,10 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('reports/get/debtor/students/pdf', [ReportController::class, 'getDebtorStudemtsPdf'])->name('report.get.debtor.students.pdf');
 
 
+    Route::get('reports/get/deposits/view', [ReportController::class, 'getDepositssView'])->name('report.get.deposits.view');
+    Route::get('reports/get/deposits/pdf', [ReportController::class, 'getDdepositsPdf'])->name('report.get.deposits.pdf');
+
+
 
 
 

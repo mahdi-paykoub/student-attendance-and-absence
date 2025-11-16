@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\Deposit;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\Student;
@@ -134,6 +136,40 @@ class ReportController extends Controller
             });
         // ارسال داده‌ها به ویو PDF
         $pdf = Pdf::loadView('pdf.deptors', compact('debtors'));
+        return $pdf->stream();
+    }
+
+
+
+
+    public function getDepositssView(Request $request)
+    {
+        $accounts = Account::all();
+        $account_id = $request->query('account_id');
+
+        if ($account_id) {
+            $deposits = Deposit::where('account_id', $account_id)->get();
+        } else {
+            // اگر چیزی انتخاب نشده بود، همه واریزی‌ها
+            $deposits = Deposit::all();
+        }
+
+        return view('reports.deposits.index', compact('accounts', 'deposits', 'account_id'));
+    }
+
+    public function getDdepositsPdf(Request $request)
+    {
+        $account_id = $request->query('account_id');
+
+        if ($account_id) {
+            $deposits = Deposit::where('account_id', $account_id)->get();
+        } else {
+            // اگر چیزی انتخاب نشده بود، همه واریزی‌ها
+            $deposits = Deposit::all();
+        }
+
+        // ارسال داده‌ها به ویو PDF
+        $pdf = Pdf::loadView('pdf.deposits', compact('deposits'));
         return $pdf->stream();
     }
 }
