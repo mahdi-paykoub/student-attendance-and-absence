@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Morilog\Jalali\Jalalian;
 
 class AccountingController extends Controller
 {
@@ -278,7 +280,86 @@ class AccountingController extends Controller
     }
 
 
-    public function costsView() {
-         return view('accounting.costs');
+    public function costsView()
+    {
+        $expenses = Expense::all();
+        return view('accounting.costs', compact('expenses'));
+    }
+
+    public function costsCreate(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:consumable,capital,gift',
+            'title' => 'required|string|max:255',
+            'receipt_image' => 'nullable|image|max:2048',
+            'expense_date' => 'required|string',
+        ]);
+
+        // تبدیل تاریخ و ساعت شمسی به میلادی
+        $jalaliDateTime = Jalalian::fromFormat('Y/m/d H:i:s', $validated['expense_date']);
+        $validated['expense_datetime'] = $jalaliDateTime->toCarbon()->format('Y-m-d H:i:s');
+
+        // ذخیره تصویر در storage/private
+        if ($request->hasFile('receipt_image')) {
+            $validated['receipt_image'] = $request->file('receipt_image')
+                ->store('receipts', 'private');
+        }
+
+        // ذخیره هزینه
+        $expense = Expense::create($validated);
+
+
+
+
+        // ======================================
+        // کسر از کیف پول نمایندگی
+        // $agecyAccount = Account::where('type', 'agecy')->first();
+        // $wallet = Wallet::firstOrCreate(
+        //     ['account_id' => $agecyAccount->id],
+        //     ['balance' => 0]
+        // );
+
+        // // ثبت تراکنش جدید برای دانش‌آموز
+        // WalletTransaction::create([
+        //     'wallet_id' => $wallet->id,
+        //     'type' => 'deposit',
+        //     'amount' => $expense,
+        //     'meta' => json_encode([
+        //         'description' => "Central contribution of the student: {$student->id}"
+        //     ]),
+        //     'status' => 'success'
+        // ]);
+
+        // // محاسبه موجودی کل بخش مرکزی بر اساس همه تراکنش‌ها
+        // $totalCentralBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+
+        // // آپدیت موجودی کیف پول
+        // $wallet->update(['balance' => $totalCentralBalance]);
+        // ======================================
+
+
+
+
+
+
+
+
+
+
+
+        return redirect()->back()->with('success', 'هزینه با موفقیت ثبت شد.');
+    }
+
+
+
+    public  function getImageCosts($filename)
+    {
+        $path = storage_path('app/private/receipts/' . $filename);
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
     }
 }

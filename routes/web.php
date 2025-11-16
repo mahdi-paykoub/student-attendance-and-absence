@@ -153,7 +153,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     //costs
     Route::get('accounting/costs/view', [AccountingController::class, 'costsView'])->name('accounting.costs.view');
-
+    Route::post('accounting/costs/create', [AccountingController::class, 'costsCreate'])->name('accounting.costs.create');
+    Route::get('accounting/get/costs/image/{filename}', [AccountingController::class, 'getImageCosts'])->name('get.image.costs');
 });
 
 
