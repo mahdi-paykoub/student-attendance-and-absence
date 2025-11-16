@@ -192,7 +192,14 @@
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('report.get.deposits.view') ? 'active' : '' }}">
                                     <a href="{{route('report.get.deposits.view')}}" class="nav-link">
-                                        واریزی ها  
+                                        واریزی ها
+                                    </a>
+                                </li>
+
+
+                                <li class="nav-item {{ request()->routeIs('report.get.checks.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.get.checks.view')}}" class="nav-link">
+                                         چک ها
                                     </a>
                                 </li>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Check;
 use App\Models\Deposit;
 use App\Models\Grade;
 use App\Models\Major;
@@ -170,6 +171,49 @@ class ReportController extends Controller
 
         // ارسال داده‌ها به ویو PDF
         $pdf = Pdf::loadView('pdf.deposits', compact('deposits'));
+        return $pdf->stream();
+    }
+
+
+    public function getChecksView(Request $request)
+    {
+        $checks = Check::query();
+
+        // اگر فیلتر ارسال شد
+        if ($request->has('status')) {
+            if ($request->status == 'cleared') {
+                $checks->where('is_cleared', true);
+            }
+            if ($request->status == 'not_cleared') {
+                $checks->where('is_cleared', false);
+            }
+        }
+
+        $checks = $checks->latest()->with('student')->get();
+        $totalCleared = Check::where('is_cleared', true)->sum('amount');
+        $totalUnCleared = Check::where('is_cleared', false)->sum('amount');
+
+        return view('reports.checks.index', compact('checks', 'totalCleared', 'totalUnCleared'));
+    }
+
+    public function getChecksPdf(Request $request)
+    {
+        $checks = Check::query();
+
+        // اگر فیلتر ارسال شد
+        if ($request->has('status')) {
+            if ($request->status == 'cleared') {
+                $checks->where('is_cleared', true);
+            }
+            if ($request->status == 'not_cleared') {
+                $checks->where('is_cleared', false);
+            }
+        }
+
+        $checks = $checks->latest()->with('student')->get();
+
+        // ارسال داده‌ها به ویو PDF
+        $pdf = Pdf::loadView('pdf.checks', compact('checks'));
         return $pdf->stream();
     }
 }

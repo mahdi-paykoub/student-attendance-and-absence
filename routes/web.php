@@ -148,6 +148,10 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
 
+    Route::get('reports/get/checks/view', [ReportController::class, 'getChecksView'])->name('report.get.checks.view');
+    Route::get('reports/get/checks/pdf', [ReportController::class, 'getChecksPdf'])->name('report.get.checks.pdf');
+
+
 
 
 

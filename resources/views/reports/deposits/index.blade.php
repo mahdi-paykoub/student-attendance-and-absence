@@ -22,8 +22,8 @@
 
     <div class="table-wrap">
         <form method="GET">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="w-75">
+            <div class="d-flex align-items-center">
+                <div class="">
                     <select name="account_id" class="form-control">
                         <option value="">همه حساب‌ها</option>
                         @foreach($accounts as $account)
@@ -40,7 +40,7 @@
 
                     {{-- دکمه PDF --}}
                     <button type="submit" class="btn btn-success btn-sm bg-admin-green me-1" formaction="{{ route('report.get.deposits.pdf') }}">
-                        گرفتن PDF
+                     چاپ pdf
                     </button>
                 </div>
             </div>
