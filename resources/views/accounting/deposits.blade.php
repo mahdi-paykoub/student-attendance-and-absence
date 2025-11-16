@@ -8,7 +8,6 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fs18 fw-bold"> ثبت واریزی</h4>
-
     </div>
 
     @if(session('success'))
@@ -73,6 +72,56 @@
     </div>
 
 
+    <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
+        <h4 class="fs18 fw-bold">همه واریزی ها</h4>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>عنوان</th>
+                    <th>مبلغ</th>
+                    <th>طرف حساب</th>
+                    <th>تاریخ واریزی</th>
+                    <th>تصویر</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach($deposits as $deposit)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+
+                    <td>{{ $deposit->title }}</td>
+
+                    <td>
+                        {{ number_format($deposit->amount) }} تومان
+                    </td>
+
+                    <td>
+                        {{ $deposit->account->name ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($deposit->paid_at))->format('Y/m/d H:i:s') }}
+                    </td>
+
+                    <td>
+                        @if($deposit->image)
+                        <a class="btn btn-success btn-sm bg-admin-green" href="{{ route('get.image.deposits', basename($deposit->image)) }}" target="_blank">
+                            مشاهده تصویر
+                        </a>
+                        @else
+                        -
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
 </div>
 @endsection

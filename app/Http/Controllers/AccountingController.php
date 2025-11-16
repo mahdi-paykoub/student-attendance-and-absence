@@ -399,7 +399,8 @@ class AccountingController extends Controller
     public function deposistView()
     {
         $accounts = Account::all();
-        return view('accounting.deposits', compact('accounts'));
+        $deposits = Deposit::with('account')->latest()->get();
+        return view('accounting.deposits', compact('accounts', 'deposits'));
     }
 
     public function deposistCreate(Request $request)
@@ -459,8 +460,7 @@ class AccountingController extends Controller
 
             // partners
             // ======================================
-            if($deposit->account->type === 'agency'){
-                
+            if ($deposit->account->type === 'agency') {
             }
             $totalAmount = $wallet->balance;
             $partners = Account::where('type', 'person')
@@ -494,5 +494,16 @@ class AccountingController extends Controller
 
 
         return redirect()->back()->with('success', 'واریزی با موفقیت ثبت شد.');
+    }
+
+    public  function getImageDeposits($filename)
+    {
+        $path = storage_path('app/private/deposits/' . $filename);
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
     }
 }

@@ -159,8 +159,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     //deposits
     Route::get('accounting/deposits/view', [AccountingController::class, 'deposistView'])->name('accounting.deposits.view');
     Route::post('accounting/deposits/create', [AccountingController::class, 'deposistCreate'])->name('accounting.deposits.create');
-
-
+    Route::get('accounting/get/deposits/image/{filename}', [AccountingController::class, 'getImageDeposits'])->name('get.image.deposits');
 });
 
 
