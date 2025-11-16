@@ -399,4 +399,9 @@ class AccountingController extends Controller
 
         return response()->file($path);
     }
+
+
+    public function deposistView()  {
+         return view('accounting.deposits');
+    }
 }

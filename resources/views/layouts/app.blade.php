@@ -209,7 +209,7 @@
                             <span class="bi bi-chevron-down"></span>
                         </a>
 
-                        <div class="collapse {{ request()->routeIs('accounting.register.percentage.*') ? 'show' : '' }}" id="accounting">
+                        <div class="collapse {{ request()->routeIs('accounting.*') ? 'show' : '' }}" id="accounting">
                             <ul class="nav flex-column  pe-4">
                                 <li class="nav-item {{ request()->routeIs('accounting.register.percentage.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.register.percentage.view') }}" class="nav-link">ثبت درصد</a>
@@ -219,6 +219,9 @@
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('accounting.costs.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.costs.view') }}" class="nav-link">هزینه ها</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('accounting.deposits.view') ? 'active' : '' }}">
+                                    <a href="{{ route('accounting.deposits.view') }}" class="nav-link">واریزی ها</a>
                                 </li>
 
                             </ul>
