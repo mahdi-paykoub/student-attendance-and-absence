@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
+            $table->string('title');                        
+            $table->string('image')->nullable();           
+            $table->bigInteger('amount');                 
+            $table->foreignId('account_id')                
+                ->constrained('accounts')
+                ->cascadeOnDelete();
+            $table->timestamp('paid_at');                
             $table->timestamps();
         });
     }

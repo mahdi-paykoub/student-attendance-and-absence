@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Deposit;
 use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\Student;
@@ -378,12 +379,6 @@ class AccountingController extends Controller
 
 
 
-
-
-
-
-
-
         return redirect()->back()->with('success', 'هزینه با موفقیت ثبت شد.');
     }
 
@@ -401,7 +396,103 @@ class AccountingController extends Controller
     }
 
 
-    public function deposistView()  {
-         return view('accounting.deposits');
+    public function deposistView()
+    {
+        $accounts = Account::all();
+        return view('accounting.deposits', compact('accounts'));
+    }
+
+    public function deposistCreate(Request $request)
+    {
+        $validated = $request->validate([
+            'title'        => 'required|string|max:255',
+            'image'        => 'nullable|image|max:4096',
+            'amount'       => 'required|numeric|min:0',
+            'account_id'   => 'required|exists:accounts,id',
+            'paid_at'      => 'required|string', // تاریخ شمسی
+        ]);
+
+        // ===== تبدیل تاریخ شمسی به میلادی =====
+        // ورودی مثل: 1403/08/15 14:30:00
+        $jalaliDateTime = Jalalian::fromFormat('Y/m/d H:i:s', $validated['paid_at']);
+        $validated['paid_at'] = $jalaliDateTime->toCarbon()->format('Y-m-d H:i:s');
+
+        // ===== ذخیره تصویر در storage/private =====
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')
+                ->store('deposits', 'private'); // مسیر: storage/app/private/deposits
+        }
+
+        // ===== ذخیره رکورد =====
+        $deposit = Deposit::create($validated);
+
+
+
+        // ======================================
+        // کسر از کیف پول نمایندگی
+        DB::transaction(function () use ($deposit) {
+
+
+            // 2. گرفتن یا ایجاد کیف پول
+            $wallet = Wallet::firstOrCreate(
+                ['account_id' => $deposit->account_id],
+                ['balance' => 0]
+            );
+
+            // 3. ثبت تراکنش کاهش موجودی
+            WalletTransaction::create([
+                'wallet_id' => $wallet->id,
+                'type' => 'withdraw',
+                'amount' => $deposit->amount,
+                'meta' => json_encode([
+                    'description' => "Deposit registration"
+                ]),
+                'status' => 'success'
+            ]);
+
+            // 4. محاسبه موجودی کیف پول: جمع تراکنش‌ها با در نظر گرفتن نوع تراکنش
+            $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+
+            // 5. آپدیت موجودی کیف پول
+            $wallet->balance = $newBalance;
+            $wallet->save();
+
+            // partners
+            // ======================================
+            if($deposit->account->type === 'agency'){
+                
+            }
+            $totalAmount = $wallet->balance;
+            $partners = Account::where('type', 'person')
+                ->orderBy('id')
+                ->limit(3)
+                ->get();
+            foreach ($partners as $partner) {
+                if ($partner->percentage) {
+                    // 3) محاسبه سهم شریک
+                    $partnerShare = $totalAmount * ($partner->percentage / 100);
+                    // 4) گرفتن کیف پول شریک
+                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
+                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                    if (!$partnerWallet) {
+                        $partnerWallet = Wallet::create([
+                            'account_id' => $partner->id,
+                            'balance' => 0
+                        ]);
+                    }
+
+                    // 5) بروزرسانی مبلغ کیف پول شریک
+                    $partnerWallet->update([
+                        'balance' => $partnerShare
+                    ]);
+                }
+            }
+            // ======================================
+        });
+        // ======================================
+
+
+
+        return redirect()->back()->with('success', 'واریزی با موفقیت ثبت شد.');
     }
 }
