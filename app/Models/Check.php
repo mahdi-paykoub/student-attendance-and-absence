@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Check extends Model
 {
     use HasFactory;
-    protected $fillable = ['student_product_id', 'date', 'amount', 'serial', 'sayad_code', 'owner_name', 'owner_national_code', 'owner_phone', 'check_image'];
+    protected $fillable = ['student_product_id', 'is_cleared', 'date', 'amount', 'serial', 'sayad_code', 'owner_name', 'owner_national_code', 'owner_phone', 'check_image'];
 
 
     public function student()

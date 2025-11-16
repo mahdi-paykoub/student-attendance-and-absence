@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('owner_national_code');
             $table->string('owner_phone');
             $table->string('check_image')->nullable(); // عکس چک
+            $table->boolean('is_cleared')->default(false); // وضعیت وصول
+
             $table->timestamps();
         });
     }
