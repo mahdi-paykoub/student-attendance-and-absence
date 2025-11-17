@@ -190,6 +190,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     // sms panel
     Route::get('sms/createor/view', [SmsTemplateController::class, 'smsCreateorView'])->name('sms.createor.view');
     Route::post('sms/store/sms-template', [SmsTemplateController::class, 'storeSmsTemplate'])->name('sms.store.sms.template');
+
+    Route::get('sms/send/view', [SmsTemplateController::class, 'sendSmsView'])->name('sms.send.view');
 });
 
 

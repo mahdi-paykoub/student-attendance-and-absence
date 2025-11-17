@@ -256,15 +256,20 @@
                             role="button"
                             aria-expanded="{{ request()->routeIs('sms.*') ? 'true' : 'false' }}"
                             aria-controls="smsMenu">
-                               منو پیامک
+                            پیامک
                             <span class="bi bi-chevron-down"></span>
                         </a>
 
                         <div class="collapse {{ request()->routeIs('sms.*') ? 'show' : '' }}" id="smsMenu">
                             <ul class="nav flex-column pe-4">
-                                <li class="nav-item {{ request()->routeIs('sms.Createor.view') ? 'active' : '' }}">
+                                <li class="nav-item {{ request()->routeIs('sms.createor.view') ? 'active' : '' }}">
                                     <a href="{{route('sms.createor.view')}}" class="nav-link">
                                         ساخت پیامک
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('sms.send.view') ? 'active' : '' }}">
+                                    <a href="{{route('sms.send.view')}}" class="nav-link">
+                                        ارسال پیامک
                                     </a>
                                 </li>
 

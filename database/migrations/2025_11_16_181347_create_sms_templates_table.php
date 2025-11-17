@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content'); // متن قالب مثل: "سلام {name} قسط شما {amount} است."
+            $table->enum('receiver_type', ['father', 'mother', 'student'])->default('student');
             $table->timestamps();
         });
     }

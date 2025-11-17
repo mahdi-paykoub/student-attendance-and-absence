@@ -24,20 +24,30 @@
         <form action="{{ route('sms.store.sms.template') }}" method="POST">
             @csrf
 
-            <div class="mb-3">
-                <label>عنوان قالب</label>
-                <input type="text" name="title" class="form-control" required>
+            <div class="row">
+                <div class="col-6 mt-3">
+                    <label>عنوان قالب</label>
+                    <input type="text" name="title" class="form-control mt-1" required>
+                </div>
+                <div class="col-6 mt-3">
+                    <label>دریافت‌کننده پیامک</label>
+                    <select name="receiver_type" class="form-select mt-1" required>
+                        <option value="student">دانش‌آموز</option>
+                        <option value="father">پدر</option>
+                        <option value="mother">مادر</option>
+                    </select>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <label>متن پیامک</label>
+                    <textarea name="content" class="form-control mt-1" rows="6" required></textarea>
+                    <small class="text-muted d-block mt-1">
+                        می‌توانید از placeholder مثل {name} ، {debt} ، {date} و ... استفاده کنید.
+                    </small>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label>متن پیامک</label>
-                <textarea name="content" class="form-control" rows="6" required></textarea>
-                <small class="text-muted d-block mt-1">
-                    می‌توانید از placeholder مثل {name} ، {debt} ، {date} و ... استفاده کنید.
-                </small>
-            </div>
-
-            <button class="btn btn-success bg-admin-green">ذخیره</button>
+            <button class="btn btn-success bg-admin-green mt-3">ذخیره</button>
         </form>
     </div>
 
@@ -62,9 +72,9 @@
                     <td>{{ $temp->title }}</td>
                     <td>{{ $temp->content }}</td>
                     <td>
-                       
 
-                       
+
+
                     </td>
                 </tr>
                 @endforeach
