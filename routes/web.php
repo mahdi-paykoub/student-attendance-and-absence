@@ -213,6 +213,10 @@ Route::middleware(['auth', 'is_suporter'])->group(function () {
 
     Route::post('/suport-panel/students/{student}/refer', [SuportPanelController::class, 'referStudent'])
         ->name('suporter.students.refer');
+
+
+    Route::post('/suport-panel/students/{student}/update-status', [SuportPanelController::class, 'updateStatus'])
+        ->name('suporter.students.update_status');
 });
 
 

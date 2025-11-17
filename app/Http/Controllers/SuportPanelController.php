@@ -65,4 +65,20 @@ class SuportPanelController extends Controller
             ->get();
         return view('suporter-panel.students', compact('students'));
     }
+
+    public function updateStatus(Request $request, Student $student)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,done',
+        ]);
+
+        $userId = auth()->id(); // پشتیبان فعلی که می‌خواهد وضعیت را تغییر دهد
+
+        // آپدیت pivot table برای این دانش‌آموز و پشتیبان
+        $student->supporters()->updateExistingPivot($userId, [
+            'progress_status' => $request->status,
+        ]);
+
+        return back()->with('success', 'وضعیت رسیدگی با موفقیت بروزرسانی شد.');
+    }
 }
