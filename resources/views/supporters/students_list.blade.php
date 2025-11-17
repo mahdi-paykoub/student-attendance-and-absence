@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'دانش‌آموزان پشتیبان ' . $supporter->name)
+@section('title', 'دانش‌آموزان پشتیبان ' . $user->name)
 
 @section('content')
 
 <div class="mt-4">
 
-    <h3 class="fw-bold fs18">لیست دانش‌آموزان پشتیبان: {{ $supporter->name }}</h3>
+    <h3 class="fw-bold fs18">لیست دانش‌آموزان پشتیبان: {{ $user->name }}</h3>
     <hr>
 
     @if($students->count() == 0)
@@ -42,7 +42,7 @@
                     </td>
 
                     <td>
-                        <form action="{{ route('supporters.remove_student', [$supporter->id, $student->id]) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟')">
+                        <form action="{{ route('supporters.remove_student', [$user->id, $student->id]) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟')">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-danger btn-sm">حذف</button>

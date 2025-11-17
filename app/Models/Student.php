@@ -101,6 +101,6 @@ class Student extends Model
 
     public function supporters()
     {
-        return $this->belongsToMany(Supporter::class, 'supporter_student');
+        return $this->belongsToMany(User::class, 'supporter_student');
     }
 }

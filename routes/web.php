@@ -188,19 +188,15 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // suporters
-    Route::prefix('supporters')->group(function () {
-        Route::get('/', [SupporterController::class, 'index'])->name('supporters.index');
-        Route::get('/create', [SupporterController::class, 'create'])->name('supporters.create');
-        Route::post('/store', [SupporterController::class, 'store'])->name('supporters.store');
-        Route::delete('/supporters/{supporter}', [SupporterController::class, 'destroy'])->name('supporters.destroy');
-    });
-    Route::get('/supporters/{supporter}/assign-students', [SupporterController::class, 'assignStudentsForm'])->name('supporters.assign.form');
-    Route::post('/supporters/{supporter}/assign-students', [SupporterController::class, 'assignStudents'])->name('supporters.assign.store');
+    Route::get('/supporters', [SupporterController::class, 'index'])->name('supporters.index');
+    Route::get('/supporters/{user}/assign-students', [SupporterController::class, 'assignStudentsForm'])->name('supporters.assign.form');
+    Route::post('/supporters/{user}/assign-students', [SupporterController::class, 'assignStudents'])->name('supporters.assign.store');
+    Route::delete('/supporters/delete/{user}', [SupporterController::class, 'destroy'])->name('supporters.destroy');
 
-    Route::get('/supporters/{supporter}/students', [SupporterController::class, 'showStudents'])->name('supporters.show_students');
+    Route::get('/supporters/{user}/students', [SupporterController::class, 'showStudents'])->name('supporters.show_students');
 
 
-    Route::delete('/supporters/{supporter}/students/{student}',[SupporterController::class, 'removeStudent'])->name('supporters.remove_student');
+    Route::delete('/supporters/{user}/students/{student}', [SupporterController::class, 'removeStudent'])->name('supporters.remove_student');
 });
 
 

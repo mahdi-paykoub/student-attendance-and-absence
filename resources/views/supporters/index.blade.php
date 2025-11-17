@@ -6,7 +6,6 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold fs18">لیست پشتبان‌ها</h4>
-        <a href="{{ route('supporters.create') }}" class="btn btn-success bg-admin-green">ایجاد پشتبان جدید</a>
     </div>
 
     @if(session('success'))
@@ -19,7 +18,7 @@
                 <tr>
                     <th>نام</th>
                     <th>ایمیل</th>
-                    <th>شماره تماس</th>
+                    <th>تاریخ عضویت</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
@@ -27,7 +26,7 @@
                 @foreach($supporters as $supporter)
                 <tr>
                     <td>{{ $supporter->name }}</td>
-                    <td>{{ $supporter->phone ?? '-' }}</td>
+                    <td>{{ $supporter->email ?? '-' }}</td>
                     <td>{{ \Morilog\Jalali\Jalalian::fromDateTime($supporter->created_at)->format('Y/m/d') }}</td>
                     <td>
 
@@ -40,7 +39,7 @@
                             <a href="{{ route('supporters.assign.form', $supporter->id) }}" class="btn me-1 btn-sm btn-success bg-admin-green">
                                 ارجاع دانش‌آموز
                             </a>
-                            <a href="{{ route('supporters.show_students', $supporter->id) }}" class="btn btn-info btn-sm">
+                            <a href="{{ route('supporters.show_students', $supporter->id) }}" class="btn btn-success bg-admin-green btn-sm me-1">
                                 لیست دانش‌آموزان
                             </a>
                         </div>

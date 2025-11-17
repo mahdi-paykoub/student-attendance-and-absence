@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'ارجاع دانش‌آموزان به ' . $supporter->name)
+@section('title', 'ارجاع دانش‌آموزان به ' . $user->name)
 
 @section('content')
 <div class="container mt-4">
 
-    <h4 class="fw-bold fs18">ارجاع دانش‌آموز به پشتیبان: {{ $supporter->name }}</h4>
+    <h4 class="fw-bold fs18">ارجاع دانش‌آموز به پشتیبان: {{ $user->name }}</h4>
 
     <div class="table-wrap mt-2">
-        <form action="{{ route('supporters.assign.store', $supporter->id) }}" method="POST">
+        <form action="{{ route('supporters.assign.store', $user->id) }}" method="POST">
             @csrf
 
             <table class="table table-bordered">

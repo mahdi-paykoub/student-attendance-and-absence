@@ -252,11 +252,7 @@
                                         پشتبان ها
                                     </a>
                                 </li>
-                                <li class="nav-item {{ request()->routeIs('supporters.create') ? 'active' : '' }}">
-                                    <a href="{{route('supporters.create')}}" class="nav-link">
-                                        ساخت پشتیبان
-                                    </a>
-                                </li>
+                               
                             </ul>
                         </div>
                     </li>

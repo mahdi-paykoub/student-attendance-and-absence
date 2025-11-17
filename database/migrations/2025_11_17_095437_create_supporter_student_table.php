@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('supporter_student', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supporter_id')->constrained()->onDelete('cascade'); // پشتبان فعلی
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // پشتبان فعلی
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assigned_by_id')->nullable()->constrained('supporters')->onDelete('set null'); // کسی که ارجاع داده
-            $table->foreignId('previous_supporter_id')->nullable()->constrained('supporters')->onDelete('set null'); // پشتبان قبلی در ارجاع
+            $table->foreignId('assigned_by_id')->nullable()->constrained('users')->onDelete('set null'); // کسی که ارجاع داده
+            $table->foreignId('previous_supporter_id')->nullable()->constrained('users')->onDelete('set null'); // پشتبان قبلی در ارجاع
             $table->enum('status', ['assigned', 'referred', 'resolved'])->default('assigned');
             $table->timestamps();
         });
