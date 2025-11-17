@@ -97,4 +97,10 @@ class Student extends Model
     {
         return $this->total_product_cost - $this->total_payments;
     }
+
+
+    public function supporters()
+    {
+        return $this->belongsToMany(Supporter::class, 'supporter_student');
+    }
 }

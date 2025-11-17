@@ -111,56 +111,6 @@
                         </div>
                     </li>
 
-
-
-
-                    {{-- زیرمنوی تنظیمات پایه‌ای --}}
-                    <li class="nav-item">
-                        <a class="nav-link d-flex justify-content-between align-items-center"
-                            data-bs-toggle="collapse"
-                            href="#basicSettingsMenu"
-                            role="button"
-                            aria-expanded="{{ request()->routeIs('grades.*') || request()->routeIs('majors.*') || request()->routeIs('schools.*') || request()->routeIs('provinces.*') || request()->routeIs('cities.*') ? 'true' : 'false' }}"
-                            aria-controls="basicSettingsMenu">
-                            تنظیمات پایه‌ای
-                            <span class="bi bi-chevron-down"></span>
-                        </a>
-
-                        <div class="collapse {{ request()->routeIs('grades.*') || request()->routeIs('majors.*') || request()->routeIs('schools.*') || request()->routeIs('provinces.*') || request()->routeIs('cities.*') ? 'show' : '' }}" id="basicSettingsMenu">
-                            <ul class="nav flex-column  pe-4">
-                                <li class="nav-item {{ request()->routeIs('grades.*') ? 'active' : '' }}">
-                                    <a href="{{ route('grades.index') }}" class="nav-link">پایه تحصیلی</a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('majors.*') ? 'active' : '' }}">
-                                    <a href="{{ route('majors.index') }}" class="nav-link">رشته تحصیلی</a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
-                                    <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
-                                </li>
-
-                                <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
-                                    <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('payment-cards.*') ? 'active' : '' }}">
-                                    <a href="{{ route('payment-cards.index') }}" class="nav-link">حساب ها</a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('settings.editExamProduct.*') ? 'active' : '' }}">
-                                    <a href="{{ route('settings.editExamProduct') }}" class="nav-link">
-                                        محصول الزامی
-                                    </a>
-                                </li>
-                                <li class="nav-item {{ request()->routeIs('seats.index.*') ? 'active' : '' }}">
-                                    <a href="{{ route('seats.index') }}" class="nav-link">
-                                        تخصیص شماره صندلی
-                                    </a>
-                                </li>
-
-
-
-                            </ul>
-                        </div>
-                    </li>
-
                     {{-- منوی گزارشات --}}
                     <li class="nav-item">
                         <a class="nav-link d-flex justify-content-between align-items-center"
@@ -215,9 +165,7 @@
                     </li>
 
 
-                    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
-                    </li>
+
 
 
 
@@ -276,6 +224,86 @@
                                 <li class="nav-item {{ request()->routeIs('sms.send.view') ? 'active' : '' }}">
                                     <a href="{{route('sms.send.view')}}" class="nav-link">
                                         ارسال پیامک
+                                    </a>
+                                </li>
+
+
+
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    {{-- منوی پشتیبان --}}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#suportersMenu"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('supporters.*') ? 'true' : 'false' }}"
+                            aria-controls="suportersMenu">
+                            پشتیبان
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+                        <div class="collapse {{ request()->routeIs('supporters.*') ? 'show' : '' }}" id="suportersMenu">
+                            <ul class="nav flex-column pe-4">
+                                <li class="nav-item {{ request()->routeIs('supporters.index') ? 'active' : '' }}">
+                                    <a href="{{route('supporters.index')}}" class="nav-link">
+                                        پشتبان ها
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('supporters.create') ? 'active' : '' }}">
+                                    <a href="{{route('supporters.create')}}" class="nav-link">
+                                        ساخت پشتیبان
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    {{-- منوی کاربران --}}
+                    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
+                    </li>
+                    {{-- زیرمنوی تنظیمات پایه‌ای --}}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#basicSettingsMenu"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('grades.*') || request()->routeIs('majors.*') || request()->routeIs('schools.*') || request()->routeIs('provinces.*') || request()->routeIs('cities.*') ? 'true' : 'false' }}"
+                            aria-controls="basicSettingsMenu">
+                            تنظیمات پایه‌ای
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+
+                        <div class="collapse {{ request()->routeIs('grades.*') || request()->routeIs('majors.*') || request()->routeIs('schools.*') || request()->routeIs('provinces.*') || request()->routeIs('cities.*') ? 'show' : '' }}" id="basicSettingsMenu">
+                            <ul class="nav flex-column  pe-4">
+                                <li class="nav-item {{ request()->routeIs('grades.*') ? 'active' : '' }}">
+                                    <a href="{{ route('grades.index') }}" class="nav-link">پایه تحصیلی</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('majors.*') ? 'active' : '' }}">
+                                    <a href="{{ route('majors.index') }}" class="nav-link">رشته تحصیلی</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+                                    <a href="{{ route('schools.index') }}" class="nav-link">مدارس</a>
+                                </li>
+
+                                <li class="nav-item {{ request()->routeIs('advisors.*') ? 'active' : '' }}">
+                                    <a href="{{ route('advisors.index') }}" class="nav-link">مشاوران</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('payment-cards.*') ? 'active' : '' }}">
+                                    <a href="{{ route('payment-cards.index') }}" class="nav-link">حساب ها</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('settings.editExamProduct.*') ? 'active' : '' }}">
+                                    <a href="{{ route('settings.editExamProduct') }}" class="nav-link">
+                                        محصول الزامی
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('seats.index.*') ? 'active' : '' }}">
+                                    <a href="{{ route('seats.index') }}" class="nav-link">
+                                        تخصیص شماره صندلی
                                     </a>
                                 </li>
 
