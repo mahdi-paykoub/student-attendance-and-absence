@@ -18,6 +18,7 @@ use App\Http\Controllers\{
     ProductController,
     ReportController,
     SmsTemplateController,
+    SuportPanelController,
     SupporterController,
     UserController
 };
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-
+// admin
 Route::middleware(['auth', 'is_admin'])->group(function () {
 
     // صفحه اصلی → می‌تونه لیست دانش‌آموزان باشه
@@ -200,6 +201,19 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('/supporters/{user}/students/{student}', [SupporterController::class, 'removeStudent'])->name('supporters.remove_student');
 });
 
+
+
+Route::middleware(['auth', 'is_suporter'])->group(function () {
+    Route::get('/suport-panel/students', [SuportPanelController::class, 'students'])->name('suporter.students');
+    Route::get('/suport-panel/referential/students', [SuportPanelController::class, 'referentialSudents'])->name('suporter.referential.students');
+
+
+    Route::get('/suport-panel/students/{student}/view', [SuportPanelController::class, 'showStudent'])
+        ->name('suporter.students.show');
+
+    Route::post('/suport-panel/students/{student}/refer', [SuportPanelController::class, 'referStudent'])
+        ->name('suporter.students.refer');
+});
 
 
 
