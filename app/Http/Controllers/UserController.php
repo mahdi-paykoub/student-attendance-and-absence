@@ -89,12 +89,27 @@ class UserController extends Controller
     }
     public function makeAdmin(User $user)
     {
-        if ($user->is_admin == 0) {
-            $user->is_admin = 1;
+        if ($user->role == 'suporter') {
+            return redirect()->back()->with('info', 'کاربر پشتیبان به‌دلایل امنیتی نم‌تواند ادمین شود.');
+        } elseif ($user->role == 'none') {
+            $user->role = 'admin';
             $user->save();
             return redirect()->back()->with('success', 'کاربر به ادمین تبدیل شد.');
+        } elseif ($user->role == 'admin') {
+            return redirect()->back()->with('info', 'این کاربر قبلاً ادمین است.');
         }
+    }
 
-        return redirect()->back()->with('info', 'این کاربر قبلاً ادمین است.');
+    public function makeSuporter(User $user)
+    {
+        if ($user->role == 'suporter') {
+            return redirect()->back()->with('نقش کاربر از قبل پشتیبان است');
+        } elseif ($user->role == 'none') {
+            $user->role = 'suporter';
+            $user->save();
+            return redirect()->back()->with('success', 'کاربر به پشتیبان تبدیل شد.');
+        } elseif ($user->role == 'admin') {
+            return redirect()->back()->with('info', 'کاربر ادمین به‌دلایل امنیتی نمی‌تواند پشتیبان شود.');
+        }
     }
 }
