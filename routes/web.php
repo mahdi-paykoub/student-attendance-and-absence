@@ -152,6 +152,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('reports/get/checks/view', [ReportController::class, 'getChecksView'])->name('report.get.checks.view');
     Route::get('reports/get/checks/pdf', [ReportController::class, 'getChecksPdf'])->name('report.get.checks.pdf');
 
+    Route::get('reports/sms', [ReportController::class, 'smsReportsView'])->name('report.sms');
 
 
 
@@ -192,6 +193,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('sms/store/sms-template', [SmsTemplateController::class, 'storeSmsTemplate'])->name('sms.store.sms.template');
 
     Route::get('sms/send/view', [SmsTemplateController::class, 'sendSmsView'])->name('sms.send.view');
+
+    Route::post('/sms/send', [SmsTemplateController::class, 'sendSms'])->name('sms.send');
 });
 
 

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sms_templates', function (Blueprint $table) {
+        Schema::create('sms_reports', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content'); // متن قالب مثل: "سلام {name} قسط شما {amount} است."
-            $table->enum('receiver_type', ['father', 'mother', 'student'])->default('student');
-            $table->string('gateway');
+            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->foreignId('template_id')->nullable()->constrained('sms_templates')->onDelete('set null');
+            $table->string('to');
+            $table->text('body'); 
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sms_templates');
+        Schema::dropIfExists('sms_reports');
     }
 };

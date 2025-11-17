@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class SmsTemplate extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'content', 'receiver_type'];
+    protected $fillable = ['title', 'content', 'receiver_type', 'gateway'];
 }

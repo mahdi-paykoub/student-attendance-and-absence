@@ -7,6 +7,7 @@ use App\Models\Check;
 use App\Models\Deposit;
 use App\Models\Grade;
 use App\Models\Major;
+use App\Models\SmsReport;
 use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
 use niklasravnsborg\LaravelPdf\Facades\Pdf;
@@ -215,5 +216,23 @@ class ReportController extends Controller
         // ارسال داده‌ها به ویو PDF
         $pdf = Pdf::loadView('pdf.checks', compact('checks'));
         return $pdf->stream();
+    }
+
+
+    public function smsReportsView(Request $request)
+    {
+        $query = SmsReport::query()->with(['student', 'template']);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('student', function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('national_code', 'like', "%{$search}%");
+            });
+        }
+
+        $smsReports = $query->latest()->get();
+        return view('reports.sms.sms', compact('smsReports'));
     }
 }

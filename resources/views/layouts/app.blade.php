@@ -203,6 +203,12 @@
                                     </a>
                                 </li>
 
+                                <li class="nav-item {{ request()->routeIs('report.sms') ? 'active' : '' }}">
+                                    <a href="{{route('report.sms')}}" class="nav-link">
+                                        پیامک ها
+                                    </a>
+                                </li>
+
 
                             </ul>
                         </div>
