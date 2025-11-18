@@ -41,6 +41,7 @@ class StudentController extends Controller
                         ->orWhere('national_code', 'like', "%{$search}%");
                 });
             })
+            ->latest()
             ->get();
 
         return view('students.index', compact('students', 'filter', 'search'));
@@ -254,44 +255,53 @@ class StudentController extends Controller
 
 
     public function details(Student $student)
-    {
-        // جمع کل پرداخت‌های نقدی
-        $totalPayments = $student->payments()
-            ->where('payment_type', 'cash')
-            ->sum('amount');
+{
+    // جمع کل پرداخت‌های نقدی
+    $totalPayments = $student->payments()
+        ->where('payment_type', 'cash')
+        ->sum('amount');
 
-        // جمع کل پیش‌پرداخت‌ها (از نوع installment)
-        $totalPrepayments = $student->payments()
-            ->where('payment_type', 'installment')
-            ->sum('amount');
+    // جمع کل پیش‌پرداخت‌ها (از نوع installment)
+    $totalPrepayments = $student->payments()
+        ->where('payment_type', 'installment')
+        ->sum('amount');
 
-        // جمع کل چک‌ها
-        $totalChecks = $student->checks()->sum('amount');
+    // جمع کل چک‌ها (بدون توجه به وصول بودن) - فقط برای نمایش
+    $totalChecks = $student->checks()->sum('amount');
 
-        // مجموع پرداختی
-        $totalPaid = $totalPayments + $totalPrepayments + $totalChecks;
+    // جمع چک‌های وصول‌شده (is_cleared = 1)
+    $clearedChecks = $student->checks()
+        ->where('is_cleared', 1)
+        ->sum('amount');
 
-        // جمع مبلغ محصولات با احتساب مالیات
-        $totalProducts = $student->products->sum(function ($product) {
-            $taxAmount = $product->price * ($product->tax_percent / 100);
-            return $product->price + $taxAmount;
-        });
+    // مجموع پرداختی واقعی = نقد + پیش‌پرداخت + چک وصول‌شده
+    $totalPaid = $totalPayments + $totalPrepayments + $clearedChecks;
 
-        // محاسبه بدهی یا بستانکاری
-        $debt = max($totalProducts - $totalPaid, 0);
-        $credit = max($totalPaid - $totalProducts, 0);
+    // جمع مبلغ محصولات با احتساب مالیات
+    $totalProducts = $student->products->sum(function ($product) {
+        $taxAmount = $product->price * ($product->tax_percent / 100);
+        return $product->price + $taxAmount;
+    });
 
-        return view('students.details', compact(
-            'student',
-            'totalPayments',
-            'totalPrepayments',
-            'totalChecks',
-            'totalProducts',
-            'totalPaid',
-            'debt',
-            'credit'
-        ));
-    }
+    // بدهی = محصولات - پرداخت واقعی
+    $debt = max($totalProducts - $totalPaid, 0);
+
+    // بستانکاری = پرداخت واقعی - محصولات
+    $credit = max($totalPaid - $totalProducts, 0);
+
+    return view('students.details', compact(
+        'student',
+        'totalPayments',
+        'totalPrepayments',
+        'totalChecks',
+        'clearedChecks',
+        'totalProducts',
+        'totalPaid',
+        'debt',
+        'credit'
+    ));
+}
+
 
 
     public function import(Request $request)
@@ -394,8 +404,4 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', 'تاریخ با موفقیت به‌روزرسانی شد.');
     }
-
-
-
-    
 }

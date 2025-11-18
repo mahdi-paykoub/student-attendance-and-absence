@@ -107,6 +107,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         ->name('payments.receipt');
     Route::get('/checks/{check}/image', [CheckController::class, 'showImage'])
         ->name('checks.image');
+    Route::post('/checks/{check}/clear', [CheckController::class, 'clear'])
+        ->name('checks.clear');
 
 
 
@@ -207,7 +209,7 @@ Route::middleware(['auth', 'is_suporter'])->group(function () {
     Route::get('/suport-panel/filter/students', [SuportPanelController::class, 'filterStudents'])->name('suporter.filter.students');
 
 
-    
+
     Route::get('/suport-panel/students', [SuportPanelController::class, 'students'])->name('suporter.students');
     Route::get('/suport-panel/returned/students', [SuportPanelController::class, 'returnedList'])->name('suporter.returned.students');
     Route::get('/suport-panel/referredList/students', [SuportPanelController::class, 'referredList'])->name('suporter.referredList.students');

@@ -108,7 +108,6 @@ class SuportPanelController extends Controller
 
     public function referentialSudents(Request $request)
     {
-        
          $students = auth()->user()
         ->students()
         ->wherePivot('relation_type', 'referred');

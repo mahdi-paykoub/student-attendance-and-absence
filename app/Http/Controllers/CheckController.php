@@ -19,4 +19,12 @@ class CheckController extends Controller
             Storage::disk('private')->path($check->check_image)
         );
     }
+    public function clear(Check $check)
+    {
+        $check->update([
+            'is_cleared' => 1
+        ]);
+
+        return back()->with('success', 'چک با موفقیت وصول شد');
+    }
 }
