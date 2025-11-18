@@ -5,9 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SuportPanelController extends Controller
 {
+
+    public function students(Request $request)
+    {
+        $user = auth()->user();
+
+        $students = $user->students()->with(['grade', 'major', 'products']);
+
+        // فیلتر وضعیت رسیدگی
+        if ($request->progress_status) {
+            $students->wherePivot('progress_status', $request->progress_status);
+        }
+
+        $students = $students->get();
+
+        return view('suporter-panel.students', compact('students'));
+    }
+
     public function filterStudents(Request $request)
     {
         $user = auth()->user();
@@ -31,16 +49,6 @@ class SuportPanelController extends Controller
             'relationType' => $request->relation_type,
             'progressStatus' => $request->progress_status,
         ]);
-    }
-    public function students()
-    {
-        $students = auth()->user()
-            ->students()
-            ->wherePivot('relation_type', '!=', 'referred')
-            ->orWherePivot('relation_type', null)
-            ->with('products')
-            ->get();
-        return view('suporter-panel.students', compact('students'));
     }
 
 
@@ -82,14 +90,18 @@ class SuportPanelController extends Controller
         ]);
 
         $newSupporter = $request->supporter_id;
+        $currentSupporter = auth()->id(); // پشتیبان فعلی
 
-        // اتصال پشتیبان جدید (بدون حذف پشتیبان‌های قبلی)
+        // اتصال پشتیبان جدید
         $student->supporters()->attach($newSupporter, [
             'relation_type' => 'referred',
+            'previous_supporter_id' => $currentSupporter, // پشتیبان قبل
+            'progress_status'        => 'pending' // شروع کار برای پشتیبان جدید
         ]);
 
         return back()->with('success', 'دانش‌آموز با موفقیت به پشتیبان جدید ارجاع داده شد.');
     }
+
 
 
     public function referentialSudents()
@@ -101,21 +113,34 @@ class SuportPanelController extends Controller
         return view('suporter-panel.students', compact('students'));
     }
 
-    public function updateStatus(Request $request, Student $student)
+    public function updateStatus(Student $student)
     {
-        $request->validate([
-            'status' => 'required|in:pending,in_progress,done',
-        ]);
+        $user = auth()->user();
+        $pivot = $student->supporters()->where('user_id', $user->id)->first()->pivot;
 
-        $userId = auth()->id(); // پشتیبان فعلی که می‌خواهد وضعیت را تغییر دهد
+        // اگر این دانش‌آموز ارجاعی بوده و کار کامل شد
+        if ($pivot->relation_type === 'referred' && request('progress_status') == 'done') {
 
-        // آپدیت pivot table برای این دانش‌آموز و پشتیبان
-        $student->supporters()->updateExistingPivot($userId, [
-            'progress_status' => $request->status,
-        ]);
+            // پشتیبان قبلی را پیدا کن
+            if ($pivot->previous_supporter_id) {
 
-        return back()->with('success', 'وضعیت رسیدگی با موفقیت بروزرسانی شد.');
+                // رکورد pivot پشتیبان قبلی را بروز کن (is_returned = true)
+                DB::table('student_supporter')
+                    ->where('student_id', $student->id)
+                    ->where('user_id', $pivot->previous_supporter_id)
+                    ->update([
+                        'is_returned' => true,
+                    ]);
+            }
+        }
+
+        // آپدیت وضعیت فعلی
+        $pivot->progress_status = request('progress_status');
+        $pivot->save();
+
+        return back()->with('success', 'وضعیت بروزرسانی شد');
     }
+
 
 
 
@@ -136,5 +161,32 @@ class SuportPanelController extends Controller
         ]);
 
         return back()->with('success', 'یادداشت با موفقیت ثبت شد.');
+    }
+
+
+
+
+    public function returnedList()
+    {
+        $user = auth()->user();
+
+        $students = $user->students()
+            ->wherePivot('is_returned', true)
+            ->orderByPivot('updated_at', 'desc')
+            ->get();
+
+        return view('suporter-panel.students', compact('students'));
+    }
+
+
+    public function referredList()
+    {
+        $user = auth()->user();
+
+        $students = $user->students()
+            ->orderByPivot('updated_at', 'desc')
+            ->get();
+
+        return view('suporter-panel.students', compact('students'));
     }
 }

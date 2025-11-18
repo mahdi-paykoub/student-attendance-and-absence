@@ -56,4 +56,18 @@ class User extends Authenticatable
             ])
             ->withTimestamps();
     }
+
+
+    public function returnedStudents()
+    {
+        return $this->belongsToMany(Student::class, 'student_supporter')
+            ->withPivot([
+                'relation_type',
+                'progress_status',
+                'previous_supporter_id',
+                'is_returned'
+            ])
+            ->wherePivot('is_returned', true)
+            ->wherePivot('user_id', $this->id);
+    }
 }

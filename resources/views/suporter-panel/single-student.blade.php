@@ -10,7 +10,7 @@
 
 
     <div class="table-wrap mt-3 mb-4">
-        <h5>مشخصات دانش‌آموز</h5>
+        <h6>مشخصات دانش‌آموز</h6>
 
         <div class="row">
 
@@ -27,30 +27,28 @@
                 @endforeach
             </div>
 
+            <div class="mt-4">
+
+
+                @if($currentSupporters->count() == 0)
+                <p class="text-danger">هیچ پشتیبانی ندارد</p>
+                @else
+                <div class="d-flex align-items-center">
+                    <h6 class="pt-2">پشتیبان ها:</h6>
+                    @foreach($currentSupporters as $s)
+                    <span class="badge bg-dark me-2">
+                        {{ $s->name }}
+                    </span>
+                    @endforeach
+                </div>
+
+                @endif
+            </div>
+
         </div>
     </div>
-    <ul>
 
 
-
-    </ul>
-
-
-    <div class="bg-body-secondary rounded p-3">
-
-        <h5>پشتیبان‌های فعلی:</h5>
-
-
-        @if($currentSupporters->count() == 0)
-        <p class="text-danger">هیچ پشتیبانی ندارد</p>
-        @else
-        <ul>
-            @foreach($currentSupporters as $s)
-            <li>{{ $s->name }}</li>
-            @endforeach
-        </ul>
-        @endif
-    </div>
 
 
 
@@ -98,7 +96,7 @@
                 <div class="table-wrap">
                     <form action="{{ route('suporter.students.update_status', $student->id) }}" method="POST">
                         @csrf
-                        <select name="status" class="form-select w-25 d-inline-block">
+                        <select name="progress_status" class="form-select w-25 d-inline-block">
                             <option value="pending" @if($currentStatus=='pending' ) selected @endif>در انتظار</option>
                             <option value="in_progress" @if($currentStatus=='in_progress' ) selected @endif>در حال انجام</option>
                             <option value="done" @if($currentStatus=='done' ) selected @endif>تکمیل شد</option>

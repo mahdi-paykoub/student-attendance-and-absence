@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('assigned_by_id')->nullable()->constrained('users')->onDelete('set null'); // کسی که ارجاع داده
             $table->foreignId('previous_supporter_id')->nullable()->constrained('users')->onDelete('set null'); // پشتبان قبلی در ارجاع
             $table->enum('relation_type', ['assigned', 'referred'])->default('assigned');
+            $table->boolean('is_returned')->default(false);
+
             $table->enum('progress_status', ['pending', 'in_progress', 'done'])->default('pending');
             $table->timestamps();
         });

@@ -10,7 +10,16 @@
 
 
     <div class="table-wrap mt-3">
-
+        {{-- فیلتر وضعیت --}}
+        <form method="GET" class="mb-3">
+            <label for="" class="fs14"> وضعیت رسیدگی: </label>
+            <select name="progress_status" class="form-control w-auto d-inline" onchange="this.form.submit()">
+                <option value="">همه </option>
+                <option value="pending" {{ request('progress_status') == 'pending' ? 'selected' : '' }}>در انتظار</option>
+                <option value="in_progress" {{ request('progress_status') == 'in_progress' ? 'selected' : '' }}>در حال انجام</option>
+                <option value="done" {{ request('progress_status') == 'done' ? 'selected' : '' }}>تکمیل شد</option>
+            </select>
+        </form>
         @if($students->count())
         <table class="table table-striped">
             <thead class="table-light">
@@ -41,7 +50,7 @@
                         @if($student->pivot->relation_type == 'assigned')
                         <span class="badge bg-primary">اصلی</span>
                         @elseif($student->pivot->relation_type == 'referred')
-                        <span class="badge bg-warning">ارجاعی</span>
+                        <span class="badge bg-warning"></span>
                         @endif
                     </td>
 

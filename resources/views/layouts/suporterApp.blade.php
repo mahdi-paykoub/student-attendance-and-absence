@@ -46,10 +46,19 @@
                     </li>
 
                     <li class="nav-item {{ request()->routeIs('suporter.referential.students') ? 'active' : '' }}">
-                        <a href="{{ route('suporter.referential.students') }}" class="nav-link">دانش‌آموزان ارجاعی</a>
+                        <a href="{{ route('suporter.referential.students') }}" class="nav-link">ارجاع شده ها به من</a>
                     </li>
 
 
+
+
+                    <li class="nav-item {{ request()->routeIs('suporter.referredList.students') ? 'active' : '' }}">
+                        <a href="{{ route('suporter.referredList.students') }}" class="nav-link">ارجاع داده ها</a>
+                    </li>
+
+                    <li class="nav-item {{ request()->routeIs('suporter.returned.students') ? 'active' : '' }}">
+                        <a href="{{ route('suporter.returned.students') }}" class="nav-link">برگشتی از ارجاع</a>
+                    </li>
 
 
 
