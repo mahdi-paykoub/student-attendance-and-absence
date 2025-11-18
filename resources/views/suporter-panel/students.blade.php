@@ -50,9 +50,10 @@
                         @if($student->pivot->relation_type == 'assigned')
                         <span class="badge bg-primary">اصلی</span>
                         @elseif($student->pivot->relation_type == 'referred')
-                        <span class="badge bg-warning"></span>
+                        <span class="badge bg-warning">ارجاعی</span>
                         @endif
                     </td>
+
 
                     {{-- وضعیت رسیدگی --}}
                     <td>

@@ -53,7 +53,7 @@
 
 
                     <li class="nav-item {{ request()->routeIs('suporter.referredList.students') ? 'active' : '' }}">
-                        <a href="{{ route('suporter.referredList.students') }}" class="nav-link">ارجاع داده ها</a>
+                        <a href="{{ route('suporter.referredList.students') }}" class="nav-link">ارجاع داده های من</a>
                     </li>
 
                     <li class="nav-item {{ request()->routeIs('suporter.returned.students') ? 'active' : '' }}">

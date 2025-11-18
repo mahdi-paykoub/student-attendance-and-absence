@@ -14,10 +14,12 @@ class SuportPanelController extends Controller
     {
         $user = auth()->user();
 
-        $students = $user->students()->with(['grade', 'major', 'products']);
+        $students = $user->students()
+            ->wherePivot('relation_type' , '!=' , 'referred')
+            ->with(['grade', 'major', 'products']);
 
-        // فیلتر وضعیت رسیدگی
-        if ($request->progress_status) {
+        // فیلتر progress_status
+        if ($request->has('progress_status') && $request->progress_status != '') {
             $students->wherePivot('progress_status', $request->progress_status);
         }
 
@@ -104,13 +106,21 @@ class SuportPanelController extends Controller
 
 
 
-    public function referentialSudents()
+    public function referentialSudents(Request $request)
     {
-        $students = auth()->user()
-            ->students()
-            ->wherePivot('relation_type', 'referred')
-            ->get();
-        return view('suporter-panel.students', compact('students'));
+        
+         $students = auth()->user()
+        ->students()
+        ->wherePivot('relation_type', 'referred');
+
+    // فیلتر وضعیت رسیدگی روی pivot
+    if ($request->has('progress_status') && $request->progress_status != '') {
+        $students->wherePivot('progress_status', $request->progress_status);
+    }
+
+    $students = $students->with(['grade', 'major', 'products'])->get();
+
+    return view('suporter-panel.students', compact('students'));
     }
 
     public function updateStatus(Student $student)
@@ -179,13 +189,33 @@ class SuportPanelController extends Controller
     }
 
 
-    public function referredList()
+    public function referredList(Request $request)
     {
         $user = auth()->user();
 
-        $students = $user->students()
-            ->orderByPivot('updated_at', 'desc')
+        // گام 1: گرفتن رکوردهای pivot با فیلتر وضعیت
+        $pivotRecords = DB::table('student_supporter')
+            ->where('previous_supporter_id', $user->id)
+            ->where('relation_type', 'referred');
+
+        if ($request->has('progress_status') && $request->progress_status != '') {
+            $pivotRecords->where('progress_status', $request->progress_status);
+        }
+
+        $pivotRecords = $pivotRecords->orderBy('updated_at', 'desc')->get();
+
+        // گام 2: گرفتن Student های مربوطه
+        $students = Student::with(['grade', 'major', 'products'])
+            ->whereIn('id', $pivotRecords->pluck('student_id'))
             ->get();
+
+        // گام 3: attach کردن pivot info برای Blade
+        // اینطوری می‌تونی وضعیت و پشتیبان فعلی رو در Blade نمایش بدی
+        $students = $students->map(function ($student) use ($pivotRecords) {
+            $pivot = $pivotRecords->firstWhere('student_id', $student->id);
+            $student->pivot = (object) $pivot; // شبیه سازی pivot
+            return $student;
+        });
 
         return view('suporter-panel.students', compact('students'));
     }
