@@ -53,13 +53,41 @@
         تراکنش ها
     </h4>
     <div class="table-wrap">
+        <form method="GET" class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold">انتخاب حساب</label>
+                <select name="account_id" class="form-select">
+                    <option value="">-- همه حساب‌ها --</option>
+                    @foreach($accounts as $acc)
+                    <option value="{{ $acc->id }}" {{ request('account_id') == $acc->id ? 'selected' : '' }}>
+                        {{ $acc->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold">نوع تراکنش</label>
+                <select name="type" class="form-select">
+                    <option value="">-- همه --</option>
+                    <option value="deposit" {{ request('type') == 'deposit' ? 'selected' : '' }}>واریزی</option>
+                    <option value="withdraw" {{ request('type') == 'withdraw' ? 'selected' : '' }}>برداشت</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-primary w-100 bg-admin-green">اعمال فیلتر</button>
+            </div>
+
+        </form>
+
         <table class="table mt-3">
             <thead class="table-light">
                 <tr>
                     <th>کیف پول</th>
                     <th>مبلغ</th>
                     <th>نوع</th>
-                    <th>وضعیت</th>
                     <th>تاریخ</th>
 
 
@@ -67,13 +95,14 @@
             </thead>
             <tbody>
                 @forelse($transactions as $transaction)
-                <tr>
+
+                <tr class="@if($transaction->amount > 0) table-success @else table-danger   @endif">
                     <td>
                         {{$transaction->wallet->account->name}}
                     </td>
                     <td>
                         @if($transaction->amount >= 0)
-                        <span>{{number_format($transaction->amount)}}</span>
+                        <span class="text-success">{{number_format($transaction->amount)}}</span>
                         @else
                         <span class="text-danger">
                             {{number_format($transaction->amount)}}
@@ -81,17 +110,7 @@
                         @endif
 
                     </td>
-                    <td>
-                        @if($transaction->type == 'deposit')
-                        <span>
-                            واریزی
-                        </span>
-                        @elseif('withdraw')
-                        <span>
-                            برداشت
-                        </span>
-                        @endif
-                    </td>
+
                     <td>
                         @if($transaction->status == 'success')
                         <span class="badge bg-admin-green">
@@ -110,6 +129,7 @@
                     </td>
 
                 </tr>
+
                 @empty
                 <tr>
                     <td colspan="4" class="text-center">هیچ تراکنشی ثبت نشده است.</td>

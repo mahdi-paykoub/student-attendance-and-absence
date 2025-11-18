@@ -512,10 +512,29 @@ class AccountingController extends Controller
     }
 
     // wallets
-    public function walletsView()
+    public function walletsView(Request $request)
     {
+        // فیلترها
+        $accountId = $request->account_id;
+        $type = $request->type;
+
         $wallets = Wallet::all();
-        $transactions = WalletTransaction::all();
-        return view('accounting.wallets', compact('wallets' , 'transactions'));
+        $accounts = Account::all(); // برای فرم فیلتر
+
+        $transactions = WalletTransaction::query()
+            ->when($accountId, function ($q) use ($accountId) {
+                $q->whereHas('wallet', function ($q) use ($accountId) {
+                    $q->where('account_id', $accountId);
+                });
+            })
+            ->when($type, function ($q) use ($type) {
+                if ($type == 'deposit') { // واریزی
+                    $q->where('amount', '>', 0);
+                } elseif ($type == 'withdraw') { // برداشت
+                    $q->where('amount', '<', 0);
+                }
+            })
+            ->get();
+        return view('accounting.wallets', compact('wallets', 'transactions', 'accounts'));
     }
 }
