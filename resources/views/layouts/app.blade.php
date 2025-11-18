@@ -196,6 +196,9 @@
                                 <li class="nav-item {{ request()->routeIs('accounting.deposits.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.deposits.view') }}" class="nav-link">واریزی ها</a>
                                 </li>
+                                <li class="nav-item {{ request()->routeIs('accounting.wallets.view') ? 'active' : '' }}">
+                                    <a href="{{ route('accounting.wallets.view') }}" class="nav-link">کیف پول</a>
+                                </li>
 
                             </ul>
                         </div>
@@ -252,7 +255,7 @@
                                         پشتبان ها
                                     </a>
                                 </li>
-                               
+
                             </ul>
                         </div>
                     </li>

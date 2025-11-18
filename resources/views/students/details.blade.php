@@ -37,7 +37,7 @@
     @if($student->payments->count())
     <div class="card mb-4">
         <div class="card-header bg-light fw-bold">💵 پرداخت‌های نقدی و پیش‌پرداخت</div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-bordered align-middle">
                 <thead>
                     <tr>
@@ -80,7 +80,7 @@
     @if($student->checks->count())
     <div class="card mb-4">
         <div class="card-header bg-light fw-bold">🧾 چک‌ها</div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-bordered align-middle">
                 <thead>
                     <tr>
@@ -100,7 +100,7 @@
                     @foreach($student->checks as $check)
                     <tr>
                         <td>{{ \Morilog\Jalali\Jalalian::fromCarbon(\Carbon\Carbon::parse($check->date))->format('Y/m/d') }}</td>
-                        <td>{{ number_format($check->amount) }} تومان</td>
+                        <td>{{ number_format($check->amount) }} </td>
                         <td>{{ $check->serial }}</td>
                         <td>{{ $check->sayad_code }}</td>
                         <td>{{ $check->owner_name }}</td>

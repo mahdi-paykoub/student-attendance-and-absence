@@ -61,7 +61,7 @@ class Student extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_student')->withPivot('id');
+        return $this->belongsToMany(Product::class, 'product_student')->withPivot('id')->withPivot('created_at')->withTimestamps();
     }
     public function payments()
     {

@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class WalletTransaction extends Model
 {
     use HasFactory;
-     protected $fillable = [
+    protected $fillable = [
         'wallet_id',
         'type',
         'amount',
         'meta',
         'status',
     ];
+
+
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class);
+    }
 }

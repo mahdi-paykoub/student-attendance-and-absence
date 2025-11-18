@@ -17,9 +17,13 @@ class AccountingController extends Controller
 {
     public function registerPercantageView()
     {
-        $students = Student::with('percentages.account')->get();
+        $students = Student::with('percentages.account')
+            ->withMax('products as last_assigned_at', 'product_student.created_at')
+            ->orderByDesc('last_assigned_at')
+            ->get();
 
-        $accounts = Account::all(); // اضافه کردن همه حساب‌ها
+        $accounts = Account::all();
+
 
         return view('accounting.registerPercantage', compact('students', 'accounts'));
     }
@@ -505,5 +509,13 @@ class AccountingController extends Controller
         }
 
         return response()->file($path);
+    }
+
+    // wallets
+    public function walletsView()
+    {
+        $wallets = Wallet::all();
+        $transactions = WalletTransaction::all();
+        return view('accounting.wallets', compact('wallets' , 'transactions'));
     }
 }

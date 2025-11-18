@@ -164,6 +164,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // Accounting
+    Route::get('accounting/wallets/view', [AccountingController::class, 'walletsView'])->name('accounting.wallets.view');
     Route::get('accounting/register/percentage/view', [AccountingController::class, 'registerPercantageView'])->name('accounting.register.percentage.view');
     Route::post('accounting/register/centarl/percentage/{student}', [AccountingController::class, 'registerCentralPercantage'])->name('accounting.register.centarl.percentage');
     Route::post('accounting/register/agency/percentage/{student}', [AccountingController::class, 'registerAgencyPercentage'])->name('accounting.register.agency.percentage');
