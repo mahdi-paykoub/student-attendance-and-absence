@@ -11,6 +11,34 @@
 
     <div class="table-wrap mt-3">
 
+        <div class="mb-3">
+
+            <form method="GET" id="filterForm" class="row g-3 mb-3">
+
+                {{-- فیلتر نوع ارتباط --}}
+                <div class="col-md-3">
+                    <label class="form-label">نوع ارتباط</label>
+                    <select name="relation_type" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                        <option value="">همه</option>
+                        <option value="assigned" {{ request('relation_type')=='assigned' ? 'selected' : '' }}>اصلی</option>
+                        <option value="referred" {{ request('relation_type')=='referred' ? 'selected' : '' }}>ارجاعی</option>
+                    </select>
+                </div>
+
+                {{-- فیلتر وضعیت رسیدگی --}}
+                <div class="col-md-3">
+                    <label class="form-label">وضعیت رسیدگی</label>
+                    <select name="progress_status" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                        <option value="">همه</option>
+                        <option value="pending" {{ request('progress_status')=='pending' ? 'selected' : '' }}>در انتظار</option>
+                        <option value="in_progress" {{ request('progress_status')=='in_progress' ? 'selected' : '' }}>در حال انجام</option>
+                        <option value="done" {{ request('progress_status')=='done' ? 'selected' : '' }}>تکمیل شده</option>
+                    </select>
+                </div>
+
+            </form>
+
+        </div>
         @if($students->count())
         <table class="table table-striped">
             <thead class="table-light">

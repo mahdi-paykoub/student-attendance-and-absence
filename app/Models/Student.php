@@ -102,12 +102,18 @@ class Student extends Model
     public function supporters()
     {
         return $this->belongsToMany(User::class, 'student_supporter')
-        ->withPivot([
-            'relation_type',
-            'progress_status',
-            'assigned_by_id',
-            'previous_supporter_id'
-        ])
-        ->withTimestamps();
+            ->withPivot([
+                'relation_type',
+                'progress_status',
+                'assigned_by_id',
+                'previous_supporter_id'
+            ])
+            ->withTimestamps();
+    }
+
+
+    public function notes()
+    {
+        return $this->hasMany(StudentNote::class);
     }
 }

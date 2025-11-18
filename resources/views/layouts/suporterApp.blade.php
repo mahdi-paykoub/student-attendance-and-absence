@@ -38,6 +38,9 @@
                 <ul class="nav flex-column p-0">
 
                     {{-- منوی دانش‌آموزان --}}
+                    <li class="nav-item {{ request()->routeIs('suporter.filter.students') ? 'active' : '' }}">
+                        <a href="{{ route('suporter.filter.students') }}" class="nav-link">فیلتر دانش‌آموزان</a>
+                    </li>
                     <li class="nav-item {{ request()->routeIs('suporter.students') ? 'active' : '' }}">
                         <a href="{{ route('suporter.students') }}" class="nav-link">دانش‌آموزان من</a>
                     </li>
