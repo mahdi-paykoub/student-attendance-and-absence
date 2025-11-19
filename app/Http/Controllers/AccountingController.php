@@ -539,25 +539,33 @@ class AccountingController extends Controller
         return view('accounting.wallets', compact('wallets', 'transactions', 'accounts'));
     }
 
-    public function accountsProfits()
+    public function accountsProfits(Request $request)
     {
+        $start = $request->start_date
+            ? Jalalian::fromFormat('Y/m/d', $request->start_date)->toCarbon()->startOfDay()
+            : null;
+
+        $end = $request->end_date
+            ? Jalalian::fromFormat('Y/m/d', $request->end_date)->toCarbon()->endOfDay()
+            : null;
+
 
         $students = Student::with('products', 'percentages.account')->get();
-        // سود از هردانش امور
+
+        // محاسبه سود هر دانش‌آموز
         foreach ($students as $student) {
             $profits = $this->calculateStudentProfits($student);
             $student->central_profit = $profits['central_profit'];
             $student->agency_profit  = $profits['agency_profit'];
         }
+
         $centralTotal = 0;
-        $agencyTotal = 0;
+        $agencyTotal  = 0;
 
         foreach ($students as $student) {
-
             // درصدهای ثبت‌شده برای این دانش‌آموز
             $centralPercentage = optional($student->percentages->firstWhere('account.type', 'center'))->percentage ?? 0;
-
-            $agencyPercentage = optional($student->percentages->firstWhere('account.type', 'agency'))->percentage ?? 0;
+            $agencyPercentage  = optional($student->percentages->firstWhere('account.type', 'agency'))->percentage ?? 0;
 
             foreach ($student->products as $product) {
 
@@ -565,27 +573,68 @@ class AccountingController extends Controller
                 $tax   = $price * ($product->tax_percent / 100);
 
                 if (!$product->is_shared) {
+                    // بررسی تاریخ تخصیص از جدول واسط
+                    $allocationExists = DB::table('product_student')
+                        ->where('student_id', $student->id)
+                        ->where('product_id', $product->id)
+                        ->when($start, fn($q) => $q->where('created_at', '>=', $start))
+                        ->when($end, fn($q) => $q->where('created_at', '<=', $end))
+                        ->exists();
 
-                    // ❌ محصول غیر اشتراکی → همه‌اش برای نمایندگی
+                    if (!$allocationExists) {
+                        continue; // اگر تخصیص محصول در بازه نبود، از سود حذف می‌کنیم
+                    }
+                    // محصول غیر اشتراکی → همه‌اش برای نمایندگی
+
                     $agencyTotal += $price;
                 } else {
+                    // محصول اشتراکی → فقط اگر درصد ثبت شده باشد در بازه تاریخ
+                    $centralPercentage = 0;
+                    $agencyPercentage  = 0;
 
-                    // ✔ محصول اشتراکی:
-                    // قیمت طبق درصد تقسیم می‌شود
-                    $centralShareFromPrice = $price * ($centralPercentage / 100);
-                    $agencyShareFromPrice  = $price * ($agencyPercentage / 100);
+                    // درصد مرکزی
+                    $centralRecord = DB::table('student_account_percentages')
+                        ->where('student_id', $student->id)
+                        ->where('account_id', optional($student->percentages->firstWhere('account.type', 'center'))->account_id)
+                        ->when($start, fn($q) => $q->where('created_at', '>=', $start))
+                        ->when($end, fn($q) => $q->where('created_at', '<=', $end))
+                        ->latest('created_at')
+                        ->first();
 
+                    if ($centralRecord) {
+                        $centralPercentage = $centralRecord->percentage;
+                    }
 
-                    // مالیات 100٪ برای مرکزی
-                    $centralTotal += ($centralShareFromPrice + $tax);
-                    $agencyTotal  += $agencyShareFromPrice;
+                    // درصد نمایندگی
+                    $agencyRecord = DB::table('student_account_percentages')
+                        ->where('student_id', $student->id)
+                        ->where('account_id', optional($student->percentages->firstWhere('account.type', 'agency'))->account_id)
+                        ->when($start, fn($q) => $q->where('created_at', '>=', $start))
+                        ->when($end, fn($q) => $q->where('created_at', '<=', $end))
+                        ->latest('created_at')
+                        ->first();
+
+                    if ($agencyRecord) {
+                        $agencyPercentage = $agencyRecord->percentage;
+                    }
+
+                    $hasCentralPercentage = $centralPercentage > 0;
+                    $hasAgencyPercentage  = $agencyPercentage > 0;
+
+                    if ($hasCentralPercentage || $hasAgencyPercentage) {
+                        $centralShareFromPrice = $price * ($centralPercentage / 100);
+                        $agencyShareFromPrice  = $price * ($agencyPercentage / 100);
+
+                        // مالیات 100٪ برای مرکزی
+                        $centralTotal += ($centralShareFromPrice + $tax);
+                        $agencyTotal  += $agencyShareFromPrice;
+                    }
+                    // در غیر این صورت، این محصول از سود حذف می‌شود
                 }
             }
         }
 
-
-
-        // 3️⃣ سهم هر شریک از سود نمایندگی
+        // سهم هر شریک از سود نمایندگی
         $agencyPartners = Account::where('type', 'person')->get(); // تمام شرکای نمایندگی
         $totalPercent   = $agencyPartners->sum('percentage'); // مجموع درصد شرکا
 
@@ -600,11 +649,8 @@ class AccountingController extends Controller
             }
         }
 
-
         return view('accounting.profits', compact('centralTotal', 'agencyTotal', 'students', 'partnersProfits'));
     }
-
-
 
     private function calculateStudentProfits(Student $student)
     {
@@ -616,17 +662,13 @@ class AccountingController extends Controller
             $student->percentages->firstWhere('account.type', 'agency')
         )->percentage ?? 0;
 
-        // هندل درصدها
+        // هندل درصدها (مثل قبل)
         if ($centralPercentage == 0 && $agencyPercentage > 0) {
             $centralPercentage = 100 - $agencyPercentage;
         }
 
         if ($agencyPercentage == 0 && $centralPercentage > 0) {
             $agencyPercentage = 100 - $centralPercentage;
-        }
-
-        if ($centralPercentage == 0 && $agencyPercentage == 0) {
-            $agencyPercentage = 100;
         }
 
         $central = 0;
@@ -638,15 +680,18 @@ class AccountingController extends Controller
             $tax   = $price * ($product->tax_percent / 100);
 
             if (!$product->is_shared) {
-                // غیر اشتراکی → کل سود برای نمایندگی
-                $agency += ($price);
+                // غیر اشتراکی → همیشه برای نمایندگی
+                $agency += $price;
             } else {
-                // مشترک → تقسیم سود + مالیات برای مرکزی
-                $centralShare = $price * ($centralPercentage / 100);
-                $agencyShare  = $price * ($agencyPercentage / 100);
+                // مشترک → فقط اگر درصد ثبت شده باشد
+                if ($centralPercentage > 0 || $agencyPercentage > 0) {
+                    $centralShare = $price * ($centralPercentage / 100);
+                    $agencyShare  = $price * ($agencyPercentage / 100);
 
-                $central += ($centralShare + $tax);
-                $agency  += $agencyShare;
+                    $central += $centralShare + $tax;
+                    $agency  += $agencyShare;
+                }
+                // اگر درصد ثبت نشده، این محصول از سود حذف می‌شود
             }
         }
 

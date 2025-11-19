@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('styles')
+<link rel="stylesheet" href="{{asset('assets/css/data-picker.css')}}">
+@endsection
 
 @section('content')
 <div class=" mt-4">
@@ -26,43 +29,65 @@
     @endif
 
 
-    <div class="row mt-4 gap-2">
-        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
-            <div class="text-center">
-                <div class="fw-bold">
-                    سود کل بخش مرکزی
-                </div>
-                <div class="fw-bold mt-3">
-                    {{number_format($centralTotal)}}
-                </div>
-
+    <div class="table-wrap px-4">
+        <div class="mt-4">
+            <div class="mt-4">
+                <form action="" method="GET" class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">تاریخ شروع</label>
+                        <input type="text" name="start_date" class="form-control" value="{{ request('start_date') }}" data-jdp>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">تاریخ پایان</label>
+                        <input type="text" name="end_date" class="form-control" value="{{ request('end_date') }}" data-jdp>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success bg-admin-green w-100">اعمال فیلتر</button>
+                    </div>
+                </form>
             </div>
-        </div>
-        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
-            <div class="text-center">
-                <div class="fw-bold">
-                    سود کل بخش نمایندگی
-                </div>
-                <div class="fw-bold mt-3">
-                    {{number_format($agencyTotal)}}
-                </div>
 
-            </div>
         </div>
 
-        <!-- سهم هر شریک نمایندگی -->
-        @foreach($partnersProfits as $partnerName => $profit)
-        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
-            <div class="text-center">
-                <div class="fw-bold">
-                    سود {{ $partnerName }}
-                </div>
-                <div class="fw-bold mt-3">
-                    {{ number_format($profit) }} تومان
+        <div class="row mt-4 gap-2">
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        سود کل بخش مرکزی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($centralTotal)}}
+                    </div>
+
                 </div>
             </div>
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        سود کل بخش نمایندگی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($agencyTotal)}}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- سهم هر شریک نمایندگی -->
+            @foreach($partnersProfits as $partnerName => $profit)
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        سود {{ $partnerName }}
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{ number_format($profit) }} تومان
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
-        @endforeach
+
     </div>
 
 
@@ -107,7 +132,13 @@
 
         </div>
     </div>
-
-
 </div>
+@endsection
+
+@section('scripts')
+<script src="{{asset('assets/js/data-picker.js')}}"></script>
+<script>
+    jalaliDatepicker.startWatch();
+</script>
+
 @endsection
