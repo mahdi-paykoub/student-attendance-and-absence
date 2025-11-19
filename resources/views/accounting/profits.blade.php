@@ -5,11 +5,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h4 class="fs18 fw-bold">
-            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="25" width="25" xmlns="http://www.w3.org/2000/svg">
-                <path d="M95.5 104h320a87.73 87.73 0 0 1 11.18.71 66 66 0 0 0-77.51-55.56L86 94.08h-.3a66 66 0 0 0-41.07 26.13A87.57 87.57 0 0 1 95.5 104zm320 24h-320a64.07 64.07 0 0 0-64 64v192a64.07 64.07 0 0 0 64 64h320a64.07 64.07 0 0 0 64-64V192a64.07 64.07 0 0 0-64-64zM368 320a32 32 0 1 1 32-32 32 32 0 0 1-32 32z"></path>
-                <path d="M32 259.5V160c0-21.67 12-58 53.65-65.87C121 87.5 156 87.5 156 87.5s23 16 4 16-18.5 24.5 0 24.5 0 23.5 0 23.5L85.5 236z"></path>
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="25" width="25" xmlns="http://www.w3.org/2000/svg">
+                <path fill="none" d="M0 0h24v24H0z"></path>
+                <path d="M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3h7zM7 9H4V5h3v4zm10 6h3v4h-3v-4zm0-10h3v4h-3V5z"></path>
             </svg>
-          سود طرف حساب ها
+            سود خالص طرف حساب ها
         </h4>
 
     </div>
@@ -25,119 +25,89 @@
     </div>
     @endif
 
-    <div class="row mt-4">
 
-
-        @foreach($wallets as $wallet)
-        <div class="col-2">
-            <div class="bg-body-secondary rounded text-center p-4">
+    <div class="row mt-4 gap-2">
+        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+            <div class="text-center">
                 <div class="fw-bold">
-                    {{$wallet->account->name}}
+                    سود کل بخش مرکزی
                 </div>
-                <div class="mt-2 fw-bold" dir="ltr">
-                    @if($wallet->balance >= 0)
-                    {{number_format($wallet->balance)}}
-                    @else
-                    <span class="text-danger">
-                        {{number_format($wallet->balance)}}
-                    </span>
-                    @endif
+                <div class="fw-bold mt-3">
+                    {{number_format($centralTotal)}}
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+            <div class="text-center">
+                <div class="fw-bold">
+                    سود کل بخش نمایندگی
+                </div>
+                <div class="fw-bold mt-3">
+                    {{number_format($agencyTotal)}}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- سهم هر شریک نمایندگی -->
+        @foreach($partnersProfits as $partnerName => $profit)
+        <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+            <div class="text-center">
+                <div class="fw-bold">
+                    سود {{ $partnerName }}
+                </div>
+                <div class="fw-bold mt-3">
+                    {{ number_format($profit) }} تومان
                 </div>
             </div>
         </div>
         @endforeach
-
     </div>
 
-    <h4 class="fw-bold fs18 mt-5 mb-3">
-        تراکنش ها
-    </h4>
-    <div class="table-wrap">
-        <form method="GET" class="row g-3 mb-4">
 
-            <div class="col-md-4">
-                <label class="form-label fw-bold">انتخاب حساب</label>
-                <select name="account_id" class="form-select">
-                    <option value="">-- همه حساب‌ها --</option>
-                    @foreach($accounts as $acc)
-                    <option value="{{ $acc->id }}" {{ request('account_id') == $acc->id ? 'selected' : '' }}>
-                        {{ $acc->name }}
-                    </option>
+
+    <div class="mt-5 table-wrap">
+        <div class="fs18 fw-bold">
+            سود از هر دانش‌آموز
+        </div>
+
+        <div class="mt-3">
+
+            <table class="table table-striped text-center table-responsive">
+                <thead class="table-light">
+                    <tr>
+                        <th>نام دانش‌آموز</th>
+                        <th>سود بخش مرکزی</th>
+                        <th>سود بخش نمایندگی</th>
+                        <th>جمع کل سود</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach($students as $student)
+                    <tr>
+                        <td>{{ $student->first_name }} {{ $student->last_name }}</td>
+
+                        <td class="text-success fw-bold">
+                            {{ number_format($student->central_profit) }} تومان
+                        </td>
+
+                        <td class="text-success fw-bold">
+                            {{ number_format($student->agency_profit) }} تومان
+                        </td>
+
+                        <td class="text-dark fw-bold">
+                            {{ number_format($student->central_profit + $student->agency_profit) }} تومان
+                        </td>
+                    </tr>
                     @endforeach
-                </select>
-            </div>
+                </tbody>
+            </table>
 
-            <div class="col-md-4">
-                <label class="form-label fw-bold">نوع تراکنش</label>
-                <select name="type" class="form-select">
-                    <option value="">-- همه --</option>
-                    <option value="deposit" {{ request('type') == 'deposit' ? 'selected' : '' }}>واریزی</option>
-                    <option value="withdraw" {{ request('type') == 'withdraw' ? 'selected' : '' }}>برداشت</option>
-                </select>
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-                <button class="btn btn-success w-100 bg-admin-green">اعمال فیلتر</button>
-            </div>
-
-        </form>
-
-        <table class="table mt-3">
-            <thead class="table-light">
-                <tr>
-                    <th>کیف پول</th>
-                    <th>مبلغ</th>
-                    <th>نوع</th>
-                    <th>تاریخ</th>
-
-
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($transactions as $transaction)
-
-                <tr class="@if($transaction->amount > 0) table-success @else table-danger   @endif">
-                    <td>
-                        {{$transaction->wallet->account->name}}
-                    </td>
-                    <td>
-                        @if($transaction->amount >= 0)
-                        <span class="text-success">{{number_format($transaction->amount)}}</span>
-                        @else
-                        <span class="text-danger">
-                            {{number_format($transaction->amount)}}
-                        </span>
-                        @endif
-
-                    </td>
-
-                    <td>
-                        @if($transaction->status == 'success')
-                        <span class="badge bg-admin-green">
-                            موفق
-                        </span>
-                        @else
-                        <span class="badge bg-danger">
-                            نا
-                            موفق
-                        </span>
-                        @endif
-                    </td>
-
-                    <td class="text-end" dir="ltr">
-                        {{ \Morilog\Jalali\Jalalian::fromDateTime($transaction->created_at)->format('Y/m/d H:i:s') }}
-                    </td>
-
-                </tr>
-
-                @empty
-                <tr>
-                    <td colspan="4" class="text-center">هیچ تراکنشی ثبت نشده است.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+        </div>
     </div>
+
 
 </div>
 @endsection

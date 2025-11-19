@@ -539,7 +539,120 @@ class AccountingController extends Controller
         return view('accounting.wallets', compact('wallets', 'transactions', 'accounts'));
     }
 
-    public function accountsProfits(){
-        
+    public function accountsProfits()
+    {
+
+        $students = Student::with('products', 'percentages.account')->get();
+        // سود از هردانش امور
+        foreach ($students as $student) {
+            $profits = $this->calculateStudentProfits($student);
+            $student->central_profit = $profits['central_profit'];
+            $student->agency_profit  = $profits['agency_profit'];
+        }
+        $centralTotal = 0;
+        $agencyTotal = 0;
+
+        foreach ($students as $student) {
+
+            // درصدهای ثبت‌شده برای این دانش‌آموز
+            $centralPercentage = optional($student->percentages->firstWhere('account.type', 'center'))->percentage ?? 0;
+
+            $agencyPercentage = optional($student->percentages->firstWhere('account.type', 'agency'))->percentage ?? 0;
+
+            foreach ($student->products as $product) {
+
+                $price = $product->price;
+                $tax   = $price * ($product->tax_percent / 100);
+
+                if (!$product->is_shared) {
+
+                    // ❌ محصول غیر اشتراکی → همه‌اش برای نمایندگی
+                    $agencyTotal += $price;
+                } else {
+
+                    // ✔ محصول اشتراکی:
+                    // قیمت طبق درصد تقسیم می‌شود
+                    $centralShareFromPrice = $price * ($centralPercentage / 100);
+                    $agencyShareFromPrice  = $price * ($agencyPercentage / 100);
+
+
+                    // مالیات 100٪ برای مرکزی
+                    $centralTotal += ($centralShareFromPrice + $tax);
+                    $agencyTotal  += $agencyShareFromPrice;
+                }
+            }
+        }
+
+
+
+        // 3️⃣ سهم هر شریک از سود نمایندگی
+        $agencyPartners = Account::where('type', 'person')->get(); // تمام شرکای نمایندگی
+        $totalPercent   = $agencyPartners->sum('percentage'); // مجموع درصد شرکا
+
+        $partnersProfits = [];
+
+        foreach ($agencyPartners as $partner) {
+            if ($totalPercent > 0) {
+                $partnersProfits[$partner->name] = $agencyTotal * ($partner->percentage / $totalPercent);
+            } else {
+                // اگر درصدی ثبت نشده بود، سهم صفر بده
+                $partnersProfits[$partner->name] = 0;
+            }
+        }
+
+
+        return view('accounting.profits', compact('centralTotal', 'agencyTotal', 'students', 'partnersProfits'));
+    }
+
+
+
+    private function calculateStudentProfits(Student $student)
+    {
+        $centralPercentage = optional(
+            $student->percentages->firstWhere('account.type', 'central')
+        )->percentage ?? 0;
+
+        $agencyPercentage = optional(
+            $student->percentages->firstWhere('account.type', 'agency')
+        )->percentage ?? 0;
+
+        // هندل درصدها
+        if ($centralPercentage == 0 && $agencyPercentage > 0) {
+            $centralPercentage = 100 - $agencyPercentage;
+        }
+
+        if ($agencyPercentage == 0 && $centralPercentage > 0) {
+            $agencyPercentage = 100 - $centralPercentage;
+        }
+
+        if ($centralPercentage == 0 && $agencyPercentage == 0) {
+            $agencyPercentage = 100;
+        }
+
+        $central = 0;
+        $agency = 0;
+
+        foreach ($student->products as $product) {
+
+            $price = $product->price;
+            $tax   = $price * ($product->tax_percent / 100);
+
+            if (!$product->is_shared) {
+                // غیر اشتراکی → کل سود برای نمایندگی
+                $agency += ($price);
+            } else {
+                // مشترک → تقسیم سود + مالیات برای مرکزی
+                $centralShare = $price * ($centralPercentage / 100);
+                $agencyShare  = $price * ($agencyPercentage / 100);
+
+                $central += ($centralShare + $tax);
+                $agency  += $agencyShare;
+            }
+        }
+
+        return [
+            'central_profit' => $central,
+            'agency_profit'  => $agency,
+        ];
     }
 }
