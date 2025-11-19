@@ -35,10 +35,10 @@ class AccountingController extends Controller
             'percatege' => 'required|numeric|min:0|max:100'
         ]);
 
-        $totalPrice = $student->products->sum('price');
+        $totalPrice = $student->products->where('is_shared', true)->sum('price');
         $central_share = $totalPrice * ($validated['percatege'] / 100);
 
-        $totalTax = $student->products->sum(function ($product) {
+        $totalTax = $student->products->where('is_shared', true)->sum(function ($product) {
             return $product->price * ($product->tax_percent / 100);
         });
 
@@ -108,8 +108,8 @@ class AccountingController extends Controller
         $totalPayments = Payment::where('student_id', $student->id)->sum('amount');
 
         // ===== محاسبه جمع کل محصولات + مالیات =====
-        $totalProducts = $student->products->sum('price');
-        $totalTax = $student->products->sum(function ($product) {
+        $totalProducts = $student->products->where('is_shared', true)->sum('price');
+        $totalTax = $student->products->where('is_shared', true)->sum(function ($product) {
             return $product->price * ($product->tax_percent / 100);
         });
 

@@ -82,20 +82,25 @@
                     <td>
                         <div dir="ltr" class="central_value text-end" id="central_value_{{ $student->id }}">
                             @php
-                            $percentage =optional($student->percentages->firstWhere('account.type', 'center'))->percentage ?? 0;
+                            $percentage = optional($student->percentages->firstWhere('account.type', 'center'))->percentage ?? 0;
 
-                            $totalPrice = $student->products->sum('price');
+                            // فقط محصولاتی که is_share = true هستند
+                            $sharedProducts = $student->products->where('is_shared', true);
+
+                            $totalPrice = $sharedProducts->sum('price');
+
                             $central_share = $totalPrice * ($percentage / 100);
 
-                            $totalTax= 0;
-                            if($percentage){
-                            $totalTax = $student->products->sum(function ($product) {
+                            $totalTax = 0;
+                            if ($percentage) {
+                            $totalTax = $sharedProducts->sum(function ($product) {
                             return $product->price * ($product->tax_percent / 100);
                             });
-
                             }
+
                             $final = $central_share + $totalTax;
                             @endphp
+
                             {{number_format($final)}}
                         </div>
                     </td>
