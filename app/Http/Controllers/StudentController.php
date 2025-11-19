@@ -139,7 +139,7 @@ class StudentController extends Controller
         return response($file, 200)
             ->header('Content-Type', $type);
     }
-   
+
 
 
     public function edit(Student $student)
@@ -197,6 +197,7 @@ class StudentController extends Controller
             'province_id'     => 'nullable|exists:provinces,id',
             'city_id'         => 'nullable|exists:cities,id',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'photo_2'         => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'gender'          => 'required|in:male,female',
             'advisor_id'      => 'nullable|exists:advisors,id',
             'referrer_id'     => 'nullable|exists:advisors,id',
@@ -230,6 +231,22 @@ class StudentController extends Controller
             $validated['photo'] = $path;
         } else {
             $validated['photo'] = $student->photo;
+        }
+
+
+        // 🔹 مدیریت عکس دوم (photo_2)
+        if ($request->hasFile('photo_2')) {
+
+            if ($student->photo_2 && Storage::disk('private')->exists($student->photo_2)) {
+                Storage::disk('private')->delete($student->photo_2);
+            }
+
+            $file2 = $request->file('photo_2');
+            $filename2 = time() . '_' . uniqid() . '.' . $file2->getClientOriginalExtension();
+            $path2 = $file2->storeAs('students', $filename2, 'private');
+            $validated['photo_2'] = $path2;
+        } else {
+            $validated['photo_2'] = $student->photo_2;
         }
 
         $student->update($validated);

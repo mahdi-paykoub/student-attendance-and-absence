@@ -26,23 +26,51 @@
                 @csrf
                 @method('PUT')
 
-                {{-- عکس --}}
-                <div class="mb-3">
-                    <label class="form-label">عکس 3x4</label>
-                    @if($student->photo)
-                    <div class="mb-2">
-                        <img src="{{ route('students.photo', basename($student->photo)) }}"
-                            alt="عکس دانش‌آموز"
-                            width="100"
-                            class="rounded">
+                <div class="row">
+                    <div class="col-lg-6">
+                        {{-- عکس --}}
+                        <div class="mb-3">
+                            <label class="form-label">عکس 3x4</label>
+                            @if($student->photo)
+                            <div class="mb-2">
+                                <img src="{{ route('students.photo', basename($student->photo)) }}"
+                                    alt="عکس دانش‌آموز"
+                                    width="100"
+                                    class="rounded">
+                            </div>
+                            @endif
+
+                            <input type="file" name="photo" class="form-control">
+                            @error('photo')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+
+                        </div>
+
+
+
                     </div>
-                    @endif
+                    <div class="col-lg-6">
+                        {{-- عکس 2 --}}
+                        <div class="mb-3">
+                            <label class="form-label"> تصویر</label>
 
-                    <input type="file" name="photo" class="form-control">
-                    @error('photo')
-                    <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                            @if($student->photo_2)
+                            <div class="mb-2">
+                                <img src="{{ route('students.photo', basename($student->photo_2)) }}"
+                                    alt="عکس دوم دانش‌آموز"
+                                    width="100"
+                                    class="rounded">
+                            </div>
+                            @endif
 
+                            <input type="file" name="photo_2" class="form-control">
+
+                            @error('photo_2')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 {{-- نام و نام خانوادگی --}}

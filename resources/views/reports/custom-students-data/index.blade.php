@@ -109,7 +109,7 @@
                         $totalPayments = $student->payments()->where('payment_type', 'cash')->sum('amount');
                         $totalPrepayments = $student->payments()->where('payment_type', 'installment')->sum('amount');
                         $totalChecks = $student->checks()->sum('amount');
-                        $totalPaid = $totalPayments + $totalPrepayments + $totalChecks;
+                        $totalPaid = $totalPayments + $totalPrepayments ;
                         $totalProducts = $student->products->sum(function ($product) {
                         $taxAmount = $product->price * ($product->tax_percent / 100);
                         return $product->price + $taxAmount;
