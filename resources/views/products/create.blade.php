@@ -62,8 +62,14 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-3 form-check d-flex align-items-center mt-3">
+                    <input type="checkbox" name="is_shared" id="is_shared" class="form-check-input"
+                        {{ old('is_shared') ? 'checked' : '' }}>
+                    <label for="is_shared" class="form-check-label me-4 pe-2">محصول مشارکتی؟</label>
+                </div>
 
-                <button type="submit" class="btn btn-success bg-admin-green">ثبت محصول</button>
+
+                <button type="submit" class="btn btn-success bg-admin-green mt-3">ثبت محصول</button>
             </form>
 
 

@@ -30,9 +30,17 @@ class ProductController extends Controller
             'tax_percent' => 'required|numeric|min:0|max:100',
             'grade_id' => 'nullable|exists:grades,id',
             'major_id' => 'nullable|exists:majors,id',
+            'is_shared' => 'nullable',
         ]);
 
-        \App\Models\Product::create($validated);
+        Product::create([
+            'title' => $request->title,
+            'price' => $request->price,
+            'tax_percent' => $request->tax_percent,
+            'grade_id' => $request->grade_id,
+            'major_id' => $request->major_id,
+            'is_shared' => $request->has('is_shared'), // ⭐ مهم
+        ]);
 
         return redirect()->route('products.index')->with('success', 'محصول با موفقیت اضافه شد.');
     }

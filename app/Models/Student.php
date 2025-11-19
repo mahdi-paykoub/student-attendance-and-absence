@@ -26,6 +26,7 @@ class Student extends Model
         'referrer_id',
         'address',
         'phone',
+        'phone_2',
         'mobile_father',
         'mobile_mother',
         'notes',

@@ -54,11 +54,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // get student image
-    Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])
-        ->name('students.photo');
-
-
-
+    Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])->name('students.photo');
     // دکمه حضور و غیاب خارج از ریسورس
     Route::get('exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');
 
@@ -165,6 +161,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     // Accounting
     Route::get('accounting/wallets/view', [AccountingController::class, 'walletsView'])->name('accounting.wallets.view');
+    Route::get('accounting/profis/view', [AccountingController::class, 'accountsProfits'])->name('accounting.profis.view');
     Route::get('accounting/register/percentage/view', [AccountingController::class, 'registerPercantageView'])->name('accounting.register.percentage.view');
     Route::post('accounting/register/centarl/percentage/{student}', [AccountingController::class, 'registerCentralPercantage'])->name('accounting.register.centarl.percentage');
     Route::post('accounting/register/agency/percentage/{student}', [AccountingController::class, 'registerAgencyPercentage'])->name('accounting.register.agency.percentage');

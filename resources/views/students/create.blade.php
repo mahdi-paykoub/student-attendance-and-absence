@@ -28,12 +28,21 @@
                 @csrf
 
                 {{-- عکس --}}
-                <div class="mb-3">
-                    <label class="form-label">عکس 3x4</label>
-                    <input type="file" name="photo" class="form-control">
-                    @error('photo')
-                    <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                <div class="row">
+                    <div class="col-lg-6 mb-3 ">
+                        <label class="form-label">عکس 3x4</label>
+                        <input type="file" name="photo" class="form-control">
+                        @error('photo')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="col-lg-6 mb-3 ">
+                        <label class="form-label">تصویر</label>
+                        <input type="file" name="photo_2" class="form-control">
+                        @error('photo')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
                 </div>
 
                 {{-- نام و نام خانوادگی --}}
@@ -246,7 +255,6 @@
 <script src="{{asset('assets/js/data-picker.js')}}"></script>
 
 <script>
-  
     jalaliDatepicker.startWatch();
 </script>
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_shared')->default(false);
             $table->decimal('price', 12, 2);
             $table->decimal('tax_percent', 5, 2)->default(0);
             $table->foreignId('grade_id')->nullable()->constrained()->onDelete('cascade');

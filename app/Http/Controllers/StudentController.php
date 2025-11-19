@@ -78,6 +78,7 @@ class StudentController extends Controller
             'province'     => 'nullable|string',
             'city'         => 'nullable|string',
             'photo'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'photo_2' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'gender'          => 'required|in:male,female',
             'consultant_id'   => 'nullable',
             'referrer_id'     => 'nullable',
@@ -108,6 +109,13 @@ class StudentController extends Controller
             $path = $file->storeAs('students', $filename, 'private');
             $validated['photo'] = $path;
         }
+        if ($request->hasFile('photo_2')) {
+            $file2 = $request->file('photo_2');
+            $filename2 = time() . '_' . uniqid() . '.' . $file2->getClientOriginalExtension();
+            $path2 = $file2->storeAs('students', $filename2, 'private');
+            $validated['photo_2'] = $path2;
+        }
+
 
         Student::create($validated);
 
@@ -131,6 +139,7 @@ class StudentController extends Controller
         return response($file, 200)
             ->header('Content-Type', $type);
     }
+   
 
 
     public function edit(Student $student)
@@ -255,52 +264,52 @@ class StudentController extends Controller
 
 
     public function details(Student $student)
-{
-    // جمع کل پرداخت‌های نقدی
-    $totalPayments = $student->payments()
-        ->where('payment_type', 'cash')
-        ->sum('amount');
+    {
+        // جمع کل پرداخت‌های نقدی
+        $totalPayments = $student->payments()
+            ->where('payment_type', 'cash')
+            ->sum('amount');
 
-    // جمع کل پیش‌پرداخت‌ها (از نوع installment)
-    $totalPrepayments = $student->payments()
-        ->where('payment_type', 'installment')
-        ->sum('amount');
+        // جمع کل پیش‌پرداخت‌ها (از نوع installment)
+        $totalPrepayments = $student->payments()
+            ->where('payment_type', 'installment')
+            ->sum('amount');
 
-    // جمع کل چک‌ها (بدون توجه به وصول بودن) - فقط برای نمایش
-    $totalChecks = $student->checks()->sum('amount');
+        // جمع کل چک‌ها (بدون توجه به وصول بودن) - فقط برای نمایش
+        $totalChecks = $student->checks()->sum('amount');
 
-    // جمع چک‌های وصول‌شده (is_cleared = 1)
-    $clearedChecks = $student->checks()
-        ->where('is_cleared', 1)
-        ->sum('amount');
+        // جمع چک‌های وصول‌شده (is_cleared = 1)
+        $clearedChecks = $student->checks()
+            ->where('is_cleared', 1)
+            ->sum('amount');
 
-    // مجموع پرداختی واقعی = نقد + پیش‌پرداخت + چک وصول‌شده
-    $totalPaid = $totalPayments + $totalPrepayments + $clearedChecks;
+        // مجموع پرداختی واقعی = نقد + پیش‌پرداخت + چک وصول‌شده
+        $totalPaid = $totalPayments + $totalPrepayments + $clearedChecks;
 
-    // جمع مبلغ محصولات با احتساب مالیات
-    $totalProducts = $student->products->sum(function ($product) {
-        $taxAmount = $product->price * ($product->tax_percent / 100);
-        return $product->price + $taxAmount;
-    });
+        // جمع مبلغ محصولات با احتساب مالیات
+        $totalProducts = $student->products->sum(function ($product) {
+            $taxAmount = $product->price * ($product->tax_percent / 100);
+            return $product->price + $taxAmount;
+        });
 
-    // بدهی = محصولات - پرداخت واقعی
-    $debt = max($totalProducts - $totalPaid, 0);
+        // بدهی = محصولات - پرداخت واقعی
+        $debt = max($totalProducts - $totalPaid, 0);
 
-    // بستانکاری = پرداخت واقعی - محصولات
-    $credit = max($totalPaid - $totalProducts, 0);
+        // بستانکاری = پرداخت واقعی - محصولات
+        $credit = max($totalPaid - $totalProducts, 0);
 
-    return view('students.details', compact(
-        'student',
-        'totalPayments',
-        'totalPrepayments',
-        'totalChecks',
-        'clearedChecks',
-        'totalProducts',
-        'totalPaid',
-        'debt',
-        'credit'
-    ));
-}
+        return view('students.details', compact(
+            'student',
+            'totalPayments',
+            'totalPrepayments',
+            'totalChecks',
+            'clearedChecks',
+            'totalProducts',
+            'totalPaid',
+            'debt',
+            'credit'
+        ));
+    }
 
 
 

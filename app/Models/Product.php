@@ -14,7 +14,8 @@ class Product extends Model
         'tax_percent',
         'grade_id',
         'major_id',
-        'is_active'
+        'is_active',
+        'is_shared'
     ];
 
 
@@ -24,7 +25,7 @@ class Product extends Model
         return $this->hasMany(ProductStudent::class);
     }
 
-  
+
     public function students()
     {
         return $this->belongsToMany(Student::class, 'product_student')->withPivot('id');

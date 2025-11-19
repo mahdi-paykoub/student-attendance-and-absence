@@ -23,22 +23,31 @@
         <table class="table">
             <thead class="table-light">
                 <tr>
-                    <th>#</th>
                     <th>عنوان محصول</th>
                     <th>قیمت</th>
                     <th>درصد آبونمان</th>
                     <th> قیمت کل</th>
+                    <th>محصول مشارکتی؟</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($products as $product)
                 <tr class="{{ !$product->is_active ? 'table-secondary' : '' }}">
-                    <td>{{ $product->id }}</td>
                     <td>{{ $product->title }}</td>
                     <td>{{ number_format($product->price) }}</td>
                     <td>{{ $product->tax_percent }}%</td>
                     <td>{{ number_format(($product->price * $product->tax_percent / 100) +$product->price )  }}</td>
+                    <td>
+                        @if($product->is_shared)
+                        بله
+                        @else
+                        خیر
+                        @endif
+
+
+                    </td>
+
                     <td>
                         <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             دانش‌آموزان

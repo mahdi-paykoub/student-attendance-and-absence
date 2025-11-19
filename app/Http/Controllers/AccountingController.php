@@ -534,7 +534,12 @@ class AccountingController extends Controller
                     $q->where('amount', '<', 0);
                 }
             })
+            ->latest()
             ->get();
         return view('accounting.wallets', compact('wallets', 'transactions', 'accounts'));
+    }
+
+    public function accountsProfits(){
+        
     }
 }
