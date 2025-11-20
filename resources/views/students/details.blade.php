@@ -7,18 +7,21 @@
     {{-- خلاصه مالی --}}
     <div class="card mb-4">
         <div class="card-header bg-admin-green text-white">📊 خلاصه مالی</div>
-        <div class="card-body text-center row">
-            <div class="col-md-3"><strong>💰 جمع کل محصولات:</strong>
+        <div class="card-body text-center row justify-content-center">
+            <div class="col-md-2"><strong>💰 جمع کل محصولات:</strong>
                 <p>{{ number_format($totalProducts) }} تومان</p>
             </div>
-            <div class="col-md-3"><strong>💵 پرداخت نقدی:</strong>
+            <div class="col-md-2"><strong>💵 پرداخت نقدی:</strong>
                 <p>{{ number_format($totalPayments) }} تومان</p>
             </div>
-            <div class="col-md-3"><strong>💳 پیش‌پرداخت‌ها:</strong>
+            <div class="col-md-2"><strong>💳 پیش‌پرداخت‌ها:</strong>
                 <p>{{ number_format($totalPrepayments) }} تومان</p>
             </div>
-            <div class="col-md-3"><strong>🧾 چک‌ها:</strong>
+            <div class="col-md-2"><strong>🧾 چک‌ها:</strong>
                 <p>{{ number_format($totalChecks) }} تومان</p>
+            </div>
+            <div class="col-md-2"><strong>🧾 تخفیف:</strong>
+                <p>{{ number_format($student->discounts()->first()?->amount) }} تومان</p>
             </div>
         </div>
         <hr>
@@ -64,7 +67,7 @@
                             -
                             @endif
                         </td>
-                      
+
                     </tr>
                     @endforeach
                 </tbody>
@@ -127,7 +130,7 @@
                                 </button>
                             </form>
                             @endif
-                           
+
 
                         </td>
                     </tr>

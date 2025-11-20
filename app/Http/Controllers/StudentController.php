@@ -280,6 +280,54 @@ class StudentController extends Controller
     }
 
 
+    // public function details(Student $student)
+    // {
+    //     // جمع کل پرداخت‌های نقدی
+    //     $totalPayments = $student->payments()
+    //         ->where('payment_type', 'cash')
+    //         ->sum('amount');
+
+    //     // جمع کل پیش‌پرداخت‌ها (از نوع installment)
+    //     $totalPrepayments = $student->payments()
+    //         ->where('payment_type', 'installment')
+    //         ->sum('amount');
+
+    //     // جمع کل چک‌ها (بدون توجه به وصول بودن) - فقط برای نمایش
+    //     $totalChecks = $student->checks()->sum('amount');
+
+    //     // جمع چک‌های وصول‌شده (is_cleared = 1)
+    //     $clearedChecks = $student->checks()
+    //         ->where('is_cleared', 1)
+    //         ->sum('amount');
+
+    //     // مجموع پرداختی واقعی = نقد + پیش‌پرداخت + چک وصول‌شده
+    //     $totalPaid = $totalPayments + $totalPrepayments + $clearedChecks;
+
+    //     // جمع مبلغ محصولات با احتساب مالیات
+    //     $totalProducts = $student->products->sum(function ($product) {
+    //         $taxAmount = $product->price * ($product->tax_percent / 100);
+    //         return $product->price + $taxAmount;
+    //     });
+
+    //     // بدهی = محصولات - پرداخت واقعی
+    //     $debt = max($totalProducts - $totalPaid, 0);
+
+    //     // بستانکاری = پرداخت واقعی - محصولات
+    //     $credit = max($totalPaid - $totalProducts, 0);
+
+    //     return view('students.details', compact(
+    //         'student',
+    //         'totalPayments',
+    //         'totalPrepayments',
+    //         'totalChecks',
+    //         'clearedChecks',
+    //         'totalProducts',
+    //         'totalPaid',
+    //         'debt',
+    //         'credit'
+    //     ));
+    // }
+
     public function details(Student $student)
     {
         // جمع کل پرداخت‌های نقدی
@@ -309,11 +357,15 @@ class StudentController extends Controller
             return $product->price + $taxAmount;
         });
 
+        // اعمال تخفیف دانش‌آموز (اگر وجود داشت)
+        $discount = optional($student->discounts->first())->amount ?? 0;
+        $totalProductsAfterDiscount = max($totalProducts - $discount, 0);
+
         // بدهی = محصولات - پرداخت واقعی
-        $debt = max($totalProducts - $totalPaid, 0);
+        $debt = max($totalProductsAfterDiscount - $totalPaid, 0);
 
         // بستانکاری = پرداخت واقعی - محصولات
-        $credit = max($totalPaid - $totalProducts, 0);
+        $credit = max($totalPaid - $totalProductsAfterDiscount, 0);
 
         return view('students.details', compact(
             'student',
@@ -322,9 +374,11 @@ class StudentController extends Controller
             'totalChecks',
             'clearedChecks',
             'totalProducts',
+            'totalProductsAfterDiscount', // اضافه شد
             'totalPaid',
             'debt',
-            'credit'
+            'credit',
+            'discount' // اضافه شد
         ));
     }
 
