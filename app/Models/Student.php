@@ -91,8 +91,24 @@ class Student extends Model
 
     public function getTotalPaymentsAttribute()
     {
-        return $this->payments->sum('amount');
+        // پرداخت نقدی
+        $cash = $this->payments
+            ->where('payment_type', 'cash')
+            ->sum('amount');
+
+        // پرداخت قسطی
+        $installments = $this->payments
+            ->where('payment_type', 'installment')
+            ->sum('amount');
+
+        // چک‌های پاس شده
+        $clearedChecks = $this->checks
+            ->where('is_cleared', true)
+            ->sum('amount');
+
+        return $cash + $installments + $clearedChecks;
     }
+
 
     public function getDebtAttribute()
     {
@@ -116,5 +132,10 @@ class Student extends Model
     public function notes()
     {
         return $this->hasMany(StudentNote::class);
+    }
+
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
     }
 }

@@ -456,7 +456,7 @@ class AccountingController extends Controller
             WalletTransaction::create([
                 'wallet_id' => $wallet->id,
                 'type' => 'withdraw',
-                'amount' => $deposit->amount,
+                'amount' => -($deposit->amount),
                 'meta' => json_encode([
                     'description' => "Deposit registration"
                 ]),

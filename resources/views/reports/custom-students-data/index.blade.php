@@ -106,14 +106,25 @@
                         @foreach($columns as $col)
                         @if($col === 'payment_status')
                         @php
+                        // پرداخت‌های نقدی
                         $totalPayments = $student->payments()->where('payment_type', 'cash')->sum('amount');
+
+                        // پرداخت‌های قسطی
                         $totalPrepayments = $student->payments()->where('payment_type', 'installment')->sum('amount');
-                        $totalChecks = $student->checks()->sum('amount');
-                        $totalPaid = $totalPayments + $totalPrepayments ;
+
+                        // چک‌های وصول شده
+                        $totalClearedChecks = $student->checks()->where('is_cleared', true)->sum('amount');
+
+                        // مجموع پرداختی‌ها (نقدی + قسط + چک وصول شده)
+                        $totalPaid = $totalPayments + $totalPrepayments + $totalClearedChecks;
+
+                        // مجموع مبلغ محصولات + مالیات
                         $totalProducts = $student->products->sum(function ($product) {
                         $taxAmount = $product->price * ($product->tax_percent / 100);
                         return $product->price + $taxAmount;
                         });
+
+                        // بدهی
                         $debt = max($totalProducts - $totalPaid, 0);
                         @endphp
                         <td>{{ number_format($totalPaid) }}</td>

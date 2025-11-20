@@ -60,13 +60,28 @@
 
             </div>
 
-            <div class="mt-5 d-flex align-items-center justify-content-between">
-                <div>
-                    <h4 class="fw-bold fs18">هزینه نهایی: <span id="totalPrice">0</span> تومان</h4>
-                </div>
+            <div class="row mt-5 align-items-center">
+                <div class="col-lg-6">
+                    <div>
+                        <h4 class="fw-bold fs18">هزینه نهایی: <span id="totalPrice">0</span> تومان</h4>
+                    </div>
 
-                <button type="submit" class="btn btn-success bg-admin-green">ذخیره تغییرات</button>
+                </div>
+                <div class="col-lg-6 ">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <input
+                            type="number"
+                            name="amount"
+                            id="amount"
+                            class="form-control w-25 "
+                            placeholder="مقدار تخفیف"
+                            value="{{optional($student->discounts->first())->amount ?? ''}}">
+                        <button type="submit" class="btn btn-success bg-admin-green me-2">ذخیره تغییرات</button>
+                    </div>
+                </div>
             </div>
+
+
         </form>
 
 
@@ -213,9 +228,11 @@
 <script>
     const checkboxes = document.querySelectorAll('.product-checkbox');
     const totalPriceEl = document.getElementById('totalPrice');
+    const discountInput = document.getElementById('amount'); // فیلد تخفیف
 
     function calculateTotal() {
         let total = 0;
+
         checkboxes.forEach(chk => {
             if (chk.checked) {
                 let price = parseFloat(chk.dataset.price);
@@ -223,11 +240,22 @@
                 total += price + (price * tax / 100);
             }
         });
-        totalPriceEl.textContent = total.toLocaleString();
+
+        // اعمال تخفیف اگر وارد شده باشد
+        let discount = parseFloat(discountInput.value) || 0;
+        let finalTotal = total - discount;
+
+        if (finalTotal < 0) finalTotal = 0; // جلوگیری از عدد منفی
+
+        totalPriceEl.textContent = finalTotal.toLocaleString();
     }
 
+    // وقتی تغییرات روی محصولات یا تخفیف اعمال شد، دوباره محاسبه کن
     checkboxes.forEach(chk => chk.addEventListener('change', calculateTotal));
-    calculateTotal(); // وقتی صفحه لود شد هم محاسبه شود
+    discountInput.addEventListener('input', calculateTotal);
+
+    // محاسبه اولیه هنگام لود صفحه
+    calculateTotal();
 </script>
 
 

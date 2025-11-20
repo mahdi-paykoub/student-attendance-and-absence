@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Check;
+use App\Models\Discount;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\Payment;
@@ -107,6 +108,18 @@ class StudentProductController extends Controller
 
     public function updateAssignedProducts(Request $request, Student $student)
     {
+
+        // ثبت کد تخفیف
+        if ($request->has('amount') && $request->amount !== null) {
+            $amount = (int) $request->amount;
+
+            // updateOrCreate
+            Discount::updateOrCreate(
+                ['student_id' => $student->id],
+                ['amount' => $amount]
+            );
+        }
+
         // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
         $selectedProducts = $request->input('products', []);
 
@@ -594,7 +607,7 @@ class StudentProductController extends Controller
                 WalletTransaction::create([
                     'wallet_id' => $wallet->id,
                     'type' => 'withdraw',
-                    'amount' => -($agencyShare),
+                    'amount' => - ($agencyShare),
                     'meta' => json_encode([
                         'description' => "Revert agency share due to payment deletion. Payment ID: {$payment->id}"
                     ]),
