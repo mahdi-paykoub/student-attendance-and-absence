@@ -47,7 +47,6 @@
                         <th>شماره فیش</th>
                         <th>کارت</th>
                         <th>رسید</th>
-                        <th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,9 +64,7 @@
                             -
                             @endif
                         </td>
-                        <td>
-                            <button class="btn btn-danger btn-sm delete-item" data-type="payment" data-id="{{ $pay->id }}">حذف</button>
-                        </td>
+                      
                     </tr>
                     @endforeach
                 </tbody>
@@ -121,10 +118,9 @@
                             @endif
                         </td>
                         <td class="d-flex align-items-center">
-                            <button class="btn btn-danger btn-sm delete-item" data-type="check" data-id="{{ $check->id }}">حذف</button>
 
                             @if(!$check->is_cleared)
-                            <form action="{{ route('checks.clear', $check->id) }}" method="POST" onsubmit="return confirm('آیا از وصول این چک مطمئن هستید؟')">
+                            <form action="{{ route('checks.clear', ['check' => $check->id, 'student' =>$student->id ]) }}" method="POST" onsubmit="return confirm('آیا از وصول این چک مطمئن هستید؟')">
                                 @csrf
                                 <button class="btn btn-success bg-admin-green me-1 btn-sm">
                                     وصول شود

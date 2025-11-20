@@ -134,7 +134,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی ثبت نشده است.</td>
+                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی  محصول دریافت  نکرده است.</td>
                 </tr>
                 @endforelse
             </tbody>

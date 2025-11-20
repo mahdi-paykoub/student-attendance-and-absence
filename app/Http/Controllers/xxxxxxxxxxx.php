@@ -1,110 +1,5 @@
 <?php
 
-namespace App\Http\Controllers;
-
-use App\Models\Account;
-use App\Models\Check;
-use App\Models\Grade;
-use App\Models\Major;
-use App\Models\Payment;
-use App\Models\PaymentCard;
-use App\Models\Product;
-use App\Models\ProductStudent;
-use App\Models\Setting;
-use App\Models\Student;
-use App\Models\StudentAccountPercentage;
-use App\Models\Wallet;
-use App\Models\WalletTransaction;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Morilog\Jalali\Jalalian;
-use Illuminate\Support\Facades\DB;
-
-
-
-class StudentProductController extends Controller
-{
-
-
-    public function assignForm(Student $student)
-    {
-
-
-        $products = Product::where(function ($query) use ($student) {
-            if ($student->grade_id !== null) {
-                $query->where(function ($q) use ($student) {
-                    $q->where('grade_id', $student->grade_id)
-                        ->orWhereNull('grade_id');
-                });
-            }
-            // اگر grade_id دانش آموز null بود، همه رکوردها می‌گیرن
-        })
-            ->where(function ($query) use ($student) {
-                if ($student->major_id !== null) {
-                    $query->where(function ($q) use ($student) {
-                        $q->where('major_id', $student->major_id)
-                            ->orWhereNull('major_id');
-                    });
-                }
-            })
-            ->where(function ($query) use ($student) {
-                $query->where('is_active', true)
-                    ->orWhereHas('students', function ($q) use ($student) {
-                        $q->where('student_id', $student->id);
-                    });
-            })
-            ->get();
-
-
-
-
-        $assignedProducts = $student->products;
-
-
-        $paymentCards = PaymentCard::all();
-        $existingPayments = $student->payments()->get(); // نقدی و پیش‌پرداخت
-        $existingChecks = $student->checks()->get();     // چک‌ها
-
-
-
-
-
-
-
-
-
-        // گرفتن همه پرداخت‌ها
-        $cashPayments = Payment::where('student_id', $student->id)
-            ->where('payment_type', 'cash')
-            ->get();
-
-        $prepayments = Payment::where('student_id', $student->id)
-            ->where('payment_type', 'installment')
-            ->get();
-
-        $checks = Check::where('student_id', $student->id)->get();
-
-        return view('students.assign-products', [
-            'student' => $student,
-            'grade' => $student->grade?->name,
-            'major' => $student->major?->name,
-            'products' => $products,
-            'assignedProducts' => $assignedProducts,
-
-            'paymentCards' => $paymentCards,
-            'existingPayments' => $existingPayments,
-            'existingChecks' => $existingChecks,
-
-            'cashPayments' => $cashPayments,
-            'prepayments' => $prepayments,
-            'checks' => $checks,
-
-
-
-        ]);
-    }
-
-
     public function updateAssignedProducts(Request $request, Student $student)
     {
         // آرایه محصولاتی که انتخاب شده (اگر چیزی انتخاب نشده باشه، آرایه خالی)
@@ -587,22 +482,30 @@ class StudentProductController extends Controller
                     ['balance' => 0]
                 );
 
-                // سهم نمایندگی همان مبلغ پرداخت است 
+                // سهم نمایندگی همان مبلغ پرداخت است (طبق کد شما)
                 $agencyShare = $payment->amount;
 
                 // ثبت تراکنش برداشت هنگام حذف پرداخت
                 WalletTransaction::create([
                     'wallet_id' => $wallet->id,
                     'type' => 'withdraw',
-                    'amount' => -($agencyShare),
+                    'amount' => $agencyShare,
                     'meta' => json_encode([
                         'description' => "Revert agency share due to payment deletion. Payment ID: {$payment->id}"
                     ]),
                     'status' => 'success'
                 ]);
 
+                $deposits = WalletTransaction::where('wallet_id', $wallet->id)
+                    ->where('type', 'deposit')
+                    ->sum('amount');
 
-                $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+                $withdraws = WalletTransaction::where('wallet_id', $wallet->id)
+                    ->where('type', 'withdraw')
+                    ->sum('amount');
+
+                $newBalance = $deposits - $withdraws;
+
                 $wallet->balance = $newBalance;
                 $wallet->save();
 
@@ -644,4 +547,3 @@ class StudentProductController extends Controller
 
         return response()->json(['success' => true, 'message' => 'با موفقیت حذف شد']);
     }
-}

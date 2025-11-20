@@ -103,7 +103,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         ->name('payments.receipt');
     Route::get('/checks/{check}/image', [CheckController::class, 'showImage'])
         ->name('checks.image');
-    Route::post('/checks/{check}/clear', [CheckController::class, 'clear'])
+    Route::post('/checks/{check}/clear/{student}', [CheckController::class, 'clear'])
         ->name('checks.clear');
 
 

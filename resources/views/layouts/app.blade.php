@@ -200,7 +200,7 @@
                                     <a href="{{ route('accounting.wallets.view') }}" class="nav-link">کیف پول</a>
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('accounting.profis.view') ? 'active' : '' }}">
-                                    <a href="{{ route('accounting.profis.view') }}" class="nav-link">سود ها  </a>
+                                    <a href="{{ route('accounting.profis.view') }}" class="nav-link">سود خالص  </a>
                                 </li>
 
                             </ul>

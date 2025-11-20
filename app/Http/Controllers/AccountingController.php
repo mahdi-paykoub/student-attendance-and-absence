@@ -18,9 +18,11 @@ class AccountingController extends Controller
     public function registerPercantageView()
     {
         $students = Student::with('percentages.account')
+            ->whereHas('products') // فقط دانش‌آموزانی که محصول دارند
             ->withMax('products as last_assigned_at', 'product_student.created_at')
             ->orderByDesc('last_assigned_at')
             ->get();
+
 
         $accounts = Account::all();
 
@@ -106,7 +108,13 @@ class AccountingController extends Controller
 
         // ===== جمع پرداختی‌های دانش‌آموز =====
         $totalPayments = Payment::where('student_id', $student->id)->sum('amount');
+        $clearedChecks = \App\Models\Check::where('student_id', $student->id)
+            ->where('is_cleared', true)
+            ->sum('amount');
 
+        // اضافه کردن چک‌ها به پرداختی‌ها
+        $totalPayments += $clearedChecks;
+        
         // ===== محاسبه جمع کل محصولات + مالیات =====
         $totalProducts = $student->products->where('is_shared', true)->sum('price');
         $totalTax = $student->products->where('is_shared', true)->sum(function ($product) {

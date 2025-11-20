@@ -46,9 +46,6 @@
                             @enderror
 
                         </div>
-
-
-
                     </div>
                     <div class="col-lg-6">
                         {{-- عکس 2 --}}
@@ -63,7 +60,6 @@
                                     class="rounded">
                             </div>
                             @endif
-
                             <input type="file" name="photo_2" class="form-control">
 
                             @error('photo_2')
