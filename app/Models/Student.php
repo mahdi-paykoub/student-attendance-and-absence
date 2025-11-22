@@ -106,7 +106,9 @@ class Student extends Model
             ->where('is_cleared', true)
             ->sum('amount');
 
-        return $cash + $installments + $clearedChecks;
+        $discountAmount = $this->discounts()->first()?->amount;
+
+        return $cash + $installments + $clearedChecks + $discountAmount;
     }
 
 

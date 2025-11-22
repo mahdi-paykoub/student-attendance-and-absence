@@ -115,8 +115,10 @@
                         // چک‌های وصول شده
                         $totalClearedChecks = $student->checks()->where('is_cleared', true)->sum('amount');
 
+                        // مقدار تخفیف دانش آموز
+                        $discounAmount = $student->discounts()->first()?->amount;
                         // مجموع پرداختی‌ها (نقدی + قسط + چک وصول شده)
-                        $totalPaid = $totalPayments + $totalPrepayments + $totalClearedChecks;
+                        $totalPaid = ($totalPayments + $totalPrepayments + $totalClearedChecks) ;
 
                         // مجموع مبلغ محصولات + مالیات
                         $totalProducts = $student->products->sum(function ($product) {
@@ -125,7 +127,7 @@
                         });
 
                         // بدهی
-                        $debt = max($totalProducts - $totalPaid, 0);
+                        $debt = max($totalProducts - ($totalPaid + $discounAmount), 0);
                         @endphp
                         <td>{{ number_format($totalPaid) }}</td>
                         <td>{{ number_format($totalProducts) }}</td>
