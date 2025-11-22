@@ -226,8 +226,6 @@ Route::middleware(['auth', 'is_suporter'])->group(function () {
 
     Route::post('/suport-panel/students/add/note/{student}', [SuportPanelController::class, 'storeNote'])
         ->name('suporter.students.add.note');
-
-
 });
 
 

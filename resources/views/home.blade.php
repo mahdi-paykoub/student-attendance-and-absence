@@ -10,9 +10,17 @@
                         داشبورد
                     </div>
                     <div>
+
+                        @if(auth()->user()->role === 'admin')
                         <a href="{{ route('students.index') }}" class="btn btn-primary btn-sm">
                             پنل کاربری
                         </a>
+                        @elseif(auth()->user()->role === 'suporter')
+                        <a href="{{ route('suporter.filter.students') }}" class="btn btn-primary btn-sm">
+                            پنل کاربری
+                        </a>
+                        @endif
+
 
                     </div>
                 </div>
