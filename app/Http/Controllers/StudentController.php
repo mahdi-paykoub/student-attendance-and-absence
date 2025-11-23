@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Morilog\Jalali\Jalalian;
 use ZipArchive;
-
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -189,7 +189,12 @@ class StudentController extends Controller
             'first_name'      => 'required|string|max:255',
             'last_name'       => 'required|string|max:255',
             'father_name'     => 'nullable|string|max:255',
-            'national_code'   => 'required|digits:10|unique:students,national_code,' . $student->id,
+            'national_code' => [
+                'required',
+                'digits:10',
+                Rule::unique('students', 'national_code')->ignore($student->id),
+                new ValidNationalCode(),
+            ],
             'mobile_student'  => 'required|string|max:15',
             'grade_id'        => 'nullable|exists:grades,id',
             'major_id'        => 'nullable|exists:majors,id',
