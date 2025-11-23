@@ -7,6 +7,7 @@ use App\Models\SmsTemplate;
 use App\Models\Student;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
 
 class SmsTemplateController extends Controller
 {
@@ -155,5 +156,21 @@ class SmsTemplateController extends Controller
         $smsTemplate->delete();
 
         return redirect()->back()->with('success', 'قالب پیامک با موفقیت حذف شد.');
+    }
+
+    public function previousSms($studentId)
+    {
+        $sms = \App\Models\SmsReport::where('student_id', $studentId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // تبدیل تاریخ‌ها به شمسی
+        $sms->transform(function ($item) {
+            $item->created_at_sh = Jalalian::fromDateTime($item->created_at)->format('Y/m/d H:i');
+            $item->updated_at_sh = Jalalian::fromDateTime($item->updated_at)->format('Y/m/d H:i');
+            return $item;
+        });
+
+        return response()->json($sms);
     }
 }

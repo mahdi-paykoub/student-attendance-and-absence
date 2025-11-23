@@ -71,7 +71,7 @@
         </table>
     </div>
 </div>
-<div class="modal fade" id="sendSmsModal" tabindex="-1">
+<!-- <div class="modal fade" id="sendSmsModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="POST" action="{{ route('sms.send') }}">
             @csrf
@@ -108,6 +108,50 @@
             </div>
         </form>
     </div>
+</div> -->
+
+<div class="modal fade" id="sendSmsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <form method="POST" action="{{ route('sms.send') }}">
+            @csrf
+            <input type="hidden" name="student_id" id="modal-student-id">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ارسال پیامک</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>انتخاب قالب پیامک</label>
+                        <select id="template-selector" name="template_id" class="form-control mt-1">
+                            <option value="">انتخاب کنید</option>
+                            @foreach($templates as $tpl)
+                            <option value="{{ $tpl->id }}" data-body="{{ $tpl->content }}">
+                                {{ $tpl->title }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div id="placeholders-area"></div>
+
+                    <hr>
+                    <h6>پیامک‌های قبلی</h6>
+                    <div id="previous-sms-area">
+                        <p class="text-muted">لطفا روی دانش‌آموز کلیک کنید تا پیامک‌های قبلی نمایش داده شود.</p>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success bg-admin-green">ارسال</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection
@@ -115,6 +159,68 @@
 
 @section('scripts')
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById('sendSmsModal');
+        const prevSmsArea = document.getElementById('previous-sms-area');
+
+        modal.addEventListener('show.bs.modal', function(event) {
+            let btn = event.relatedTarget;
+            const studentId = btn.dataset.studentId;
+            document.getElementById('modal-student-id').value = studentId;
+
+            // پاک کردن قبلی‌ها
+            prevSmsArea.innerHTML = "<p class='text-muted'>در حال بارگذاری...</p>";
+            document.getElementById("template-selector").value = "";
+            document.getElementById("placeholders-area").innerHTML = "";
+
+            // fetch پیامک‌های قبلی همان دانش‌آموز
+            fetch(`/sms/previous/${studentId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        prevSmsArea.innerHTML = "<p class='text-muted'>هیچ پیامکی برای این دانش‌آموز وجود ندارد.</p>";
+                        return;
+                    }
+
+                    let html = `<table class="table table-sm table-bordered mt-2">
+                        <thead>
+                            <tr>
+                                <th>ارسال به</th>
+                                <th>متن</th>
+                                <th>تاریخ ارسال</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    data.forEach((sms, index) => {
+                        html += `<tr>
+                        <td>${sms.to}</td>
+                        <td>${sms.body}</td>
+                        <td>${sms.created_at_sh}</td>
+                    </tr>`;
+                    });
+                    html += `</tbody></table>`;
+                    prevSmsArea.innerHTML = html;
+                });
+
+        });
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // لیست placeholderهای شناخته‌شده از PHP
     const knownPlaceholders = @json($knownPlaceholders);
 
@@ -159,4 +265,5 @@
 </script>
 
 
+<script></script>
 @endsection
