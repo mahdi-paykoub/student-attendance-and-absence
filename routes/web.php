@@ -193,6 +193,10 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     // suporters
     Route::get('/supporters', [SupporterController::class, 'index'])->name('supporters.index');
+    Route::get('/supporters/add/view', [SupporterController::class, 'storeSuporterView'])
+        ->name('suporter.store.suporter.view');
+    Route::post('/supporters/add', [SupporterController::class, 'storeSuporter'])
+        ->name('suporter.store.suporter');
     Route::get('/supporters/{user}/assign-students', [SupporterController::class, 'assignStudentsForm'])->name('supporters.assign.form');
     Route::post('/supporters/{user}/assign-students', [SupporterController::class, 'assignStudents'])->name('supporters.assign.store');
     Route::delete('/supporters/delete/{user}', [SupporterController::class, 'destroy'])->name('supporters.destroy');

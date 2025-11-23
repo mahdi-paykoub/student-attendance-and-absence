@@ -15,7 +15,7 @@ class SuportPanelController extends Controller
         $user = auth()->user();
 
         $students = $user->students()
-            ->wherePivot('relation_type' , '!=' , 'referred')
+            ->wherePivot('relation_type', '!=', 'referred')
             ->with(['grade', 'major', 'products']);
 
         // فیلتر progress_status
@@ -27,6 +27,8 @@ class SuportPanelController extends Controller
 
         return view('suporter-panel.students', compact('students'));
     }
+
+   
 
     public function filterStudents(Request $request)
     {
@@ -108,18 +110,18 @@ class SuportPanelController extends Controller
 
     public function referentialSudents(Request $request)
     {
-         $students = auth()->user()
-        ->students()
-        ->wherePivot('relation_type', 'referred');
+        $students = auth()->user()
+            ->students()
+            ->wherePivot('relation_type', 'referred');
 
-    // فیلتر وضعیت رسیدگی روی pivot
-    if ($request->has('progress_status') && $request->progress_status != '') {
-        $students->wherePivot('progress_status', $request->progress_status);
-    }
+        // فیلتر وضعیت رسیدگی روی pivot
+        if ($request->has('progress_status') && $request->progress_status != '') {
+            $students->wherePivot('progress_status', $request->progress_status);
+        }
 
-    $students = $students->with(['grade', 'major', 'products'])->get();
+        $students = $students->with(['grade', 'major', 'products'])->get();
 
-    return view('suporter-panel.students', compact('students'));
+        return view('suporter-panel.students', compact('students'));
     }
 
     public function updateStatus(Student $student)

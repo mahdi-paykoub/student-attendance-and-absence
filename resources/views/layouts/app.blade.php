@@ -200,7 +200,7 @@
                                     <a href="{{ route('accounting.wallets.view') }}" class="nav-link">کیف پول</a>
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('accounting.profis.view') ? 'active' : '' }}">
-                                    <a href="{{ route('accounting.profis.view') }}" class="nav-link">سود خالص  </a>
+                                    <a href="{{ route('accounting.profis.view') }}" class="nav-link">سود خالص </a>
                                 </li>
 
                             </ul>
@@ -256,6 +256,11 @@
                                 <li class="nav-item {{ request()->routeIs('supporters.index') ? 'active' : '' }}">
                                     <a href="{{route('supporters.index')}}" class="nav-link">
                                         پشتبان ها
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('suporter.store.suporter.view') ? 'active' : '' }}">
+                                    <a href="{{route('suporter.store.suporter.view')}}" class="nav-link">
+                                         افزودن پشتیبان
                                     </a>
                                 </li>
 
