@@ -49,7 +49,7 @@
                         {{$student->major?->name}}
                     </td>
                     <td>
-                         <button
+                        <button
                             class="btn btn-sm btn-success bg-admin-green"
                             data-bs-toggle="modal"
                             data-bs-target="#sendSmsModal"
@@ -65,7 +65,7 @@
                 </tr>
                 @endforelse
 
-              
+
 
             </tbody>
         </table>
@@ -87,7 +87,7 @@
                     <div class="mb-3">
                         <label>انتخاب قالب پیامک</label>
                         <select id="template-selector" name="template_id" class="form-control mt-1">
-                            <option value="">انتخاب کنید   </option>
+                            <option value="">انتخاب کنید </option>
                             @foreach($templates as $tpl)
                             <option
                                 value="{{ $tpl->id }}"
@@ -105,7 +105,6 @@
                 <div class="modal-footer">
                     <button class="btn btn-success bg-admin-green">ارسال</button>
                 </div>
-
             </div>
         </form>
     </div>
@@ -116,7 +115,11 @@
 
 @section('scripts')
 <script>
+    // لیست placeholderهای شناخته‌شده از PHP
+    const knownPlaceholders = @json($knownPlaceholders);
+
     document.addEventListener("DOMContentLoaded", function() {
+
         // پر کردن student_id داخل مدال
         const modal = document.getElementById('sendSmsModal');
         modal.addEventListener('show.bs.modal', function(event) {
@@ -124,28 +127,36 @@
             document.getElementById('modal-student-id').value = btn.dataset.studentId;
         });
 
-        // شناسایی placeholder ها وقتی قالب انتخاب می‌شود
+        // شناسایی placeholderها وقتی قالب انتخاب می‌شود
         document.getElementById("template-selector").addEventListener("change", function() {
-            let body = this.selectedOptions[0].dataset.body || "";
-            console.log(body);
 
-            // پیدا کردن placeholderها مثل {name} یا {price}
+            let body = this.selectedOptions[0].dataset.body || "";
+
+            // پیدا کردن placeholderها مثل {first_name}
             let matches = body.match(/\{([^}]+)\}/g) || [];
 
             let area = document.getElementById("placeholders-area");
             area.innerHTML = "";
 
             matches.forEach(ph => {
+
                 let key = ph.replace('{', '').replace('}', '');
+
+                if (knownPlaceholders.includes(key)) {
+                    return; // اگر شناخته‌شده باشد، ورودی نمایش نده
+                }
+
+                // اگر ناشناخته بود input بساز
                 area.innerHTML += `
-                <div class="mb-3">
-                    <label>${key}</label>
-                    <input type="text" class="form-control" name="placeholders[${key}]">
-                </div>
-            `;
+                    <div class="mb-3">
+                        <label>${key}</label>
+                        <input type="text" class="form-control" name="placeholders[${key}]">
+                    </div>
+                `;
             });
         });
     });
 </script>
+
 
 @endsection

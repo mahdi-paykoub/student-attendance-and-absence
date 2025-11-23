@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\smsReport;
-use Illuminate\Support\Facades\Http;
-
+use App\Models\SmsReport;
 use App\Models\SmsTemplate;
 use App\Models\Student;
 use App\Services\SmsService;
@@ -38,7 +36,29 @@ class SmsTemplateController extends Controller
     {
         $students = Student::all();
         $templates = SmsTemplate::all();
-        return view('sms.send', compact('students', 'templates'));
+
+        $knownPlaceholders = [
+            'first_name',
+            'last_name',
+            'full_name',
+            'mobile',
+            'father_name',
+            'national_code',
+            'grade',
+            'major',
+            'mobile_student',
+            'phone',
+            'seat_number',
+            'province',
+            'city',
+            'address',
+
+            'total_products_price',
+            'debt',
+            'totalPayments',
+        ];
+        $knownPlaceholders = ($knownPlaceholders);
+        return view('sms.send', compact('students', 'templates', 'knownPlaceholders'));
     }
 
 
@@ -55,14 +75,51 @@ class SmsTemplateController extends Controller
         // متن قالب
         $body = $template->content;
 
-        // جایگذاری placeholderها
-        if ($request->placeholders) {
-            foreach ($request->placeholders as $key => $value) {
-                $body = str_replace('{' . $key . '}', $value, $body);
+
+
+        $totalProducts = $student->total_product_cost ?? ($student->product_total ?? 0);
+        $totalPayments = $student->total_payments ?? ($student->payment_total ?? 0);
+        $debt = $totalProducts - $totalPayments;
+        // لیست placeholderهای شناخته‌شده و مقدارشان از دیتابیس
+        $knownPlaceholders = [
+            'first_name' => $student->first_name,
+            'last_name'  => $student->last_name,
+            'full_name'    => $student->first_name . ' ' . $student->last_name,
+            'mobile'     => $student->mobile_student,
+            'father_name' => $student->father_name,
+            'national_code' => $student->national_code,
+            'grade' => $student->grade()->first()->name,
+            'major' => $student->major()->first()->name,
+            'mobile_student' => $student->mobile_student,
+            'phone' => $student->phone,
+            'seat_number' => $student->seat_number,
+            'province' => $student->province,
+            'city' => $student->city,
+            'address' => $student->address,
+
+            'total_products_price' => number_format($totalProducts),
+            'debt' => number_format($debt),
+            'totalPayments' => number_format($totalPayments),
+        ];
+
+        // تمام placeholderهای موجود در متن مثل {first_name}
+        preg_match_all('/{(.*?)}/', $body, $matches);
+
+        foreach ($matches[1] as $placeholder) {
+
+            if (array_key_exists($placeholder, $knownPlaceholders)) {
+                // اگر placeholder شناخته‌شده بود → از دیتابیس جایگزین کن
+                $value = $knownPlaceholders[$placeholder];
+            } else {
+                // اگر ناشناخته بود → از ورودی کاربر بخوان
+                $value = $request->placeholders[$placeholder] ?? '';
             }
+
+            // جایگزینی
+            $body = str_replace("{" . $placeholder . "}", $value, $body);
         }
 
-        // انتخاب شماره بر اساس receiver_type موجود در قالب
+        // تعیین شماره
         switch ($template->receiver_type) {
             case 'father':
                 $to = $student->mobile_father;
@@ -72,25 +129,31 @@ class SmsTemplateController extends Controller
                 break;
             default:
                 $to = $student->mobile_student;
-                break;
         }
 
         if (!$to) {
             return back()->with('error', 'شماره گیرنده موجود نیست.');
         }
 
+        $body = $body . "\nلغو 11";
         // ارسال پیامک
-        SmsService::send($to, $body .  "11\nلغو", $template);
+        SmsService::send($to, $body, $template->gateway);
 
-
-        smsReport::create([
+        SmsReport::create([
             'student_id'  => $student->id,
             'template_id' => $template->id,
             'to'          => $to,
             'body'        => $body,
         ]);
 
-
         return back()->with('success', "پیامک با موفقیت به {$to} ارسال شد.");
+    }
+
+
+    public function sendDelete(SmsTemplate $smsTemplate)
+    {
+        $smsTemplate->delete();
+
+        return redirect()->back()->with('success', 'قالب پیامک با موفقیت حذف شد.');
     }
 }

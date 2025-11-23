@@ -56,6 +56,85 @@
 
             <button class="btn btn-success bg-admin-green mt-3">ذخیره</button>
         </form>
+
+        <table class="table table-bordered mt-3">
+            <thead class="table-light">
+                <tr>
+                    <th>کلید (Placeholder)</th>
+                    <th>توضیح</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>first_name</td>
+                    <td>نام کوچک دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>last_name</td>
+                    <td>نام خانوادگی دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>full_name</td>
+                    <td>نام و نام خانوادگی کامل دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>mobile</td>
+                    <td>شماره موبایل دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>father_name</td>
+                    <td>نام پدر دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>national_code</td>
+                    <td>کد ملی دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>grade</td>
+                    <td>پایه تحصیلی (مثلاً دهم، یازدهم، دوازدهم)</td>
+                </tr>
+                <tr>
+                    <td>major</td>
+                    <td>رشته تحصیلی (ریاضی، تجربی، انسانی و ...)</td>
+                </tr>
+                <tr>
+                    <td>mobile_student</td>
+                    <td>شماره موبایل دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>phone</td>
+                    <td>شماره تلفن ثابت منزل</td>
+                </tr>
+                <tr>
+                    <td>seat_number</td>
+                    <td>شماره صندلی یا شماره اختصاصی دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>province</td>
+                    <td>استان محل سکونت</td>
+                </tr>
+                <tr>
+                    <td>city</td>
+                    <td>شهر محل سکونت</td>
+                </tr>
+                <tr>
+                    <td>address</td>
+                    <td>آدرس کامل دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>total_products_price</td>
+                    <td>مجموع قیمت تمام محصولات/خدمات خریداری‌شده</td>
+                </tr>
+                <tr>
+                    <td>debt</td>
+                    <td>مقدار بدهی فعلی دانش‌آموز</td>
+                </tr>
+                <tr>
+                    <td>totalPayments</td>
+                    <td>مجموع مبالغ پرداختی دانش‌آموز</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
 
@@ -96,13 +175,15 @@
                     </td>
 
                     <td>
-                        <form action="">
+                        <form action="{{ route('sms.delete', $temp->id) }}" method="POST">
                             @csrf
+                            @method('DELETE')
                             <button class="btn btn-danger btn-sm" type="submit">
                                 حذف
                             </button>
                         </form>
                     </td>
+
                 </tr>
                 @endforeach
             </tbody>

@@ -265,26 +265,28 @@ class AccountingController extends Controller
                 $q->where('type', 'agency');
             })->first();
 
-            $totalAmount = $centralWallet->balance;
+            if ($centralWallet) {
+                $totalAmount = $centralWallet->balance;
 
-            // 3) محاسبه سهم شریک
-            $partnerShare = $totalAmount * ($partner['percent'] / 100);
+                // 3) محاسبه سهم شریک
+                $partnerShare = $totalAmount * ($partner['percent'] / 100);
 
-            // 4) گرفتن کیف پول شریک
-            $partnerWallet = Wallet::where('account_id', $account->id)->first();
+                // 4) گرفتن کیف پول شریک
+                $partnerWallet = Wallet::where('account_id', $account->id)->first();
 
-            // اگر کیف پول شریک هنوز وجود ندارد → بساز
-            if (!$partnerWallet) {
-                $partnerWallet = Wallet::create([
-                    'account_id' => $account->id,
-                    'balance' => 0
+                // اگر کیف پول شریک هنوز وجود ندارد → بساز
+                if (!$partnerWallet) {
+                    $partnerWallet = Wallet::create([
+                        'account_id' => $account->id,
+                        'balance' => 0
+                    ]);
+                }
+
+                // 5) بروزرسانی مبلغ کیف پول شریک
+                $partnerWallet->update([
+                    'balance' => $partnerShare
                 ]);
             }
-
-            // 5) بروزرسانی مبلغ کیف پول شریک
-            $partnerWallet->update([
-                'balance' => $partnerShare
-            ]);
         }
 
 

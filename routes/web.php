@@ -187,7 +187,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('sms/store/sms-template', [SmsTemplateController::class, 'storeSmsTemplate'])->name('sms.store.sms.template');
     Route::get('sms/send/view', [SmsTemplateController::class, 'sendSmsView'])->name('sms.send.view');
     Route::post('/sms/send', [SmsTemplateController::class, 'sendSms'])->name('sms.send');
-
+    Route::delete('/sms/delete/{smsTemplate}', [SmsTemplateController::class, 'sendDelete'])->name('sms.delete');
+    
 
     // suporters
     Route::get('/supporters', [SupporterController::class, 'index'])->name('supporters.index');

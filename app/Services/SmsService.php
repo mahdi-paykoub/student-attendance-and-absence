@@ -16,17 +16,14 @@ class SmsService
      * @return array
      * @throws \Exception
      */
-    public static function send(string $to, string $message , $gateway)
+    public static function send(string $to, string $message, $gateway)
     {
         // URL کامل
-        $url = "https://api.sabanovin.com/v1/" . self::$apiKey . "/sms/send.json";
+
+        $url = "https://api.sabanovin.com/v1/sa346962026:30VS1kkn0icUcAreALcKZ41mcPrkt0xEwMvS/sms/send.json?gateway=" . $gateway . " &to=" . $to . "&text=" . $message . "";
 
         // GET request با query
-        $response = Http::get($url, [
-            'gateway' => $gateway,
-            'to'      => $to,
-            'text'    => $message,
-        ]);
+        $response = Http::get($url);
         // dd($response->body());
         if ($response->failed()) {
             throw new \Exception("ارسال پیامک موفق نبود: " . $response->body());
