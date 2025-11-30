@@ -17,7 +17,7 @@ class AccountingController extends Controller
 {
     public function registerPercantageView()
     {
-        $students = Student::with('percentages.account')
+        $students = Student::with('percentages.account' ,'products')
             ->whereHas('products') // فقط دانش‌آموزانی که محصول دارند
             ->withMax('products as last_assigned_at', 'product_student.created_at')
             ->orderByDesc('last_assigned_at')

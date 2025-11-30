@@ -50,7 +50,15 @@
                     <td>{{ $student->national_code }}</td>
                     <td>{{ optional($student->grade)->name }}</td>
                     <td>{{ optional($student->major)->name }}</td>
-                    <td>لیست محصول</td>
+                    <td>
+                        @foreach($student->products as $product)
+                        {{ $product->title }}
+                        @if(!$loop->last)
+                        -
+                        @endif
+                        @endforeach
+
+                    </td>
 
 
                     <td>
@@ -134,7 +142,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی  محصول دریافت  نکرده است.</td>
+                    <td colspan="11" class="text-center text-muted">هیچ دانش‌آموزی محصول دریافت نکرده است.</td>
                 </tr>
                 @endforelse
             </tbody>
