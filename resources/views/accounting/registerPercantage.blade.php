@@ -50,7 +50,7 @@
                     <td>{{ $student->national_code }}</td>
                     <td>{{ optional($student->grade)->name }}</td>
                     <td>{{ optional($student->major)->name }}</td>
-                    <td>
+                    <td class="fs14">
                         @foreach($student->products as $product)
                         {{ $product->title }}
                         @if(!$loop->last)
@@ -121,9 +121,14 @@
                             if($percentage){
                             $totalPayments = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
 
-                            $totalDue = ($totalPrice + $totalTax) - $totalPayments;
-                            $baseShare = $totalPrice * ($percentage / 100);
+                            $collectedChecks = \App\Models\Check::where('student_id', $student->id)
+                            ->where('is_cleared', 1)
+                            ->sum('amount');
 
+                            $paidTotal = $totalPayments + $collectedChecks;
+
+                            $totalDue = ($totalPrice + $totalTax) - $paidTotal;
+                            $baseShare = $totalPrice * ($percentage / 100);
                             }
                             $agencyShare = $baseShare - $totalDue;
 
