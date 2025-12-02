@@ -260,7 +260,7 @@
                                 </li>
                                 <li class="nav-item {{ request()->routeIs('suporter.store.suporter.view') ? 'active' : '' }}">
                                     <a href="{{route('suporter.store.suporter.view')}}" class="nav-link">
-                                         افزودن پشتیبان
+                                        افزودن پشتیبان
                                     </a>
                                 </li>
 
@@ -270,9 +270,29 @@
 
 
                     {{-- منوی کاربران --}}
-                    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            data-bs-toggle="collapse"
+                            href="#userMenu"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('supporters.*') ? 'true' : 'false' }}"
+                            aria-controls="userMenu">
+                            کاربران
+                            <span class="bi bi-chevron-down"></span>
+                        </a>
+                        <div class="collapse {{ request()->routeIs('supporters.*') ? 'show' : '' }}" id="userMenu">
+                            <ul class="nav flex-column pe-4">
+                                <li class="nav-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                    <a href="{{ route('users.index') }}" class="nav-link">کاربران</a>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('users.create') ? 'active' : '' }}">
+                                    <a href="{{ route('users.create') }}" class="nav-link">ایجاد کاربر</a>
+                                </li>
+
+                            </ul>
+                        </div>
                     </li>
+
                     {{-- زیرمنوی تنظیمات پایه‌ای --}}
                     <li class="nav-item">
                         <a class="nav-link d-flex justify-content-between align-items-center"

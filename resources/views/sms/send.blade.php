@@ -194,7 +194,7 @@
                     data.forEach((sms, index) => {
                         html += `<tr>
                         <td>${sms.to}</td>
-                        <td>${sms.body}</td>
+                        <td>${sms.template.title}</td>
                         <td>${sms.created_at_sh}</td>
                     </tr>`;
                     });

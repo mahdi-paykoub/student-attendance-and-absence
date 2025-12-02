@@ -160,7 +160,7 @@ class SmsTemplateController extends Controller
 
     public function previousSms($studentId)
     {
-        $sms = \App\Models\SmsReport::where('student_id', $studentId)
+        $sms = \App\Models\SmsReport::where('student_id', $studentId)->with('template')
             ->orderByDesc('created_at')
             ->get();
 

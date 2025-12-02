@@ -70,10 +70,10 @@
                 <div class="col-lg-6 ">
                     <div class="d-flex align-items-center justify-content-end">
                         <input
-                            type="number"
+                            type="text"
                             name="amount"
                             id="amount"
-                            class="form-control w-25 "
+                            class="form-control w-50 price-input"
                             placeholder="مقدار تخفیف"
                             value="{{optional($student->discounts->first())->amount ?? ''}}">
                         <button type="submit" class="btn btn-success bg-admin-green me-2">ذخیره تغییرات</button>

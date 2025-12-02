@@ -44,10 +44,10 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => 0, // کاربران ایجاد شده عادی هستند
+            'role' => 'none',
         ]);
 
-        return redirect()->route('users.index')->with('success', 'کاربر با موفقیت اضافه شد.');
+        return redirect()->route('users.index')->with('success', 'کاربر با موفقیت ایجاد شد');
     }
 
     /**
@@ -112,6 +112,4 @@ class UserController extends Controller
             return redirect()->back()->with('info', 'کاربر ادمین به‌دلایل امنیتی نمی‌تواند پشتیبان شود.');
         }
     }
-
-    
 }
