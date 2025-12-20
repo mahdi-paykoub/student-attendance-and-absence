@@ -138,13 +138,15 @@ class SmsTemplateController extends Controller
 
         $body = $body . "\nلغو 11";
         // ارسال پیامک
-        SmsService::send($to, $body, $template->gateway);
+        $res =  SmsService::send($to, $body, $template->gateway);
 
         SmsReport::create([
             'student_id'  => $student->id,
             'template_id' => $template->id,
             'to'          => $to,
             'body'        => $body,
+            'status'    => $res['entries'][0]['status'] ?? '',
+
         ]);
 
         return back()->with('success', "پیامک با موفقیت به {$to} ارسال شد.");

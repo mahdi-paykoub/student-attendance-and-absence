@@ -7,6 +7,7 @@ use App\Models\Check;
 use App\Models\Deposit;
 use App\Models\Grade;
 use App\Models\Major;
+use App\Models\Payment;
 use App\Models\SmsReport;
 use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
@@ -196,6 +197,22 @@ class ReportController extends Controller
 
         return view('reports.checks.index', compact('checks', 'totalCleared', 'totalUnCleared'));
     }
+    public function getPaysView()
+    {
+        $payments = Payment::with('student')->latest()->get();
+
+        return view('reports.student-pays.index', compact('payments'));
+    }
+    public function getPaysPdf()
+    {
+        $payments = Payment::with('student')->latest()->get();
+
+        // ارسال داده‌ها به ویو PDF
+        $pdf = Pdf::loadView('pdf.pays', compact('payments'));
+        return $pdf->stream();
+    }
+
+
 
     public function getChecksPdf(Request $request)
     {

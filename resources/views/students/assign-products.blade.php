@@ -141,6 +141,7 @@
                     <th>تاریخ و ساعت</th>
                     <th>مبلغ</th>
                     <th>شماره فیش / سریال</th>
+                    <th> کارت </th>
                     <th>تصویر</th>
                     <th>عملیات</th>
                 </tr>
@@ -156,6 +157,7 @@
                     </td>
                     <td>{{number_format($payment->amount) }}</td>
                     <td>{{ $payment->voucher_number }}</td>
+                    <td>{{ $payment->paymentCard->name }}</td>
                     <td>
                         @if($payment->receipt_image)
                         <a href="{{ route('payments.receipt', $payment->id) }}" target="_blank">
@@ -241,14 +243,16 @@
             }
         });
 
-        // اعمال تخفیف اگر وارد شده باشد
-        let discount = parseFloat(discountInput.value) || 0;
-        let finalTotal = total - discount;
+        // حذف ویرگول‌ها از تخفیف
+        let discountRaw = discountInput.value.replace(/,/g, '');
+        let discount = parseFloat(discountRaw) || 0;
 
-        if (finalTotal < 0) finalTotal = 0; // جلوگیری از عدد منفی
+        let finalTotal = total - discount;
+        if (finalTotal < 0) finalTotal = 0;
 
         totalPriceEl.textContent = finalTotal.toLocaleString();
     }
+
 
     // وقتی تغییرات روی محصولات یا تخفیف اعمال شد، دوباره محاسبه کن
     checkboxes.forEach(chk => chk.addEventListener('change', calculateTotal));

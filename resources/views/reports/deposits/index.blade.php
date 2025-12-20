@@ -64,7 +64,7 @@
                     <td>{{ $deposit->title }}</td>
                     <td>{{ $deposit->account->name }}</td>
                     <td>{{ number_format($deposit->amount) }}</td>
-                    <td>{{ $deposit->created_at->format('Y-m-d') }}</td>
+                    <td>{{ \Morilog\Jalali\Jalalian::fromCarbon($deposit->created_at)->format('Y/m/d') }}</td>
                 </tr>
                 @empty
                 <tr>

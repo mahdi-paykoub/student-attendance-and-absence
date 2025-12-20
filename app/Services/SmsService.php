@@ -24,7 +24,7 @@ class SmsService
 
         // GET request با query
         $response = Http::get($url);
-        // dd($response->body());
+
         if ($response->failed()) {
             throw new \Exception("ارسال پیامک موفق نبود: " . $response->body());
         }

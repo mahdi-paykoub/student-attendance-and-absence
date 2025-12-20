@@ -33,7 +33,7 @@
 
                 <div class="col-md-6 mt-3">
                     <label class="form-label">میزان واریزی</label>
-                    <input type="number" name="amount" class="form-control">
+                    <input type="text" name="amount" class="form-control price-input">
                 </div>
 
 
@@ -73,7 +73,7 @@
         <h4 class="fs18 fw-bold">همه واریزی ها</h4>
     </div>
 
-    
+
     <div class="table-wrap">
         <table class="table table-striped">
             <thead class="table-light">
@@ -84,6 +84,7 @@
                     <th>طرف حساب</th>
                     <th>تاریخ واریزی</th>
                     <th>تصویر</th>
+                    <th>عملیات</th>
                 </tr>
             </thead>
 
@@ -114,6 +115,19 @@
                         @else
                         -
                         @endif
+                    </td>
+                    <td>
+                        <form action="{{ route('accounting.deposit.delete', $deposit->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('آیا از حذف این واریزی مطمئن هستید؟ مبلغ به کیف پول برمی‌گردد.')">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                حذف
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach

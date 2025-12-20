@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('template_id')->nullable()->constrained('sms_templates')->onDelete('set null');
             $table->string('to');
             $table->text('body'); 
+            $table->string('status')->nullable(); 
             $table->timestamps();
         });
     }

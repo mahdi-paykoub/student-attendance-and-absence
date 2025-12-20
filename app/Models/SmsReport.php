@@ -15,6 +15,7 @@ class SmsReport extends Model
         'template_id',
         'to',
         'body',
+        'status',
     ];
 
     public function student()

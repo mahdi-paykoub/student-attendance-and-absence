@@ -510,6 +510,49 @@ class AccountingController extends Controller
         return redirect()->back()->with('success', 'واریزی با موفقیت ثبت شد.');
     }
 
+    public function deleteDeposit(Deposit $deposit)
+    {
+        DB::transaction(function () use ($deposit) {
+
+            // 1️⃣ حذف نرم واریزی
+            $deposit->delete();
+
+            // 2️⃣ گرفتن کیف پول مربوط به اکانت
+            $wallet = Wallet::where('account_id', $deposit->account_id)->first();
+
+            if (!$wallet) {
+                return;
+            }
+
+           
+
+            // 4️⃣ ثبت تراکنش برگشت پول (شارژ کیف پول)
+            WalletTransaction::create([
+                'wallet_id'  => $wallet->id,
+                'deposit_id' => $deposit->id,
+                'type'       => 'deposit',
+                'amount'     => +$deposit->amount,
+                'meta'       => json_encode([
+                    'description' => 'Deposit deleted - refund'
+                ]),
+                'status'     => 'success'
+            ]);
+
+            // 5️⃣ محاسبه مجدد موجودی کیف پول
+            $newBalance = WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
+
+            // 6️⃣ آپدیت موجودی
+            $wallet->update([
+                'balance' => $newBalance
+            ]);
+
+            // ⚠️ اگر بعداً خواستی:
+            // اینجا بهترین جا برای اصلاح سهم شرکا (partners) هست
+        });
+
+        return redirect()->back()->with('success', 'واریزی حذف شد و مبلغ به کیف پول برگشت داده شد.');
+    }
+
     public  function getImageDeposits($filename)
     {
         $path = storage_path('app/private/deposits/' . $filename);
@@ -560,7 +603,7 @@ class AccountingController extends Controller
             : null;
 
         $students = Student::with('products', 'percentages.account')
-            ->whereHas('products')  
+            ->whereHas('products')
             ->get();
 
 

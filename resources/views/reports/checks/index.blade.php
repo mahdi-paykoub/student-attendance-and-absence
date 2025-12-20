@@ -81,7 +81,9 @@
                     <th>مبلغ</th>
                     <th>سریال</th>
                     <th>شناسه صیاد</th>
+                    <th>موبایل</th>
                     <th>نام صاحب چک</th>
+                    <th>تغییر وضعیت</th>
                     <th>وضعیت وصول</th>
                 </tr>
             </thead>
@@ -95,8 +97,25 @@
                     <td>{{ number_format($check->amount) }} تومان</td>
                     <td>{{ $check->serial }}</td>
                     <td>{{ $check->sayad_code }}</td>
+                    <td>{{ $check->owner_phone }}</td>
                     <td>{{ $check->owner_name }}</td>
+                    <td class="d-flex align-items-center">
 
+                        @if(!$check->is_cleared)
+                        <form action="{{ route('checks.clear', ['check' => $check->id, 'student' => $check->student_id ]) }}" method="POST" onsubmit="return confirm('آیا از وصول این چک مطمئن هستید؟')">
+                            @csrf
+                            <button class="btn btn-success bg-admin-green me-1 btn-sm">
+                                وصول شود
+                            </button>
+                        </form>
+                        @else
+                        <button class="btn btn-dark  me-1 btn-sm">
+                          وصول شده
+                        </button>
+                        @endif
+
+
+                    </td>
                     <td>
                         @if($check->is_cleared)
                         <span class="badge bg-admin-green">وصول شده</span>

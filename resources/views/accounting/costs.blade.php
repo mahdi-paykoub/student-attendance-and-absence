@@ -35,7 +35,7 @@
                 </div>
                 <div class="col-md-6 mt-3">
                     <label class="form-label"> مقدار هزینه</label>
-                    <input type="number" name="amount" class="form-control" required>
+                    <input type="text" name="amount" class="form-control price-input" required>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label class="form-label">نوع هزینه</label>

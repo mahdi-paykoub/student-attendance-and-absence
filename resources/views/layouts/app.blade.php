@@ -147,9 +147,10 @@
                                 </li>
 
 
-                                <li class="nav-item {{ request()->routeIs('report.get.checks.view') ? 'active' : '' }}">
-                                    <a href="{{route('report.get.checks.view')}}" class="nav-link">
-                                        چک ها
+
+                                <li class="nav-item {{ request()->routeIs('report.get.pays.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.get.pays.view')}}" class="nav-link">
+                                        واریزی دانش‌آموان
                                     </a>
                                 </li>
 
@@ -202,7 +203,11 @@
                                 <li class="nav-item {{ request()->routeIs('accounting.profis.view') ? 'active' : '' }}">
                                     <a href="{{ route('accounting.profis.view') }}" class="nav-link">سود خالص </a>
                                 </li>
-
+                                <li class="nav-item {{ request()->routeIs('report.get.checks.view') ? 'active' : '' }}">
+                                    <a href="{{route('report.get.checks.view')}}" class="nav-link">
+                                        چک ها
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>

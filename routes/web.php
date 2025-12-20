@@ -25,8 +25,6 @@ use App\Http\Controllers\{
 use Illuminate\Support\Facades\Auth;
 
 
-
-
 // admin
 Route::middleware(['auth', 'is_admin'])->group(function () {
 
@@ -152,6 +150,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     Route::get('reports/get/checks/view', [ReportController::class, 'getChecksView'])->name('report.get.checks.view');
     Route::get('reports/get/checks/pdf', [ReportController::class, 'getChecksPdf'])->name('report.get.checks.pdf');
+    Route::get('reports/get/pay/view', [ReportController::class, 'getPaysView'])->name('report.get.pays.view');
+    Route::get('reports/get/pays/pdf', [ReportController::class, 'getPaysPdf'])->name('report.get.pays.pdf');
 
     Route::get('reports/sms', [ReportController::class, 'smsReportsView'])->name('report.sms');
 
@@ -179,6 +179,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     //deposits
     Route::get('accounting/deposits/view', [AccountingController::class, 'deposistView'])->name('accounting.deposits.view');
     Route::post('accounting/deposits/create', [AccountingController::class, 'deposistCreate'])->name('accounting.deposits.create');
+    Route::delete('accounting/deposits/delete/{deposit}', [AccountingController::class, 'deleteDeposit'])->name('accounting.deposit.delete');
     Route::get('accounting/get/deposits/image/{filename}', [AccountingController::class, 'getImageDeposits'])->name('get.image.deposits');
 
 

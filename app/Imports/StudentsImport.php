@@ -97,7 +97,7 @@ class StudentsImport implements ToModel, WithHeadingRow
             'mobile_father'   => $row['mobile_father'] ?? null,
             'mobile_mother'   => $row['mobile_mother'] ?? null,
             'notes'           => $row['notes'] ?? null,
-            'birthday'        => $birthday,   // 🟦 اینجا اضافه شد
+            'birthday'        => $birthday,   
 
             // 'seat_number'     => $row['seat_number'] ?? null,
         ]);
