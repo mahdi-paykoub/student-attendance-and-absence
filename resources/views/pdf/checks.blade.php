@@ -63,7 +63,7 @@
         <tbody>
             @foreach($checks as $index => $check)
             <tr class="text-center">
-                <td>{{ $index + 1 }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $check->student->first_name }} {{ $check->student->last_name }}</td>
                 <td>{{ \Morilog\Jalali\Jalalian::forge($check->date)->format('Y/m/d') }}</td>
                 <td>{{ number_format($check->amount) }} تومان</td>

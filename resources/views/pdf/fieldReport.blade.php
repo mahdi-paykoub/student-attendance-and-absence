@@ -90,13 +90,19 @@
                 @php
                 $totalPayments = $student->payments()->where('payment_type', 'cash')->sum('amount');
                 $totalPrepayments = $student->payments()->where('payment_type', 'installment')->sum('amount');
-                $totalChecks = $student->checks()->sum('amount');
+                $totalChecks = $student->checks()->where('is_cleared', true)->sum('amount'); // اضافه کردن شرط
                 $totalPaid = $totalPayments + $totalPrepayments + $totalChecks;
+
                 $totalProducts = $student->products->sum(function ($product) {
                 $taxAmount = $product->price * ($product->tax_percent / 100);
                 return $product->price + $taxAmount;
                 });
-                $debt = max($totalProducts - $totalPaid, 0);
+
+                // اعمال تخفیف (اگر در accessor وجود دارد)
+                $discount = $student->discounts()->first()?->amount ?? 0;
+                $totalProductsAfterDiscount = max($totalProducts - $discount, 0);
+
+                $debt = max($totalProductsAfterDiscount - $totalPaid, 0);
                 @endphp
                 <td>{{ number_format($totalPaid) }}</td>
                 <td>{{ number_format($totalProducts) }}</td>

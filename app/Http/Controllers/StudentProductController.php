@@ -158,7 +158,8 @@ class StudentProductController extends Controller
                 'type' => 'deposit',
                 'amount' => $final,
                 'meta' => json_encode([
-                    'description' => "Central contribution of the student: {$student->id}"
+                    'description' => "Central contribution of the student: {$student->id}",
+                    'for' => "ثبت محصول جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
                 ]),
                 'status' => 'success'
             ]);
@@ -202,7 +203,8 @@ class StudentProductController extends Controller
                 'type' => 'deposit',
                 'amount' => $agencyShare,
                 'meta' => json_encode([
-                    'description' => "Agency contribution of student: {$student->id}"
+                    'description' => "Agency contribution of student: {$student->id}",
+                    'for' => "ثبت محصول جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
                 ]),
                 'status' => 'success'
             ]);
@@ -210,34 +212,68 @@ class StudentProductController extends Controller
             $totalBalance = \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->sum('amount');
             $wallet->balance = $totalBalance;
             $wallet->save();
+
             // partners
             // ======================================
-            $totalAmount = $wallet->balance;
+            // مبلغی که الان برای نمایندگی ثبت شده (اثر خالص این دانش‌آموز)
+            $agencyDeltaAmount = $agencyShare;
+
             $partners = Account::where('type', 'person')
                 ->orderBy('id')
                 ->limit(3)
                 ->get();
-            foreach ($partners as $partner) {
-                if ($partner->percentage) {
-                    // 3) محاسبه سهم شریک
-                    $partnerShare = $totalAmount * ($partner->percentage / 100);
-                    // 4) گرفتن کیف پول شریک
-                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                    if (!$partnerWallet) {
-                        $partnerWallet = Wallet::create([
-                            'account_id' => $partner->id,
-                            'balance' => 0
-                        ]);
-                    }
 
-                    // 5) بروزرسانی مبلغ کیف پول شریک
-                    $partnerWallet->update([
-                        'balance' => $partnerShare
-                    ]);
+            foreach ($partners as $partner) {
+
+                if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                    continue;
                 }
+
+                // 1️⃣ محاسبه سهم شریک از همین دانش‌آموز
+                $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                if ($partnerShare == 0) {
+                    continue;
+                }
+
+                // 2️⃣ گرفتن یا ساخت کیف پول شریک
+                $partnerWallet = Wallet::firstOrCreate(
+                    ['account_id' => $partner->id],
+                    ['balance' => 0]
+                );
+
+                // 3️⃣ حذف تراکنش قبلی این دانش‌آموز برای این شریک
+                WalletTransaction::where('wallet_id', $partnerWallet->id)
+                    ->whereJsonContains(
+                        'meta->description',
+                        "Partner share from student: {$student->id}"
+                    )
+                    ->delete();
+
+                // 4️⃣ ثبت تراکنش جدید سهم شریک
+                WalletTransaction::create([
+                    'wallet_id' => $partnerWallet->id,
+                    'type'      => 'deposit', // یا partner_share اگر enum جدا داری
+                    'amount'    => $partnerShare,
+                    'meta'      => json_encode([
+                        'description' => "Partner share from student: {$student->id}",
+                        'student_id'  => $student->id,
+                        'agency_id'   => $agencyAccount->id,
+                        'for' => "ثبت محصول جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
+                    ]),
+                    'status'    => 'success'
+                ]);
+
+                // 5️⃣ محاسبه و بروزرسانی موجودی کیف پول شریک
+                $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                    ->sum('amount');
+
+                $partnerWallet->update([
+                    'balance' => $newBalance
+                ]);
             }
             // ======================================
+
         }
         // ============================================================
 
@@ -364,7 +400,8 @@ class StudentProductController extends Controller
                         'type' => 'deposit',
                         'amount' => $agencyShare,
                         'meta' => json_encode([
-                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}"
+                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}",
+                            'for' => "ثبت پرداخت جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
                         ]),
                         'status' => 'success'
                     ]);
@@ -376,32 +413,60 @@ class StudentProductController extends Controller
 
                     // partners
                     // ======================================
-                    $totalAmount = $wallet->balance;
+
+                    // مبلغی که الان از این پرداخت وارد کیف پول نمایندگی شده
+                    $agencyDeltaAmount = $payment->amount;
+
                     $partners = Account::where('type', 'person')
                         ->orderBy('id')
                         ->limit(3)
                         ->get();
-                    foreach ($partners as $partner) {
-                        if ($partner->percentage) {
-                            // 3) محاسبه سهم شریک
-                            $partnerShare = $totalAmount * ($partner->percentage / 100);
-                            // 4) گرفتن کیف پول شریک
-                            $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                            // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                            if (!$partnerWallet) {
-                                $partnerWallet = Wallet::create([
-                                    'account_id' => $partner->id,
-                                    'balance' => 0
-                                ]);
-                            }
 
-                            // 5) بروزرسانی مبلغ کیف پول شریک
-                            $partnerWallet->update([
-                                'balance' => $partnerShare
-                            ]);
+                    foreach ($partners as $partner) {
+
+                        if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                            continue;
                         }
+
+                        // 1️⃣ سهم شریک فقط از همین پرداخت
+                        $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                        if ($partnerShare == 0) {
+                            continue;
+                        }
+
+                        // 2️⃣ گرفتن یا ساخت کیف پول شریک
+                        $partnerWallet = Wallet::firstOrCreate(
+                            ['account_id' => $partner->id],
+                            ['balance' => 0]
+                        );
+
+                        // 3️⃣ ثبت تراکنش سهم شریک
+                        WalletTransaction::create([
+                            'wallet_id' => $partnerWallet->id,
+                            'type'      => 'deposit',
+                            'amount'    => $partnerShare,
+                            'meta'      => json_encode([
+                                'description' => 'Partner share from payment',
+                                'payment_id'  => $payment->id,
+                                'student_id'  => $student->id,
+                                'agency_id'   => $agencyAccount->id,
+                                'for' => "ثبت پرداخت جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
+                            ]),
+                            'status'    => 'success'
+                        ]);
+
+                        // 4️⃣ محاسبه موجودی جدید شریک
+                        $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                            ->sum('amount');
+
+                        // 5️⃣ بروزرسانی موجودی
+                        $partnerWallet->update([
+                            'balance' => $newBalance
+                        ]);
                     }
                     // ======================================
+
 
 
                 }
@@ -477,7 +542,8 @@ class StudentProductController extends Controller
                         'type' => 'deposit',
                         'amount' => $agencyShare,
                         'meta' => json_encode([
-                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}"
+                            'description' => "Agency share from payment ID: {$payment->id} for student ID: {$student->id}",
+                            'for' => "ثبت پرداخت جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
                         ]),
                         'status' => 'success'
                     ]);
@@ -489,32 +555,60 @@ class StudentProductController extends Controller
 
                     // partners
                     // ======================================
-                    $totalAmount = $wallet->balance;
+
+                    // مبلغی که الان از این پرداخت وارد کیف پول نمایندگی شده
+                    $agencyDeltaAmount = $payment->amount;
+
                     $partners = Account::where('type', 'person')
                         ->orderBy('id')
                         ->limit(3)
                         ->get();
-                    foreach ($partners as $partner) {
-                        if ($partner->percentage) {
-                            // 3) محاسبه سهم شریک
-                            $partnerShare = $totalAmount * ($partner->percentage / 100);
-                            // 4) گرفتن کیف پول شریک
-                            $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                            // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                            if (!$partnerWallet) {
-                                $partnerWallet = Wallet::create([
-                                    'account_id' => $partner->id,
-                                    'balance' => 0
-                                ]);
-                            }
 
-                            // 5) بروزرسانی مبلغ کیف پول شریک
-                            $partnerWallet->update([
-                                'balance' => $partnerShare
-                            ]);
+                    foreach ($partners as $partner) {
+
+                        if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                            continue;
                         }
+
+                        // سهم شریک فقط از همین پرداخت
+                        $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                        if ($partnerShare == 0) {
+                            continue;
+                        }
+
+                        // گرفتن یا ساخت کیف پول شریک
+                        $partnerWallet = Wallet::firstOrCreate(
+                            ['account_id' => $partner->id],
+                            ['balance' => 0]
+                        );
+
+                        // ثبت تراکنش سهم شریک
+                        WalletTransaction::create([
+                            'wallet_id' => $partnerWallet->id,
+                            'type'      => 'deposit',
+                            'amount'    => $partnerShare,
+                            'meta'      => json_encode([
+                                'description' => 'Partner share from prepayment',
+                                'payment_id'  => $payment->id,
+                                'student_id'  => $student->id,
+                                'agency_id'   => $agencyAccount->id,
+                                'for' => "ثبت پرداخت جدید برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
+                            ]),
+                            'status'    => 'success'
+                        ]);
+
+                        // محاسبه موجودی جدید شریک
+                        $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                            ->sum('amount');
+
+                        // بروزرسانی موجودی
+                        $partnerWallet->update([
+                            'balance' => $newBalance
+                        ]);
                     }
                     // ======================================
+
                 }
             }
         }
@@ -609,7 +703,8 @@ class StudentProductController extends Controller
                     'type' => 'withdraw',
                     'amount' => - ($agencyShare),
                     'meta' => json_encode([
-                        'description' => "Revert agency share due to payment deletion. Payment ID: {$payment->id}"
+                        'description' => "Revert agency share due to payment deletion. Payment ID: {$payment->id}",
+                        'for' => "حذف پرداخت برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
                     ]),
                     'status' => 'success'
                 ]);
@@ -619,34 +714,63 @@ class StudentProductController extends Controller
                 $wallet->balance = $newBalance;
                 $wallet->save();
 
-                // partners
+                // partners (revert)
                 // ======================================
-                $totalAmount = $wallet->balance;
+
+                // فقط اثر همین پرداخت باید برگردد
+                $agencyDeltaAmount = $payment->amount;
+
                 $partners = Account::where('type', 'person')
                     ->orderBy('id')
                     ->limit(3)
                     ->get();
-                foreach ($partners as $partner) {
-                    if ($partner->percentage) {
-                        // 3) محاسبه سهم شریک
-                        $partnerShare = $totalAmount * ($partner->percentage / 100);
-                        // 4) گرفتن کیف پول شریک
-                        $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                        // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                        if (!$partnerWallet) {
-                            $partnerWallet = Wallet::create([
-                                'account_id' => $partner->id,
-                                'balance' => 0
-                            ]);
-                        }
 
-                        // 5) بروزرسانی مبلغ کیف پول شریک
-                        $partnerWallet->update([
-                            'balance' => $partnerShare
-                        ]);
+                foreach ($partners as $partner) {
+
+                    if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                        continue;
                     }
+
+                    // سهم شریک از همین پرداخت
+                    $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                    if ($partnerShare == 0) {
+                        continue;
+                    }
+
+                    // گرفتن یا ساخت کیف پول شریک
+                    $partnerWallet = Wallet::firstOrCreate(
+                        ['account_id' => $partner->id],
+                        ['balance' => 0]
+                    );
+
+                    // ثبت تراکنش برداشت (برگشت سهم)
+                    WalletTransaction::create([
+                        'wallet_id' => $partnerWallet->id,
+                        'type'      => 'withdraw',
+                        'amount'    => -$partnerShare,
+                        'meta'      => json_encode([
+                            'description' => 'Revert partner share due to payment deletion',
+                            'payment_id'  => $payment->id,
+                            'student_id'  => $student->id,
+                            'agency_id'   => $agencyAccount->id,
+                            'for' => "حذف پرداخت برای دانش‌آموزِ: {$student->first_name} {$student->last_name}",
+                        ]),
+                        'status'    => 'success'
+                    ]);
+
+                    // محاسبه موجودی جدید شریک
+                    $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                        ->sum('amount');
+
+                    // بروزرسانی موجودی
+                    $partnerWallet->update([
+                        'balance' => $newBalance
+                    ]);
                 }
                 // ======================================
+
+
             }
 
             // در آخر حذف پرداخت

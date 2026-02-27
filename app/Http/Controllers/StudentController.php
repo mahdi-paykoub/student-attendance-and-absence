@@ -41,7 +41,7 @@ class StudentController extends Controller
                         ->orWhere('national_code', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+            ->orderBy('id', 'asc')
             ->get();
 
         return view('students.index', compact('students', 'filter', 'search'));

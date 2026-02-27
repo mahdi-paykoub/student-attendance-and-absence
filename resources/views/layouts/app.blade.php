@@ -63,6 +63,10 @@
                         </div>
                     </li>
 
+                    @if(auth()->user()->role !== 'stucent_register')
+
+
+
                     {{-- منوی محصولات --}}
                     <li class="nav-item ">
                         <a class="nav-link d-flex justify-content-between align-items-center"
@@ -344,7 +348,7 @@
                             </ul>
                         </div>
                     </li>
-
+                    @endif
                     {{-- منوی خروج --}}
                     <li class="nav-item">
                         <a href="{{ route('logout') }}" class="nav-link"

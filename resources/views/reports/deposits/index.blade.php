@@ -40,7 +40,11 @@
 
                     {{-- دکمه PDF --}}
                     <button type="submit" class="btn btn-success btn-sm bg-admin-green me-1" formaction="{{ route('report.get.deposits.pdf') }}">
-                     چاپ pdf
+                        چاپ pdf
+                    </button>
+                   
+                    <button type="submit" class="btn btn-success btn-sm bg-admin-green me-1" formaction="{{ route('report.get.deposits.exel') }}">
+                       چاپ exel
                     </button>
                 </div>
             </div>

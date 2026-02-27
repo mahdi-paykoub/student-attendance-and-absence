@@ -88,6 +88,7 @@
                     <th>کیف پول</th>
                     <th>مبلغ</th>
                     <th>نوع</th>
+                    <th>توضیحات</th>
                     <th>تاریخ</th>
 
 
@@ -95,6 +96,7 @@
             </thead>
             <tbody>
                 @forelse($transactions as $transaction)
+
 
                 <tr class="@if($transaction->amount > 0) table-success @else table-danger   @endif">
                     <td>
@@ -122,6 +124,9 @@
                             موفق
                         </span>
                         @endif
+                    </td>
+                    <td>
+                        {{json_decode($transaction->meta)->for ?? ''}}
                     </td>
 
                     <td class="text-end" dir="ltr">

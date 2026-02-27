@@ -67,7 +67,7 @@
             </div>
         </form>
 
-       
+
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>

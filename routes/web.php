@@ -24,7 +24,25 @@ use App\Http\Controllers\{
 };
 use Illuminate\Support\Facades\Auth;
 
+Route::middleware(['auth', 'student_register'])->group(function () {
+    Route::resource('students', StudentController::class);
+    // get student image
+    Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])->name('students.photo');
 
+    Route::prefix('student-products')->name('student-products.')->group(function () {
+        Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
+        Route::put('/assign/{student}', [StudentProductController::class, 'updateAssignedProducts'])->name('storeAssign.product');
+        Route::post('/assign/{student}/payments', [StudentProductController::class, 'storePayments'])->name('storePayments');
+        Route::delete('/delete-payment/{type}/{id}', [StudentProductController::class, 'deletePayment'])
+            ->name('deletePayment');
+    });
+    
+    Route::get('/students/{student}/details', [StudentController::class, 'details'])->name('students.details');
+
+    Route::post('/students-import', [StudentController::class, 'import'])->name('students.import');
+    Route::get('/students-import-date', [StudentController::class, 'showImport'])->name('show.students.import');
+    Route::post('/students-import-image/photos/upload', [StudentController::class, 'uploadImagesZip'])->name('students.photos.upload');
+});
 // admin
 Route::middleware(['auth', 'is_admin'])->group(function () {
 
@@ -36,7 +54,6 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     // 🧑‍🎓 بخش محصولات
     // ---------------------
     Route::resource('users', UserController::class);
-    Route::resource('students', StudentController::class);
     Route::resource('products', ProductController::class);
     Route::resource('exams', ExamController::class);
 
@@ -52,7 +69,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
     // get student image
-    Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])->name('students.photo');
+    // Route::get('/student/photo/{filename}', [StudentController::class, 'showPhoto'])->name('students.photo');
     // دکمه حضور و غیاب خارج از ریسورس
     Route::get('exams/{exam}/attendance', [ExamController::class, 'attendance'])->name('exams.attendance');
 
@@ -78,23 +95,22 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     // Route::post('/students/{student}/assign-products', [ProductAssignmentController::class, 'store'])->name('students.assign-products.store');
 
 
-    Route::prefix('student-products')->name('student-products.')->group(function () {
-        Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
-        Route::put('/assign/{student}', [StudentProductController::class, 'updateAssignedProducts'])->name('storeAssign.product');
-        Route::post('/assign/{student}/payments', [StudentProductController::class, 'storePayments'])->name('storePayments');
-        Route::delete('/delete-payment/{type}/{id}', [StudentProductController::class, 'deletePayment'])
-            ->name('deletePayment');
-    });
+    // Route::prefix('student-products')->name('student-products.')->group(function () {
+    //     Route::get('/assign/{student}', [StudentProductController::class, 'assignForm'])->name('assign');
+    //     Route::put('/assign/{student}', [StudentProductController::class, 'updateAssignedProducts'])->name('storeAssign.product');
+    //     Route::post('/assign/{student}/payments', [StudentProductController::class, 'storePayments'])->name('storePayments');
+    //     Route::delete('/delete-payment/{type}/{id}', [StudentProductController::class, 'deletePayment'])
+    //         ->name('deletePayment');
+    // });
 
     // Route::get('/private/{path}', [PrivateFileController::class, 'show'])->where('path', '.*')->name('private.file');
-
 
 
     Route::get('/products/{product}/students', [ProductController::class, 'students'])
         ->name('products.students');
 
 
-    Route::get('/students/{student}/details', [StudentController::class, 'details'])->name('students.details');
+    // Route::get('/students/{student}/details', [StudentController::class, 'details'])->name('students.details');
 
 
     Route::get('/payments/{payment}/receipt', [PaymentCardController::class, 'showReceipt'])
@@ -114,14 +130,11 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('/seat-numbers/generate', [SeatNumberController::class, 'generate'])->name('seats.generate');
 
 
-    Route::post('/students-import', [StudentController::class, 'import'])->name('students.import');
-    Route::get('/students-import-date', [StudentController::class, 'showImport'])->name('show.students.import');
-    Route::post('/students-import-image/photos/upload', [StudentController::class, 'uploadImagesZip'])->name('students.photos.upload');
-
 
 
     Route::post('users/{user}/make-admin', [UserController::class, 'makeAdmin'])->name('users.makeAdmin');
     Route::post('users/{user}/make-suporter', [UserController::class, 'makeSuporter'])->name('users.makeSuporter');
+    Route::post('users/{user}/make-register-user', [UserController::class, 'makeRegisterUser'])->name('users.makeRegisterUser');
 
 
 
@@ -138,20 +151,25 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('reports/get/students/pdf', [ReportController::class, 'generatePdf'])->name('report.students.pdf.generate');
     Route::get('reports/get/students/custom-data', [ReportController::class, 'customDataView'])->name('report.student.custom.data.view');
     Route::get('reports/get/students/custom-data/pdf', [ReportController::class, 'generateStudentsCustomFielsPdf'])->name('report.student.custom.data.pdf');
+    Route::get('reports/get/students/custom-data/exel', [ReportController::class, 'generateStudentsCustomFieldsExcel'])->name('report.student.custom.data.exel');
 
+    
     Route::get('reports/get/debtor/students/view', [ReportController::class, 'getDebtorStudemtsView'])->name('report.get.debtor.students.view');
     Route::get('reports/get/debtor/students/pdf', [ReportController::class, 'getDebtorStudemtsPdf'])->name('report.get.debtor.students.pdf');
 
 
     Route::get('reports/get/deposits/view', [ReportController::class, 'getDepositssView'])->name('report.get.deposits.view');
     Route::get('reports/get/deposits/pdf', [ReportController::class, 'getDdepositsPdf'])->name('report.get.deposits.pdf');
+    Route::get('reports/get/deposits/exel', [ReportController::class, 'getDdepositsExel'])->name('report.get.deposits.exel');
 
 
 
     Route::get('reports/get/checks/view', [ReportController::class, 'getChecksView'])->name('report.get.checks.view');
     Route::get('reports/get/checks/pdf', [ReportController::class, 'getChecksPdf'])->name('report.get.checks.pdf');
+    Route::get('reports/get/checks/exel', [ReportController::class, 'getChecksExel'])->name('report.get.checks.exel');
     Route::get('reports/get/pay/view', [ReportController::class, 'getPaysView'])->name('report.get.pays.view');
     Route::get('reports/get/pays/pdf', [ReportController::class, 'getPaysPdf'])->name('report.get.pays.pdf');
+    Route::get('reports/get/pays/exel', [ReportController::class, 'getPaysExel'])->name('report.get.pays.exel');
 
     Route::get('reports/sms', [ReportController::class, 'smsReportsView'])->name('report.sms');
 

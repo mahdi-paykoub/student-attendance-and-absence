@@ -49,6 +49,8 @@
      <table class="table mt-4 table-striped">
             <thead class="table-light">
                 <tr>
+
+                    <th>#</th>
                     <th>عنوان</th>
                     <th>حساب</th>
                     <th>مبلغ</th>
@@ -58,6 +60,7 @@
             <tbody>
                 @forelse($deposits as $deposit)
                 <tr>
+                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $deposit->title }}</td>
                     <td>{{ $deposit->account->name }}</td>
                     <td>{{ number_format($deposit->amount) }}</td>

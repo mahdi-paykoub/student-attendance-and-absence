@@ -6,7 +6,7 @@
 <div class=" mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fs18 fw-bold"> بخش شرکا</h4>
+        <h4 class="fs18 fw-bold"> کیف پول شرکا</h4>
 
     </div>
 
@@ -48,6 +48,98 @@
             </div>
         </div>
         @endforeach
+    </div>
+    <div class="bg-white mt-4 p-4 rounded">
+        <div class="fs18 fw-bold">
+            سود حساب ها
+        </div>
+        <div class="row mt-2 gap-2">
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        کل بخش مرکزی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($centralTotal)}}
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        کل بخش نمایندگی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($agencyTotal)}}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- سهم هر شریک نمایندگی -->
+            @foreach($partnersProfits as $partnerName => $data)
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        {{ $partnerName }}
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{ number_format($data['profit']) }} تومان
+                    </div>
+
+
+                </div>
+            </div>
+            @endforeach
+
+        </div>
+    </div>
+    <div class="bg-white mt-4 p-4 rounded">
+        <div class="fs18 fw-bold">
+            اختلاف دریافتی و سود
+        </div>
+        <div class="row mt-2 gap-2">
+
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        کل بخش مرکزی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($centralDiff)}}
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        کل بخش نمایندگی
+                    </div>
+                    <div class="fw-bold mt-3">
+                        {{number_format($agencyDiff)}}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- سهم هر شریک نمایندگی -->
+            @foreach($partnersProfits as $partnerName => $data)
+            <div class="col-lg-2 mt-2 d-flex align-items-center justify-content-center p-4 bg-body-secondary rounded">
+                <div class="text-center">
+                    <div class="fw-bold">
+                        {{ $partnerName }}
+                    </div>
+
+                    <div class="fw-bold mt-3">
+                        {{ number_format($data['diff']) }}
+                    </div>
+                </div>
+            </div>
+            @endforeach
+
+        </div>
     </div>
 
 

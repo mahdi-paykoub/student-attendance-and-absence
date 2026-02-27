@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ChecksExport;
+use App\Exports\DepositsExport;
+use App\Exports\PaymentsExport;
+use App\Exports\StudentsReportExport;
 use App\Models\Account;
 use App\Models\Check;
 use App\Models\Deposit;
@@ -13,6 +17,8 @@ use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
 use niklasravnsborg\LaravelPdf\Facades\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Morilog\Jalali\Jalalian;
 
 class ReportController extends Controller
 {
@@ -56,6 +62,7 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('pdf.seatReport', compact('students'));
         return $pdf->stream();
     }
+
 
 
 
@@ -118,6 +125,36 @@ class ReportController extends Controller
     }
 
 
+
+    public function generateStudentsCustomFieldsExcel(Request $request)
+    {
+        $columns = $request->get('columns', []);
+
+        // اگر هیچ ستونی انتخاب نشده
+        if (empty($columns)) {
+            $columns = ['first_name', 'last_name', 'national_code'];
+        }
+
+        // گرفتن دانش‌آموزان با روابط مورد نیاز
+        $students = Student::with([
+            'payments',
+            'checks',
+            'products',
+            'grade',
+            'major',
+            'school',
+            'advisor',
+        ])->get();
+
+        // نام فایل
+        $fileName = 'students_report_' . Jalalian::now()->format('Y-m-d_H-i') . '.xlsx';
+
+        return Excel::download(
+            new StudentsReportExport($columns, $students),
+            $fileName
+        );
+    }
+
     public function getDebtorStudemtsView()
     {
         $debtors = Student::with(['products', 'payments'])
@@ -176,6 +213,23 @@ class ReportController extends Controller
         return $pdf->stream();
     }
 
+    public function getDdepositsExel(Request $request)
+    {
+        $account_id = $request->query('account_id');
+
+        if ($account_id) {
+
+            $query = Deposit::where('account_id', $account_id);
+        } else {
+            $query = Deposit::query();
+        }
+
+
+        return Excel::download(
+            new DepositsExport($query),
+            'checks.xlsx'
+        );
+    }
 
     public function getChecksView(Request $request)
     {
@@ -212,6 +266,16 @@ class ReportController extends Controller
         return $pdf->stream();
     }
 
+    public function getPaysExel()
+    {
+        $query = Payment::with('student')->latest();
+
+        return Excel::download(
+            new PaymentsExport($query),
+            'checks.xlsx'
+        );
+    }
+
 
 
     public function getChecksPdf(Request $request)
@@ -233,6 +297,27 @@ class ReportController extends Controller
         // ارسال داده‌ها به ویو PDF
         $pdf = Pdf::loadView('pdf.checks', compact('checks'));
         return $pdf->stream();
+    }
+
+    public function getChecksExel(Request $request)
+    {
+        $checks = Check::query();
+
+        // اگر فیلتر ارسال شد
+        if ($request->has('status')) {
+            if ($request->status == 'cleared') {
+                $checks->where('is_cleared', true);
+            }
+            if ($request->status == 'not_cleared') {
+                $checks->where('is_cleared', false);
+            }
+        }
+
+        $query = $checks->latest()->with('student');
+        return Excel::download(
+            new ChecksExport($query),
+            'checks.xlsx'
+        );
     }
 
 

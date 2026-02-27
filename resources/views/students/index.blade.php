@@ -51,6 +51,7 @@
         <table class="table table-striped align-middle">
             <thead class="table-light">
                 <tr>
+                    <th>#</th>
                     <th>عکس</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
@@ -67,6 +68,9 @@
             <tbody>
                 @forelse($students as $student)
                 <tr>
+                    <td>
+                      {{$loop->index + 1}}
+                    </td>
                     {{-- عکس --}}
                     <td>
                         @if($student->photo)

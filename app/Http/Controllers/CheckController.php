@@ -24,23 +24,11 @@ class CheckController extends Controller
             Storage::disk('private')->path($check->check_image)
         );
     }
-    public function clear(Check $check , Student $student)
+    public function clear(Check $check, Student $student)
     {
         $check->update([
             'is_cleared' => 1
         ]);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // === شارژ کیف پول نمایندگی فقط اگر درصد نمایندگی تعیین شده باشد ===
@@ -72,7 +60,8 @@ class CheckController extends Controller
                 'type' => 'deposit',
                 'amount' => $agencyShare,
                 'meta' => json_encode([
-                    'description' => "Agency share from payment ID: {$check->id} for student ID: {$student->id}"
+                    'description' => "Agency share from payment ID: {$check->id} for student ID: {$student->id}",
+                    'for' => "وصول چک دانش‌آموزِ : {$student->first_name} {$student->last_name}",
                 ]),
                 'status' => 'success'
             ]);
@@ -84,62 +73,61 @@ class CheckController extends Controller
 
             // partners
             // ======================================
-            $totalAmount = $wallet->balance;
+
+            // مبلغی که الان به کیف پول نمایندگی اضافه شده
+            $agencyDeltaAmount = $check->amount;
+
             $partners = Account::where('type', 'person')
                 ->orderBy('id')
                 ->limit(3)
                 ->get();
-            foreach ($partners as $partner) {
-                if ($partner->percentage) {
-                    // 3) محاسبه سهم شریک
-                    $partnerShare = $totalAmount * ($partner->percentage / 100);
-                    // 4) گرفتن کیف پول شریک
-                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                    if (!$partnerWallet) {
-                        $partnerWallet = Wallet::create([
-                            'account_id' => $partner->id,
-                            'balance' => 0
-                        ]);
-                    }
 
-                    // 5) بروزرسانی مبلغ کیف پول شریک
-                    $partnerWallet->update([
-                        'balance' => $partnerShare
-                    ]);
+            foreach ($partners as $partner) {
+
+                if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                    continue;
                 }
+
+                // 1️⃣ محاسبه سهم شریک از همین چک وصول‌شده
+                $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                if ($partnerShare == 0) {
+                    continue;
+                }
+
+                // 2️⃣ گرفتن یا ساخت کیف پول شریک
+                $partnerWallet = Wallet::firstOrCreate(
+                    ['account_id' => $partner->id],
+                    ['balance' => 0]
+                );
+
+                // 3️⃣ ثبت تراکنش سهم شریک
+                WalletTransaction::create([
+                    'wallet_id' => $partnerWallet->id,
+                    'type'      => 'deposit', // افزایش سهم شریک
+                    'amount'    => $partnerShare,
+                    'meta'      => json_encode([
+                        'description' => 'Partner share from cleared check',
+                        'check_id'    => $check->id,
+                        'student_id'  => $student->id,
+                        'agency_id'   => $agencyAccount->id,
+                        'for' => "وصول چک دانش‌آموزِ : {$student->first_name} {$student->last_name}",
+                    ]),
+                    'status'    => 'success'
+                ]);
+
+                // 4️⃣ محاسبه موجودی جدید کیف پول شریک
+                $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                    ->sum('amount');
+
+                // 5️⃣ بروزرسانی موجودی
+                $partnerWallet->update([
+                    'balance' => $newBalance
+                ]);
             }
             // ======================================
+
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         return back()->with('success', 'چک با موفقیت وصول شد');
     }

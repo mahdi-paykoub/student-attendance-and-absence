@@ -36,7 +36,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -65,7 +65,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', Rule::unique('users')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -110,6 +110,18 @@ class UserController extends Controller
             return redirect()->back()->with('success', 'کاربر به پشتیبان تبدیل شد.');
         } elseif ($user->role == 'admin') {
             return redirect()->back()->with('info', 'کاربر ادمین به‌دلایل امنیتی نمی‌تواند پشتیبان شود.');
+        }
+    }
+    public function makeRegisterUser(User $user)
+    {
+        if ($user->role == 'suporter') {
+            return redirect()->back()->with('نقش کاربر از قبل پشتیبان است');
+        } elseif ($user->role == 'admin') {
+            return redirect()->back()->with('نقش کاربر از قبل ادمین است');
+        } elseif ($user->role == 'none') {
+            $user->role = 'stucent_register';
+            $user->save();
+            return redirect()->back()->with('success', 'کاربر به ثبت کننده تبدیل شد.');
         }
     }
 }

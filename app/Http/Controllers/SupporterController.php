@@ -74,7 +74,7 @@ class SupporterController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 

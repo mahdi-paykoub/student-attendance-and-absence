@@ -75,9 +75,12 @@
 
         <button type="submit" formaction="{{ route('report.student.custom.data.view') }}"
             class="btn btn-success bg-admin-green mt-4">نمایش گزارش</button>
-
+        
         <button type="submit" formaction="{{ route('report.student.custom.data.pdf') }}"
             class="btn btn-success bg-admin-green mt-4">خروجی PDF</button>
+            
+        <button type="submit" formaction="{{ route('report.student.custom.data.exel') }}"
+            class="btn btn-success bg-admin-green mt-4">خروجی exel</button>
     </form>
 
     <br><br>

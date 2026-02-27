@@ -62,7 +62,7 @@
         <tbody>
             @foreach($payments as $index => $payment)
             <tr class="text-center">
-                <td>{{ $index + 1 }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $payment->student->first_name }} {{ $payment->student->last_name }}</td>
                 <td>{{ $payment->student->national_code }}</td>
                 <td>{{ number_format($payment->amount) }}</td>

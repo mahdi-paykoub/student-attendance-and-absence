@@ -28,17 +28,22 @@
             <form method="GET" class="mb-4 d-flex gap-3 align-items-end">
 
                 <div class="d-flex align-items-center ">
-                   
+
 
                     <div class="d-flex gap-1 me-3">
 
-                     
+
 
                         {{-- دکمه ۲: برای کارهای آینده --}}
                         <button type="submit"
                             formaction="{{ route('report.get.pays.pdf') }}"
                             class="btn btn-success bg-admin-green btn-sm">
                             چاپ pdf
+                        </button>
+                        <button type="submit"
+                            formaction="{{ route('report.get.pays.exel') }}"
+                            class="btn btn-success bg-admin-green btn-sm">
+                             خروجی exel
                         </button>
 
                     </div>
@@ -62,7 +67,7 @@
             </thead>
 
             <tbody>
-                @foreach($payments as  $index => $payment)
+                @foreach($payments as $index => $payment)
                 <tr class="text-center">
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $payment->student->first_name }} {{ $payment->student->last_name }}</td>
@@ -75,10 +80,10 @@
                         پیش‌پرداخت قسط
                         @endif
                     </td>
-                   <td>{{ \Morilog\Jalali\Jalalian::forge($payment->date)->format('Y/m/d H:i') }}</td>
+                    <td>{{ \Morilog\Jalali\Jalalian::forge($payment->date)->format('Y/m/d H:i') }}</td>
 
 
-                  
+
 
                 </tr>
                 @endforeach

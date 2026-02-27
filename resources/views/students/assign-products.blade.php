@@ -157,7 +157,7 @@
                     </td>
                     <td>{{number_format($payment->amount) }}</td>
                     <td>{{ $payment->voucher_number }}</td>
-                    <td>{{ $payment->paymentCard->name }}</td>
+                    <td>{{ $payment->paymentCard?->name }}</td>
                     <td>
                         @if($payment->receipt_image)
                         <a href="{{ route('payments.receipt', $payment->id) }}" target="_blank">

@@ -20,7 +20,7 @@ class AccountingController extends Controller
         $students = Student::with('percentages.account', 'products')
             ->whereHas('products') // فقط دانش‌آموزانی که محصول دارند
             ->withMax('products as last_assigned_at', 'product_student.created_at')
-            ->orderByDesc('last_assigned_at')
+            // ->orderByDesc('last_assigned_at')
             ->get();
 
 
@@ -77,6 +77,7 @@ class AccountingController extends Controller
             'type' => 'deposit',
             'amount' => $final,
             'meta' => json_encode([
+                'for' => "ثبت درصد برای  دانش‌آموزِ:  {$student->first_name} {$student->last_name}",
                 'description' => "Central contribution of the student: {$student->id}"
             ]),
             'status' => 'success'
@@ -155,6 +156,7 @@ class AccountingController extends Controller
             'type' => 'deposit',
             'amount' => $agencyShare,
             'meta' => json_encode([
+                'for' => "ثبت درصد برای دانش‌آموزِ:  {$student->first_name} {$student->last_name}",
                 'description' => "Agency contribution of student: {$student->id}"
             ]),
             'status' => 'success'
@@ -170,32 +172,68 @@ class AccountingController extends Controller
 
         // partners
         // ======================================
-        $totalAmount = $wallet->balance;
+
+        // مبلغی که الان به کیف پول نمایندگی اضافه شده
+        $agencyDeltaAmount = $agencyShare;
+
         $partners = Account::where('type', 'person')
             ->orderBy('id')
             ->limit(3)
             ->get();
-        foreach ($partners as $partner) {
-            if ($partner->percentage) {
-                // 3) محاسبه سهم شریک
-                $partnerShare = $totalAmount * ($partner->percentage / 100);
-                // 4) گرفتن کیف پول شریک
-                $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                if (!$partnerWallet) {
-                    $partnerWallet = Wallet::create([
-                        'account_id' => $partner->id,
-                        'balance' => 0
-                    ]);
-                }
 
-                // 5) بروزرسانی مبلغ کیف پول شریک
-                $partnerWallet->update([
-                    'balance' => $partnerShare
-                ]);
+        foreach ($partners as $partner) {
+
+            if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                continue;
             }
+
+            // 1️⃣ محاسبه سهم شریک از همین ثبت نمایندگی
+            $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+            if ($partnerShare == 0) {
+                continue;
+            }
+
+            // 2️⃣ گرفتن یا ساخت کیف پول شریک
+            $partnerWallet = Wallet::firstOrCreate(
+                ['account_id' => $partner->id],
+                ['balance' => 0]
+            );
+
+            // 3️⃣ حذف تراکنش قبلی این دانش‌آموز برای این شریک (در صورت ویرایش درصد)
+            WalletTransaction::where('wallet_id', $partnerWallet->id)
+                ->whereJsonContains(
+                    'meta->description',
+                    "Partner share from student: {$student->id}"
+                )
+                ->delete();
+
+            // 4️⃣ ثبت تراکنش جدید سهم شریک
+            WalletTransaction::create([
+                'wallet_id' => $partnerWallet->id,
+                'type'      => 'deposit', // یا partner_share اگر enum جدا داری
+                'amount'    => $partnerShare,
+                'meta'      => json_encode([
+                    'description' => "Partner share from student: {$student->id}",
+                    'student_id'  => $student->id,
+                    'agency_id'   => $agencyAccount->id,
+                    'for' => "ثبت سهم شریک برای دانش‌آموزِ:  {$student->first_name} {$student->last_name}",
+                ]),
+                'status'    => 'success'
+            ]);
+
+            // 5️⃣ محاسبه و بروزرسانی موجودی کیف پول شریک
+            $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                ->sum('amount');
+
+            $partnerWallet->update([
+                'balance' => $newBalance
+            ]);
         }
         // ======================================
+
+
+
         return response()->json([
             'status' => 'success',
             'agency_share' => $agencyShare,
@@ -206,8 +244,76 @@ class AccountingController extends Controller
     }
 
 
-    public function partnersView()
+    public function partnersView(Request $request)
     {
+        $start = $request->start_date
+            ? Jalalian::fromFormat('Y/m/d', $request->start_date)->toCarbon()->startOfDay()
+            : null;
+
+        $end = $request->end_date
+            ? Jalalian::fromFormat('Y/m/d', $request->end_date)->toCarbon()->endOfDay()
+            : null;
+
+        $students = Student::with('products', 'percentages.account')
+            ->whereHas('products')
+            ->get();
+
+
+        // محاسبه سود هر دانش‌آموز (با تخفیف + فیلتر تاریخ)
+        foreach ($students as $student) {
+            $profits = $this->calculateStudentProfits($student, $start, $end);
+            $student->central_profit = $profits['central_profit'];
+            $student->agency_profit  = $profits['agency_profit'];
+        }
+
+
+        $costs = Expense::sum('amount');
+        // 🔥 جمع کل سود 
+        $centralTotal = $students->sum('central_profit');
+        $agencyTotal  = $students->sum('agency_profit') - ($costs);
+
+        // سهم هر شریک از سود نمایندگی
+        $agencyPartners = Account::where('type', 'person')->get();
+        $totalPercent   = $agencyPartners->sum('percentage');
+
+        $partnersProfits = [];
+
+      
+        $depositsByAccount = Deposit::selectRaw('account_id, SUM(amount) as total_received')
+            ->groupBy('account_id')
+            ->pluck('total_received', 'account_id');
+
+
+        $centralAccount = Account::where('type', 'center')->first();
+
+        $centralReceived = (float) ($depositsByAccount[$centralAccount->id] ?? 0);
+        $centralDiff     = $centralTotal - $centralReceived;
+        $agencyAccount = Account::where('type', 'agency')->first();
+
+        $agencyReceived = (float) ($depositsByAccount[$agencyAccount->id] ?? 0);
+        $agencyDiff     = $agencyTotal - $agencyReceived;
+
+
+        foreach ($agencyPartners as $partner) {
+
+            // سهم سود شریک
+            $profit = ($totalPercent > 0)
+                ? $agencyTotal * ($partner->percentage / $totalPercent)
+                : 0;
+
+            // مجموع دریافتی شریک
+            $received = (float) ($depositsByAccount[$partner->id] ?? 0);
+
+            // اختلاف سود با دریافتی
+            $diff = $profit - $received;
+
+            $partnersProfits[$partner->name] = [
+                'profit'   => $profit,
+                'received' => $received,
+                'diff'     => $diff,
+            ];
+        }
+
         $partners = Account::where('type', 'person')
             ->orderBy('id')
             ->limit(3)
@@ -217,7 +323,18 @@ class AccountingController extends Controller
         })->first();
 
 
-        return view('accounting.partners', compact('partners', 'wallet'));
+
+
+        return view('accounting.partners', compact(
+            'partners',
+            'wallet',
+            'centralTotal',
+            'agencyTotal',
+            'students',
+            'partnersProfits',
+            'agencyDiff',
+            'centralDiff',
+        ));
     }
     public function createPartners(Request $request)
     {
@@ -346,7 +463,8 @@ class AccountingController extends Controller
                 'type' => 'withdraw',
                 'amount' => - ($expense->amount),
                 'meta' => json_encode([
-                    'description' => "Deduction due to expense recording"
+                    'description' => "Deduction due to expense recording",
+                    'for' =>  "ثبت هزنیه - {$expense->title}",
                 ]),
                 'status' => 'success'
             ]);
@@ -360,32 +478,58 @@ class AccountingController extends Controller
 
             // partners
             // ======================================
-            $totalAmount = $wallet->balance;
+            // مبلغی که الان از کیف پول نمایندگی کم شده
+            $agencyDeltaAmount = -$expense->amount;
+
             $partners = Account::where('type', 'person')
                 ->orderBy('id')
                 ->limit(3)
                 ->get();
-            foreach ($partners as $partner) {
-                if ($partner->percentage) {
-                    // 3) محاسبه سهم شریک
-                    $partnerShare = $totalAmount * ($partner->percentage / 100);
-                    // 4) گرفتن کیف پول شریک
-                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                    if (!$partnerWallet) {
-                        $partnerWallet = Wallet::create([
-                            'account_id' => $partner->id,
-                            'balance' => 0
-                        ]);
-                    }
 
-                    // 5) بروزرسانی مبلغ کیف پول شریک
-                    $partnerWallet->update([
-                        'balance' => $partnerShare
-                    ]);
+            foreach ($partners as $partner) {
+
+                if (!$partner->percentage || $agencyDeltaAmount == 0) {
+                    continue;
                 }
+
+                // 1️⃣ محاسبه سهم شریک از این هزینه
+                $partnerShare = $agencyDeltaAmount * ($partner->percentage / 100);
+
+                if ($partnerShare == 0) {
+                    continue;
+                }
+
+                // 2️⃣ گرفتن یا ساخت کیف پول شریک
+                $partnerWallet = Wallet::firstOrCreate(
+                    ['account_id' => $partner->id],
+                    ['balance' => 0]
+                );
+
+                // 3️⃣ ثبت تراکنش اصلاح سهم شریک بابت هزینه
+                WalletTransaction::create([
+                    'wallet_id' => $partnerWallet->id,
+                    'type'      => 'withdraw', // کاهش سهم شریک
+                    'amount'    => $partnerShare, // عدد منفی
+                    'meta'      => json_encode([
+                        'description' => 'Partner share adjustment due to expense',
+                        'expense_id'  => $expense->id,
+                        'agency_id'   => $agencyAccount->id,
+                        'for' => "ثبت هزینه - {$expense->title}",
+                    ]),
+                    'status'    => 'success'
+                ]);
+
+                // 4️⃣ محاسبه موجودی جدید کیف پول شریک
+                $newBalance = WalletTransaction::where('wallet_id', $partnerWallet->id)
+                    ->sum('amount');
+
+                // 5️⃣ بروزرسانی موجودی
+                $partnerWallet->update([
+                    'balance' => $newBalance
+                ]);
             }
             // ======================================
+
         });
         // ======================================
 
@@ -460,7 +604,8 @@ class AccountingController extends Controller
                 'type' => 'withdraw',
                 'amount' => - ($deposit->amount),
                 'meta' => json_encode([
-                    'description' => "Deposit registration"
+                    'description' => "Deposit registration",
+                    'for' => "ثبت واریزی - {$deposit->title}",
                 ]),
                 'status' => 'success'
             ]);
@@ -471,37 +616,6 @@ class AccountingController extends Controller
             // 5. آپدیت موجودی کیف پول
             $wallet->balance = $newBalance;
             $wallet->save();
-
-            // partners
-            // ======================================
-            if ($deposit->account->type === 'agency') {
-            }
-            $totalAmount = $wallet->balance;
-            $partners = Account::where('type', 'person')
-                ->orderBy('id')
-                ->limit(3)
-                ->get();
-            foreach ($partners as $partner) {
-                if ($partner->percentage) {
-                    // 3) محاسبه سهم شریک
-                    $partnerShare = $totalAmount * ($partner->percentage / 100);
-                    // 4) گرفتن کیف پول شریک
-                    $partnerWallet = Wallet::where('account_id', $partner->id)->first();
-                    // اگر کیف پول شریک هنوز وجود ندارد → بساز
-                    if (!$partnerWallet) {
-                        $partnerWallet = Wallet::create([
-                            'account_id' => $partner->id,
-                            'balance' => 0
-                        ]);
-                    }
-
-                    // 5) بروزرسانی مبلغ کیف پول شریک
-                    $partnerWallet->update([
-                        'balance' => $partnerShare
-                    ]);
-                }
-            }
-            // ======================================
         });
         // ======================================
 
@@ -524,7 +638,7 @@ class AccountingController extends Controller
                 return;
             }
 
-           
+
 
             // 4️⃣ ثبت تراکنش برگشت پول (شارژ کیف پول)
             WalletTransaction::create([
@@ -533,7 +647,8 @@ class AccountingController extends Controller
                 'type'       => 'deposit',
                 'amount'     => +$deposit->amount,
                 'meta'       => json_encode([
-                    'description' => 'Deposit deleted - refund'
+                    'description' => 'Deposit deleted - refund',
+                    'for' => "حذف واریزی - {$deposit->title}",
                 ]),
                 'status'     => 'success'
             ]);
@@ -614,9 +729,10 @@ class AccountingController extends Controller
             $student->agency_profit  = $profits['agency_profit'];
         }
 
-        // 🔥 جمع کل سود (بدون محاسبه دوباره)
+        $costs = Expense::sum('amount');
+        // 🔥 جمع کل سود 
         $centralTotal = $students->sum('central_profit');
-        $agencyTotal  = $students->sum('agency_profit');
+        $agencyTotal  = $students->sum('agency_profit') - ($costs);
 
         // سهم هر شریک از سود نمایندگی
         $agencyPartners = Account::where('type', 'person')->get();

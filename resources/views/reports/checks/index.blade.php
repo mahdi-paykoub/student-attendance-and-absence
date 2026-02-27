@@ -52,6 +52,12 @@
                             چاپ pdf
                         </button>
 
+                        <button type="submit"
+                            formaction="{{ route('report.get.checks.exel') }}"
+                            class="btn btn-success bg-admin-green btn-sm">
+                            چاپ exel
+                        </button>
+
                     </div>
                 </div>
             </form>
@@ -110,7 +116,7 @@
                         </form>
                         @else
                         <button class="btn btn-dark  me-1 btn-sm">
-                          وصول شده
+                            وصول شده
                         </button>
                         @endif
 

@@ -30,12 +30,14 @@
                     <td>
                         @if($user->role == 'admin')
                         ادمین
+                        @elseif($user->role == 'stucent_register')
+                        کاربر ثبت
                         @elseif($user->role == 'suporter')
                         پشتیبان
                         @elseif($user->role == 'none')
                         فاقد نقش
                         @endif
-                        
+
                     </td>
                     <td>{{ \Morilog\Jalali\Jalalian::fromDateTime($user->created_at)->format('Y/m/d') }}</td>
                     <td>
@@ -49,6 +51,10 @@
                         <form action="{{ route('users.makeSuporter', $user) }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-sm btn-success bg-admin-green">تبدیل به پشتیبان</button>
+                        </form>
+                        <form action="{{ route('users.makeRegisterUser', $user) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-success bg-admin-green">کاربر ثبت نام</button>
                         </form>
                         @endif
 

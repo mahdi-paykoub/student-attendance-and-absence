@@ -60,7 +60,7 @@
         <tbody>
             @forelse($debtors as $index => $student)
             <tr>
-                <td>{{ $index + 1 }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $student->first_name }} - {{ $student->last_name }}</td>
                 <td>{{ number_format($student->total_product_cost ?? ($student->product_total ?? 0)) }} تومان</td>
                 <td>{{ number_format($student->total_payments ?? ($student->payment_total ?? 0)) }} تومان</td>

@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
+        $products = Product::withCount('students')->latest()->get();
         return view('products.index', compact('products'));
     }
 

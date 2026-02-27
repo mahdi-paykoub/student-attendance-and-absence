@@ -28,6 +28,7 @@
                     <th>درصد آبونمان</th>
                     <th> قیمت کل</th>
                     <th>محصول مشارکتی؟</th>
+                    <th>تعداد تخصیص</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
@@ -47,7 +48,7 @@
 
 
                     </td>
-
+                    <td>{{ $product->students_count }}</td>
                     <td>
                         <a href="{{ route('products.students', $product->id) }}" class="btn btn-sm btn-success bg-admin-green mt-1 mt-md-0">
                             دانش‌آموزان

@@ -19,6 +19,11 @@
                         <a href="{{ route('suporter.filter.students') }}" class="btn btn-primary btn-sm">
                             پنل کاربری
                         </a>
+                       
+                        @elseif(auth()->user()->role === 'stucent_register')
+                        <a href="{{ route('students.index') }}" class="btn btn-primary btn-sm">
+                            پنل کاربری
+                        </a>
                         @endif
 
 

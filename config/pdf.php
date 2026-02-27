@@ -9,7 +9,7 @@ return [
    'creator'               => 'Farid',
    'display_mode'          => 'fullpage',
    'tempDir'               => storage_path('app/mpdf_temp'),
-   'font_path' => base_path('public/assets/IRANSans/'),
+   'font_path' => public_path('assets/IRANSans/'),
    'font_data' => [
       'fa' => [
          'R'  => 'IRANSans.ttf',
